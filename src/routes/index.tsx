@@ -43,12 +43,12 @@ function Nav() {
           <a href="#opportunities" className="hover:text-foreground transition">Opportunities</a>
         </nav>
         <div className="flex items-center gap-2">
-          <button className="hidden sm:inline-flex text-sm font-medium px-4 py-2 rounded-full hover:bg-secondary transition">
+          <Link to="/login" className="hidden sm:inline-flex text-sm font-medium px-4 py-2 rounded-full hover:bg-secondary transition">
             Sign in
-          </button>
-          <button className="inline-flex items-center gap-1 text-sm font-medium px-4 py-2 rounded-full bg-primary text-primary-foreground hover:opacity-90 transition">
+          </Link>
+          <Link to="/signup" className="inline-flex items-center gap-1 text-sm font-medium px-4 py-2 rounded-full bg-primary text-primary-foreground hover:opacity-90 transition">
             Get started <ArrowUpRight className="h-4 w-4" />
-          </button>
+          </Link>
         </div>
       </div>
     </header>
@@ -76,13 +76,13 @@ function Hero() {
             Mentor4You pairs ambitious young people with mentors who've done it, and teammates who want to build it. From raw idea to shipped project — in one place.
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-3">
-            <button className="group inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-primary text-primary-foreground font-medium hover:shadow-glow transition-all">
+            <Link to="/signup" className="group inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-primary text-primary-foreground font-medium hover:shadow-glow transition-all">
               I'm a mentee
               <ArrowUpRight className="h-4 w-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-            </button>
-            <button className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-ink text-cream font-medium hover:opacity-90 transition" style={{ backgroundColor: "var(--ink)", color: "var(--cream)" }}>
+            </Link>
+            <Link to="/signup" className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full font-medium hover:opacity-90 transition" style={{ backgroundColor: "var(--ink)", color: "var(--cream)" }}>
               I want to mentor
-            </button>
+            </Link>
           </div>
           <div className="mt-12 flex items-center gap-6 text-sm text-muted-foreground">
             <div className="flex -space-x-2">
@@ -293,9 +293,9 @@ function CTA() {
           The hardest part is starting. <span className="text-primary italic">We make it easy.</span>
         </h2>
         <div className="mt-10 flex flex-wrap justify-center gap-3">
-          <button className="inline-flex items-center gap-2 px-7 py-4 rounded-full bg-primary text-primary-foreground font-medium hover:shadow-glow transition">
+          <Link to="/signup" className="inline-flex items-center gap-2 px-7 py-4 rounded-full bg-primary text-primary-foreground font-medium hover:shadow-glow transition">
             Create your profile <ArrowUpRight className="h-4 w-4" />
-          </button>
+          </Link>
         </div>
       </div>
     </section>
