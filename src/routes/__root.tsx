@@ -77,14 +77,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Mentor4You — Where mentorship meets momentum" },
+      { name: "description", content: "Mentor4You connects ambitious young people with mentors and collaborators to turn raw ideas into shipped projects." },
+      { name: "author", content: "Mentor4You" },
+      { property: "og:title", content: "Mentor4You — Where mentorship meets momentum" },
+      { property: "og:description", content: "Find a mentor. Build a team. Ship the idea." },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:site", content: "@mentor4you" },
     ],
     links: [
       {
