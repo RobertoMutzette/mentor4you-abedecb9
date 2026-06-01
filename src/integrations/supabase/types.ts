@@ -14,7 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          bio: string
+          created_at: string
+          experience_level: string
+          full_name: string
+          goals: string[]
+          hours_per_week: number
+          id: string
+          interests: string[]
+          location: string
+          looking_for_partners: boolean
+          onboarded: boolean
+          open_to_collab: boolean
+          role: Database["public"]["Enums"]["app_role"] | null
+          skills: string[]
+          updated_at: string
+        }
+        Insert: {
+          bio?: string
+          created_at?: string
+          experience_level?: string
+          full_name?: string
+          goals?: string[]
+          hours_per_week?: number
+          id: string
+          interests?: string[]
+          location?: string
+          looking_for_partners?: boolean
+          onboarded?: boolean
+          open_to_collab?: boolean
+          role?: Database["public"]["Enums"]["app_role"] | null
+          skills?: string[]
+          updated_at?: string
+        }
+        Update: {
+          bio?: string
+          created_at?: string
+          experience_level?: string
+          full_name?: string
+          goals?: string[]
+          hours_per_week?: number
+          id?: string
+          interests?: string[]
+          location?: string
+          looking_for_partners?: boolean
+          onboarded?: boolean
+          open_to_collab?: boolean
+          role?: Database["public"]["Enums"]["app_role"] | null
+          skills?: string[]
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +76,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      app_role: "mentor" | "mentee"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +203,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["mentor", "mentee"],
+    },
   },
 } as const
