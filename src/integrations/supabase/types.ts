@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      connection_requests: {
+        Row: {
+          created_at: string
+          from_user: string
+          id: string
+          message: string
+          status: Database["public"]["Enums"]["request_status"]
+          to_user: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          from_user: string
+          id?: string
+          message?: string
+          status?: Database["public"]["Enums"]["request_status"]
+          to_user: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          from_user?: string
+          id?: string
+          message?: string
+          status?: Database["public"]["Enums"]["request_status"]
+          to_user?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "connection_requests_from_user_fkey"
+            columns: ["from_user"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "connection_requests_to_user_fkey"
+            columns: ["to_user"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           bio: string
@@ -68,6 +113,68 @@ export type Database = {
         }
         Relationships: []
       }
+      projects: {
+        Row: {
+          completion_percentage: number
+          created_at: string
+          demo_url: string
+          description: string
+          funding_goal: number
+          funding_raised: number
+          github_url: string
+          id: string
+          milestones: Json
+          owner_id: string
+          skills_needed: string[]
+          status: string
+          tags: string[]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          completion_percentage?: number
+          created_at?: string
+          demo_url?: string
+          description?: string
+          funding_goal?: number
+          funding_raised?: number
+          github_url?: string
+          id?: string
+          milestones?: Json
+          owner_id: string
+          skills_needed?: string[]
+          status?: string
+          tags?: string[]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          completion_percentage?: number
+          created_at?: string
+          demo_url?: string
+          description?: string
+          funding_goal?: number
+          funding_raised?: number
+          github_url?: string
+          id?: string
+          milestones?: Json
+          owner_id?: string
+          skills_needed?: string[]
+          status?: string
+          tags?: string[]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -77,6 +184,7 @@ export type Database = {
     }
     Enums: {
       app_role: "mentor" | "mentee"
+      request_status: "pending" | "accepted" | "declined"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -205,6 +313,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["mentor", "mentee"],
+      request_status: ["pending", "accepted", "declined"],
     },
   },
 } as const
