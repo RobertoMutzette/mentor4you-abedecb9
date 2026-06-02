@@ -61,52 +61,70 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_url: string
           bio: string
           created_at: string
+          education: Json
+          experience: Json
           experience_level: string
           full_name: string
           goals: string[]
+          headline: string
           hours_per_week: number
           id: string
+          industries: string[]
           interests: string[]
           location: string
           looking_for_partners: boolean
           onboarded: boolean
           open_to_collab: boolean
+          project_preferences: string[]
           role: Database["public"]["Enums"]["app_role"] | null
           skills: string[]
           updated_at: string
         }
         Insert: {
+          avatar_url?: string
           bio?: string
           created_at?: string
+          education?: Json
+          experience?: Json
           experience_level?: string
           full_name?: string
           goals?: string[]
+          headline?: string
           hours_per_week?: number
           id: string
+          industries?: string[]
           interests?: string[]
           location?: string
           looking_for_partners?: boolean
           onboarded?: boolean
           open_to_collab?: boolean
+          project_preferences?: string[]
           role?: Database["public"]["Enums"]["app_role"] | null
           skills?: string[]
           updated_at?: string
         }
         Update: {
+          avatar_url?: string
           bio?: string
           created_at?: string
+          education?: Json
+          experience?: Json
           experience_level?: string
           full_name?: string
           goals?: string[]
+          headline?: string
           hours_per_week?: number
           id?: string
+          industries?: string[]
           interests?: string[]
           location?: string
           looking_for_partners?: boolean
           onboarded?: boolean
           open_to_collab?: boolean
+          project_preferences?: string[]
           role?: Database["public"]["Enums"]["app_role"] | null
           skills?: string[]
           updated_at?: string
