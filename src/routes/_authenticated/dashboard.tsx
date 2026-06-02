@@ -130,17 +130,17 @@ function MatchCard({ p, alreadySent, onConnect }: { p: Scored<Profile>; alreadyS
   return (
     <article className="rounded-3xl border border-border bg-card p-6 flex flex-col hover:shadow-card transition">
       <div className="flex items-start justify-between gap-3">
-        <div className="flex items-center gap-3 min-w-0">
+        <Link to="/u/$id" params={{ id: p.id }} className="flex items-center gap-3 min-w-0 group">
           <div className="h-12 w-12 rounded-full bg-primary/15 text-primary flex items-center justify-center font-display font-bold shrink-0">{initials}</div>
           <div className="min-w-0">
-            <div className="font-display text-lg font-semibold leading-tight truncate">{p.full_name || "Anonymous"}</div>
+            <div className="font-display text-lg font-semibold leading-tight truncate group-hover:text-primary transition">{p.full_name || "Anonymous"}</div>
             <div className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
               {p.role === "mentor" ? <Compass className="h-3 w-3" /> : <Sparkles className="h-3 w-3" />}
               <span className="capitalize">{p.role}</span>
               {p.location && <><span>·</span><MapPin className="h-3 w-3" />{p.location}</>}
             </div>
           </div>
-        </div>
+        </Link>
         <div className="text-right shrink-0">
           <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Match</div>
           <div className={`font-display font-bold text-2xl leading-none ${scoreColor}`}>{p.score}</div>
