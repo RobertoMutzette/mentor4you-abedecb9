@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, ArrowRight, Check, Sparkles, Users2, Compass } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Sparkles, Users2, Compass, Plus, X } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
   head: () => ({ meta: [{ title: "Onboarding — Mentor4You" }] }),
@@ -9,10 +9,14 @@ export const Route = createFileRoute("/_authenticated/onboarding")({
 });
 
 type Role = "mentor" | "mentee";
+type EduItem = { school: string; degree: string; year: string };
+type ExpItem = { company: string; title: string; years: string };
 
-const SKILL_OPTIONS = ["Product design", "UX research", "Frontend dev", "Backend dev", "Mobile dev", "AI/ML", "Data science", "Hardware", "Product management", "Marketing", "Sales", "Content", "Community", "Finance", "Fundraising", "Operations", "Strategy", "Research"];
+const SKILL_OPTIONS = ["Product design", "UX research", "Frontend dev", "Backend dev", "Mobile dev", "AI/ML", "Data science", "Hardware", "Product management", "Marketing", "Sales", "Content", "Community", "Finance", "Fundraising", "Operations", "Strategy", "Research", "Legal", "Public speaking"];
 const INTEREST_OPTIONS = ["Climate tech", "AI", "Biotech", "Fintech", "EdTech", "Health", "Robotics", "Music tech", "Gaming", "Policy", "Social impact", "Consumer", "DeepTech", "Space", "Web3", "Creator economy"];
-const GOAL_OPTIONS = ["Find a co-founder", "Land an internship", "Ship my first project", "Apply to an accelerator", "Raise funding", "Win a hackathon", "Switch careers", "Grow my network", "Learn a new skill", "Mentor others"];
+const INDUSTRY_OPTIONS = ["Software", "Healthcare", "Finance", "Education", "Energy", "Manufacturing", "Media", "Retail", "Government", "Non-profit", "Real estate", "Agriculture", "Transport"];
+const GOAL_OPTIONS = ["Find a co-founder", "Land an internship", "Ship my first project", "Apply to an accelerator", "Raise funding", "Win a hackathon", "Switch careers", "Grow my network", "Learn a new skill", "Mentor others", "Find research collab", "Apply to a fellowship"];
+const PROJECT_PREFS = ["Solo experiments", "Small team (2–4)", "Larger team (5+)", "Open-source", "Commercial / startup", "Research", "Social impact", "Hackathon-style sprints", "Long-term build"];
 const EXP_LEVELS = ["Student", "Early career (0–3 yrs)", "Mid-career (3–8 yrs)", "Senior (8+ yrs)"];
 
 function OnboardingPage() {
@@ -25,13 +29,18 @@ function OnboardingPage() {
   const [lookingForPartners, setLookingForPartners] = useState(false);
   const [openToCollab, setOpenToCollab] = useState(false);
   const [fullName, setFullName] = useState("");
+  const [headline, setHeadline] = useState("");
   const [bio, setBio] = useState("");
   const [location, setLocation] = useState("");
   const [experience, setExperience] = useState("");
   const [hours, setHours] = useState(5);
   const [skills, setSkills] = useState<string[]>([]);
   const [interests, setInterests] = useState<string[]>([]);
+  const [industries, setIndustries] = useState<string[]>([]);
   const [goals, setGoals] = useState<string[]>([]);
+  const [projectPrefs, setProjectPrefs] = useState<string[]>([]);
+  const [education, setEducation] = useState<EduItem[]>([]);
+  const [workExperience, setWorkExperience] = useState<ExpItem[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -41,6 +50,7 @@ function OnboardingPage() {
       if (data) {
         if (data.onboarded) { navigate({ to: "/dashboard" }); return; }
         setFullName(data.full_name || u.user.user_metadata?.full_name || "");
+        setHeadline((data as any).headline || "");
         setRole(data.role as Role | null);
         setLookingForPartners(data.looking_for_partners);
         setOpenToCollab(data.open_to_collab);
@@ -50,19 +60,24 @@ function OnboardingPage() {
         setHours(data.hours_per_week || 5);
         setSkills(data.skills || []);
         setInterests(data.interests || []);
+        setIndustries(((data as any).industries as string[]) || []);
         setGoals(data.goals || []);
+        setProjectPrefs(((data as any).project_preferences as string[]) || []);
+        setEducation(((data as any).education as EduItem[]) || []);
+        setWorkExperience(((data as any).experience as ExpItem[]) || []);
       }
       setLoading(false);
     })();
   }, [navigate]);
 
-  const totalSteps = 5;
+  const totalSteps = 6;
   const canNext = () => {
     if (step === 0) return !!role;
     if (step === 1) return fullName.trim().length > 1 && !!experience;
     if (step === 2) return skills.length >= 1;
-    if (step === 3) return interests.length >= 1;
-    if (step === 4) return goals.length >= 1;
+    if (step === 3) return interests.length >= 1 && industries.length >= 1;
+    if (step === 4) return goals.length >= 1 && projectPrefs.length >= 1;
+    if (step === 5) return true; // background optional
     return false;
   };
 
@@ -70,9 +85,10 @@ function OnboardingPage() {
     setSaving(true);
     const { data: u } = await supabase.auth.getUser();
     if (!u.user) { setSaving(false); return; }
-    const payload = {
+    const payload: any = {
       id: u.user.id,
       full_name: fullName,
+      headline,
       role,
       looking_for_partners: role === "mentee" ? lookingForPartners : false,
       open_to_collab: role === "mentor" ? openToCollab : false,
@@ -82,7 +98,11 @@ function OnboardingPage() {
       hours_per_week: hours,
       skills,
       interests,
+      industries,
       goals,
+      project_preferences: projectPrefs,
+      education: education.filter((e) => e.school || e.degree),
+      experience: workExperience.filter((e) => e.company || e.title),
       onboarded: true,
     };
     const { error } = await supabase.from("profiles").upsert(payload);
@@ -124,6 +144,7 @@ function OnboardingPage() {
       {step === 1 && (
         <Stage title="About you" subtitle="The basics — keep it short.">
           <Input label="Full name" value={fullName} onChange={setFullName} required />
+          <Input label="Headline" value={headline} onChange={setHeadline} placeholder="e.g. CS student building climate tech" />
           <Input label="Where are you based?" value={location} onChange={setLocation} placeholder="City, Country or Remote" />
           <SelectChips label="Experience level" options={EXP_LEVELS} value={experience ? [experience] : []} onChange={(v) => setExperience(v[v.length - 1] || "")} single />
           <div>
@@ -142,14 +163,23 @@ function OnboardingPage() {
       )}
 
       {step === 3 && (
-        <Stage title="What fields excite you?" subtitle="We'll match on overlap. Pick at least one.">
-          <SelectChips options={INTEREST_OPTIONS} value={interests} onChange={setInterests} />
+        <Stage title="Fields & industries" subtitle="What domains excite you? We match heavily on overlap.">
+          <SelectChips label="Fields of interest" options={INTEREST_OPTIONS} value={interests} onChange={setInterests} />
+          <SelectChips label="Industries" options={INDUSTRY_OPTIONS} value={industries} onChange={setIndustries} />
         </Stage>
       )}
 
       {step === 4 && (
-        <Stage title={role === "mentor" ? "What do you want to help with?" : "What are your goals?"} subtitle="Pick at least one — this drives your matches.">
-          <SelectChips options={GOAL_OPTIONS} value={goals} onChange={setGoals} />
+        <Stage title="Goals & project style" subtitle="Tell us what you're trying to do and how you like to work.">
+          <SelectChips label={role === "mentor" ? "What do you want to help with?" : "Your goals"} options={GOAL_OPTIONS} value={goals} onChange={setGoals} />
+          <SelectChips label="Project preferences" options={PROJECT_PREFS} value={projectPrefs} onChange={setProjectPrefs} />
+        </Stage>
+      )}
+
+      {step === 5 && (
+        <Stage title="Background" subtitle="Optional — but it strengthens your matches and builds trust.">
+          <RepeaterEdu items={education} onChange={setEducation} />
+          <RepeaterExp items={workExperience} onChange={setWorkExperience} />
         </Stage>
       )}
 
@@ -252,6 +282,54 @@ function SelectChips({ label, options, value, onChange, single }: { label?: stri
           );
         })}
       </div>
+    </div>
+  );
+}
+
+function RepeaterEdu({ items, onChange }: { items: EduItem[]; onChange: (v: EduItem[]) => void }) {
+  return (
+    <div>
+      <div className="text-sm font-medium mb-3">Education</div>
+      <div className="space-y-3">
+        {items.map((it, i) => (
+          <div key={i} className="grid grid-cols-1 md:grid-cols-3 gap-2 items-start rounded-2xl border border-border bg-card p-3">
+            <input value={it.school} onChange={(e) => { const c = [...items]; c[i] = { ...it, school: e.target.value }; onChange(c); }} placeholder="School / University" className="px-3 py-2 rounded-lg border border-border bg-background text-sm" />
+            <input value={it.degree} onChange={(e) => { const c = [...items]; c[i] = { ...it, degree: e.target.value }; onChange(c); }} placeholder="Degree / Field" className="px-3 py-2 rounded-lg border border-border bg-background text-sm" />
+            <div className="flex gap-2">
+              <input value={it.year} onChange={(e) => { const c = [...items]; c[i] = { ...it, year: e.target.value }; onChange(c); }} placeholder="Year" className="flex-1 px-3 py-2 rounded-lg border border-border bg-background text-sm" />
+              <button type="button" onClick={() => onChange(items.filter((_, j) => j !== i))} className="p-2 rounded-lg hover:bg-secondary"><X className="h-4 w-4" /></button>
+            </div>
+          </div>
+        ))}
+      </div>
+      <button type="button" onClick={() => onChange([...items, { school: "", degree: "", year: "" }])}
+        className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-full border border-dashed border-border hover:bg-secondary transition">
+        <Plus className="h-4 w-4" /> Add education
+      </button>
+    </div>
+  );
+}
+
+function RepeaterExp({ items, onChange }: { items: ExpItem[]; onChange: (v: ExpItem[]) => void }) {
+  return (
+    <div>
+      <div className="text-sm font-medium mb-3">Professional experience</div>
+      <div className="space-y-3">
+        {items.map((it, i) => (
+          <div key={i} className="grid grid-cols-1 md:grid-cols-3 gap-2 items-start rounded-2xl border border-border bg-card p-3">
+            <input value={it.company} onChange={(e) => { const c = [...items]; c[i] = { ...it, company: e.target.value }; onChange(c); }} placeholder="Company" className="px-3 py-2 rounded-lg border border-border bg-background text-sm" />
+            <input value={it.title} onChange={(e) => { const c = [...items]; c[i] = { ...it, title: e.target.value }; onChange(c); }} placeholder="Role / Title" className="px-3 py-2 rounded-lg border border-border bg-background text-sm" />
+            <div className="flex gap-2">
+              <input value={it.years} onChange={(e) => { const c = [...items]; c[i] = { ...it, years: e.target.value }; onChange(c); }} placeholder="Years" className="flex-1 px-3 py-2 rounded-lg border border-border bg-background text-sm" />
+              <button type="button" onClick={() => onChange(items.filter((_, j) => j !== i))} className="p-2 rounded-lg hover:bg-secondary"><X className="h-4 w-4" /></button>
+            </div>
+          </div>
+        ))}
+      </div>
+      <button type="button" onClick={() => onChange([...items, { company: "", title: "", years: "" }])}
+        className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-full border border-dashed border-border hover:bg-secondary transition">
+        <Plus className="h-4 w-4" /> Add experience
+      </button>
     </div>
   );
 }
