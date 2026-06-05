@@ -61,8 +61,12 @@ export type Database = {
       }
       profiles: {
         Row: {
+          availability_schedule: Json
           avatar_url: string
           bio: string
+          certifications: Json
+          contact_pref: string
+          cover_url: string
           created_at: string
           education: Json
           experience: Json
@@ -74,18 +78,30 @@ export type Database = {
           id: string
           industries: string[]
           interests: string[]
+          languages: string[]
           location: string
           looking_for_partners: boolean
+          mentorship_topics: string[]
           onboarded: boolean
           open_to_collab: boolean
           project_preferences: string[]
           role: Database["public"]["Enums"]["app_role"] | null
           skills: string[]
+          social_facebook: string
+          social_instagram: string
+          social_linkedin: string
+          social_x: string
+          timezone: string
           updated_at: string
+          website: string
         }
         Insert: {
+          availability_schedule?: Json
           avatar_url?: string
           bio?: string
+          certifications?: Json
+          contact_pref?: string
+          cover_url?: string
           created_at?: string
           education?: Json
           experience?: Json
@@ -97,18 +113,30 @@ export type Database = {
           id: string
           industries?: string[]
           interests?: string[]
+          languages?: string[]
           location?: string
           looking_for_partners?: boolean
+          mentorship_topics?: string[]
           onboarded?: boolean
           open_to_collab?: boolean
           project_preferences?: string[]
           role?: Database["public"]["Enums"]["app_role"] | null
           skills?: string[]
+          social_facebook?: string
+          social_instagram?: string
+          social_linkedin?: string
+          social_x?: string
+          timezone?: string
           updated_at?: string
+          website?: string
         }
         Update: {
+          availability_schedule?: Json
           avatar_url?: string
           bio?: string
+          certifications?: Json
+          contact_pref?: string
+          cover_url?: string
           created_at?: string
           education?: Json
           experience?: Json
@@ -120,14 +148,22 @@ export type Database = {
           id?: string
           industries?: string[]
           interests?: string[]
+          languages?: string[]
           location?: string
           looking_for_partners?: boolean
+          mentorship_topics?: string[]
           onboarded?: boolean
           open_to_collab?: boolean
           project_preferences?: string[]
           role?: Database["public"]["Enums"]["app_role"] | null
           skills?: string[]
+          social_facebook?: string
+          social_instagram?: string
+          social_linkedin?: string
+          social_x?: string
+          timezone?: string
           updated_at?: string
+          website?: string
         }
         Relationships: []
       }
@@ -192,6 +228,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      rate_limits: {
+        Row: {
+          action: string
+          count: number
+          user_id: string
+          window_start: string
+        }
+        Insert: {
+          action: string
+          count?: number
+          user_id: string
+          window_start?: string
+        }
+        Update: {
+          action?: string
+          count?: number
+          user_id?: string
+          window_start?: string
+        }
+        Relationships: []
       }
     }
     Views: {
