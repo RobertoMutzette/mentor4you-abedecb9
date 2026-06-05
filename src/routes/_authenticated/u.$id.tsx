@@ -62,34 +62,62 @@ function ProfileView() {
     finally { setSending(false); }
   };
 
+  return <ProfileBody profile={profile} isMe={isMe} initials={initials} edu={edu} exp={exp} sent={sent} sending={sending} onConnect={handleConnect} />;
+}
+
+function ProfileBody({ profile, isMe, initials, edu, exp, sent, sending, onConnect }: any) {
+  const avatar = useSignedImage("avatars", profile.avatar_url);
+  const cover = useSignedImage("covers", profile.cover_url);
+  const socials = [
+    profile.website && { Icon: Globe, url: profile.website, label: "Website" },
+    profile.social_linkedin && { Icon: Linkedin, url: profile.social_linkedin, label: "LinkedIn" },
+    profile.social_x && { Icon: () => <span className="font-bold text-sm">𝕏</span>, url: profile.social_x.startsWith("http") ? profile.social_x : `https://x.com/${profile.social_x.replace(/^@/, "")}`, label: "X" },
+    profile.social_instagram && { Icon: Instagram, url: profile.social_instagram.startsWith("http") ? profile.social_instagram : `https://instagram.com/${profile.social_instagram.replace(/^@/, "")}`, label: "Instagram" },
+    profile.social_facebook && { Icon: Facebook, url: profile.social_facebook, label: "Facebook" },
+  ].filter(Boolean) as { Icon: any; url: string; label: string }[];
+  const certs = profile.certifications || [];
+
   return (
-    <div className="mx-auto max-w-3xl px-6 py-10">
-      <div className="rounded-3xl border border-border bg-gradient-to-br from-primary/10 via-card to-card p-7 md:p-9">
-        <div className="flex items-start gap-5">
-          <div className="h-20 w-20 md:h-24 md:w-24 rounded-2xl bg-gradient-to-br from-primary to-primary/40 text-primary-foreground flex items-center justify-center font-display font-bold text-2xl shrink-0">{initials}</div>
-          <div className="flex-1 min-w-0">
+    <div className="mx-auto max-w-3xl px-4 sm:px-6 py-8">
+      <div className="rounded-3xl border border-border bg-card overflow-hidden">
+        <div className="relative h-32 sm:h-48 bg-gradient-to-br from-primary/30 via-primary/10 to-secondary">
+          {cover && <img src={cover} alt="" className="absolute inset-0 h-full w-full object-cover" />}
+        </div>
+        <div className="px-5 sm:px-7 pb-6 -mt-12 sm:-mt-14">
+          <div className="h-24 w-24 sm:h-28 sm:w-28 rounded-2xl bg-gradient-to-br from-primary to-primary/40 text-primary-foreground flex items-center justify-center font-display font-bold text-3xl border-4 border-card overflow-hidden">
+            {avatar ? <img src={avatar} alt="" className="h-full w-full object-cover" /> : initials}
+          </div>
+          <div className="mt-4">
             <div className="flex items-center gap-2 text-xs text-primary font-medium capitalize">
               {profile.role === "mentor" ? <Compass className="h-3.5 w-3.5" /> : <Sparkles className="h-3.5 w-3.5" />} {profile.role}
             </div>
-            <h1 className="mt-1 font-display text-3xl md:text-4xl font-bold tracking-tight">{profile.full_name || "Anonymous"}</h1>
+            <h1 className="mt-1 font-display text-2xl sm:text-3xl font-bold tracking-tight">{profile.full_name || "Anonymous"}</h1>
             {profile.headline && <p className="mt-1 text-base text-muted-foreground">{profile.headline}</p>}
-            {profile.location && <div className="mt-2 inline-flex items-center gap-1 text-sm text-muted-foreground"><MapPin className="h-3.5 w-3.5" /> {profile.location}</div>}
+            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
+              {profile.location && <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {profile.location}</span>}
+              {profile.timezone && <span className="inline-flex items-center gap-1"><Clock className="h-3.5 w-3.5" /> {profile.timezone}</span>}
+            </div>
+          </div>
+
+          <div className="mt-5 flex flex-wrap gap-2">
+            {!isMe && (
+              <button onClick={onConnect} disabled={sent || sending}
+                className="inline-flex items-center gap-1.5 text-sm font-medium px-5 py-2.5 rounded-full bg-foreground text-background hover:opacity-90 disabled:opacity-60 transition">
+                {sent ? <><Clock className="h-4 w-4" /> Request sent</> : sending ? <><Loader2 className="h-4 w-4 animate-spin" /> Sending…</> : <>Connect <ArrowUpRight className="h-4 w-4" /></>}
+              </button>
+            )}
+            {isMe && (
+              <Link to="/settings" className="inline-flex items-center gap-1.5 text-sm font-medium px-5 py-2.5 rounded-full border border-border bg-card hover:bg-secondary transition">
+                Edit profile <ArrowUpRight className="h-4 w-4" />
+              </Link>
+            )}
+            {socials.map((s) => (
+              <a key={s.label} href={s.url} target="_blank" rel="noopener noreferrer" title={s.label} className="h-10 w-10 inline-flex items-center justify-center rounded-full border border-border hover:bg-secondary transition">
+                <s.Icon className="h-4 w-4" />
+              </a>
+            ))}
           </div>
         </div>
-
-        {!isMe && (
-          <div className="mt-6 flex gap-2">
-            <button onClick={handleConnect} disabled={sent || sending}
-              className="inline-flex items-center gap-1.5 text-sm font-medium px-5 py-2.5 rounded-full bg-foreground text-background hover:opacity-90 disabled:opacity-60 transition">
-              {sent ? <><Clock className="h-4 w-4" /> Request sent</> : sending ? <><Loader2 className="h-4 w-4 animate-spin" /> Sending…</> : <>Connect <ArrowUpRight className="h-4 w-4" /></>}
-            </button>
-          </div>
-        )}
-        {isMe && (
-          <Link to="/onboarding" className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium px-5 py-2.5 rounded-full border border-border bg-card hover:bg-secondary transition">
-            Edit profile <ArrowUpRight className="h-4 w-4" />
-          </Link>
-        )}
       </div>
 
       {profile.bio && (
