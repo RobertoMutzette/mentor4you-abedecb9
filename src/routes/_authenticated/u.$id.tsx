@@ -138,7 +138,7 @@ function ProfileBody({ profile, isMe, initials, edu, exp, sent, sending, onConne
       {edu.length > 0 && (
         <Section title="Education" icon={<GraduationCap className="h-4 w-4" />}>
           <ul className="space-y-3">
-            {edu.map((e, i) => (
+            {edu.map((e: EduItem, i: number) => (
               <li key={i} className="flex justify-between gap-3 text-sm border-b border-border last:border-0 pb-3 last:pb-0">
                 <div>
                   <div className="font-medium">{e.school || "—"}</div>
