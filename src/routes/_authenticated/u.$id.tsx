@@ -131,9 +131,27 @@ function ProfileBody({ profile, isMe, initials, edu, exp, sent, sending, onConne
         <TagSection title="Interests" items={profile.interests} />
         <TagSection title="Industries" items={profile.industries} />
         <TagSection title="Goals" items={profile.goals} />
+        <TagSection title="Mentorship topics" items={profile.mentorship_topics} />
         <TagSection title="Project style" items={profile.project_preferences} />
+        <TagSection title="Languages" items={profile.languages} />
         <InfoSection title="Availability" value={profile.hours_per_week ? `${profile.hours_per_week} hrs / week` : null} sub={profile.experience_level} />
       </div>
+
+      {(profile.certifications || []).length > 0 && (
+        <Section title="Certifications" icon={<Award className="h-4 w-4" />}>
+          <ul className="space-y-3">
+            {profile.certifications.map((c: any, i: number) => (
+              <li key={i} className="flex justify-between gap-3 text-sm border-b border-border last:border-0 pb-3 last:pb-0">
+                <div>
+                  <div className="font-medium">{c.name || "—"}</div>
+                  <div className="text-muted-foreground">{c.issuer}</div>
+                </div>
+                {c.year && <div className="text-muted-foreground shrink-0">{c.year}</div>}
+              </li>
+            ))}
+          </ul>
+        </Section>
+      )}
 
       {edu.length > 0 && (
         <Section title="Education" icon={<GraduationCap className="h-4 w-4" />}>
