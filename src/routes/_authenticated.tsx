@@ -2,7 +2,7 @@ import { createFileRoute, Outlet, redirect, Link, useNavigate } from "@tanstack/
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo.png";
-import { LogOut, LayoutDashboard, Users2, Rocket, Inbox } from "lucide-react";
+import { LogOut, LayoutDashboard, Users2, Rocket, Inbox, UserCog } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async () => {
@@ -69,6 +69,9 @@ function AuthLayout() {
               {pending > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 h-4 min-w-4 px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">{pending}</span>
               )}
+            </Link>
+            <Link to="/settings" className={navLink} activeProps={{ className: navLink + " bg-secondary" }}>
+              <UserCog className="h-4 w-4" /><span className="hidden md:inline">Profile</span>
             </Link>
           </nav>
           <div className="flex items-center gap-3 shrink-0">
