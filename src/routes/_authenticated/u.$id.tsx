@@ -2,7 +2,8 @@ import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { sendConnectionRequest } from "@/lib/connections";
-import { ArrowUpRight, Briefcase, Check, Clock, GraduationCap, Loader2, MapPin, Sparkles, Compass } from "lucide-react";
+import { useSignedImage } from "@/lib/storage";
+import { ArrowUpRight, Award, Briefcase, Check, Clock, Globe, GraduationCap, Instagram, Languages, Linkedin, Loader2, MapPin, Sparkles, Compass, Facebook } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/u/$id")({
   head: () => ({ meta: [{ title: "Profile — Mentor4You" }] }),
