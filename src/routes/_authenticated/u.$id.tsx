@@ -154,7 +154,7 @@ function ProfileBody({ profile, isMe, initials, edu, exp, sent, sending, onConne
       {exp.length > 0 && (
         <Section title="Experience" icon={<Briefcase className="h-4 w-4" />}>
           <ul className="space-y-3">
-            {exp.map((e, i) => (
+            {exp.map((e: ExpItem, i: number) => (
               <li key={i} className="flex justify-between gap-3 text-sm border-b border-border last:border-0 pb-3 last:pb-0">
                 <div>
                   <div className="font-medium">{e.title || "—"}</div>
