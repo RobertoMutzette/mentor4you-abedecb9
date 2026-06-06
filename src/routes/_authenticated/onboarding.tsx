@@ -18,6 +18,13 @@ const INDUSTRY_OPTIONS = ["Software", "Healthcare", "Finance", "Education", "Ene
 const GOAL_OPTIONS = ["Find a co-founder", "Land an internship", "Ship my first project", "Apply to an accelerator", "Raise funding", "Win a hackathon", "Switch careers", "Grow my network", "Learn a new skill", "Mentor others", "Find research collab", "Apply to a fellowship"];
 const PROJECT_PREFS = ["Solo experiments", "Small team (2–4)", "Larger team (5+)", "Open-source", "Commercial / startup", "Research", "Social impact", "Hackathon-style sprints", "Long-term build"];
 const EXP_LEVELS = ["Student", "Early career (0–3 yrs)", "Mid-career (3–8 yrs)", "Senior (8+ yrs)"];
+const AGE_RANGES = ["Under 18", "18–24", "25–34", "35–44", "45–54", "55+"];
+const COMM_STYLES = ["Async (text-first)", "Sync (calls)", "Mix of both"];
+const MEETING_FREQ = ["Weekly", "Bi-weekly", "Monthly", "As needed"];
+const LEARN_STYLES = ["Hands-on building", "Discussion & feedback", "Structured curriculum", "Pair programming"];
+const RESPONSE_TIMES = ["Within hours", "Within a day", "Within a few days"];
+const PERSONALITY = ["Direct", "Empathetic", "Analytical", "Creative", "Methodical", "Big-picture", "Detail-oriented", "Energetic", "Calm"];
+const TIMEZONES = ["UTC-8 (PT)", "UTC-5 (ET)", "UTC+0 (GMT)", "UTC+1 (CET)", "UTC+2 (EET)", "UTC+5:30 (IST)", "UTC+8 (CST/SGT)", "UTC+10 (AEST)"];
 
 function OnboardingPage() {
   const navigate = useNavigate();
