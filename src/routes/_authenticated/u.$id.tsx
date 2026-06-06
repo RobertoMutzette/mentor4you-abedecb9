@@ -21,6 +21,8 @@ function ProfileView() {
   const [loading, setLoading] = useState(true);
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
+  const [blocked, setBlocked] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -36,6 +38,7 @@ function ProfileView() {
           .eq("to_user", id)
           .maybeSingle();
         setSent(!!req);
+        setBlocked(await isBlocked(id));
       }
       setLoading(false);
     })();
@@ -60,10 +63,22 @@ function ProfileView() {
   const handleConnect = async () => {
     setSending(true);
     try { await sendConnectionRequest(profile.id); setSent(true); }
+    catch (e: any) { alert(e.message); }
     finally { setSending(false); }
   };
 
-  return <ProfileBody profile={profile} isMe={isMe} initials={initials} edu={edu} exp={exp} sent={sent} sending={sending} onConnect={handleConnect} />;
+  const handleBlock = async () => {
+    if (blocked) { await unblockUser(profile.id); setBlocked(false); }
+    else if (confirm("Block this user? They won't be able to connect with you.")) {
+      await blockUser(profile.id); setBlocked(true);
+    }
+  };
+
+  return <>
+    <ProfileBody profile={profile} isMe={isMe} initials={initials} edu={edu} exp={exp} sent={sent} sending={sending} blocked={blocked}
+      onConnect={handleConnect} onBlock={handleBlock} onReport={() => setReportOpen(true)} />
+    {reportOpen && <ReportModal userId={profile.id} onClose={() => setReportOpen(false)} />}
+  </>;
 }
 
 function ProfileBody({ profile, isMe, initials, edu, exp, sent, sending, onConnect }: any) {
