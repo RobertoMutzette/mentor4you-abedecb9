@@ -173,6 +173,30 @@ function SettingsPage() {
         </Field>
       </Card>
 
+      <Card title="Privacy" subtitle="Control what others see and who can reach you.">
+        <Field label="Profile visibility">
+          <select value={p.profile_visibility} onChange={(e) => set("profile_visibility", e.target.value)} className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm">
+            <option value="public">Public — visible to all members</option>
+            <option value="connections">Connections only</option>
+            <option value="hidden">Hidden from search</option>
+          </select>
+        </Field>
+        <Field label="Who can message you">
+          <select value={p.allow_messages_from} onChange={(e) => set("allow_messages_from", e.target.value)} className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm">
+            <option value="everyone">Everyone</option>
+            <option value="connections">Connections only</option>
+            <option value="nobody">Nobody</option>
+          </select>
+        </Field>
+        <label className="flex items-center gap-3 cursor-pointer">
+          <input type="checkbox" checked={p.show_email} onChange={(e) => set("show_email", e.target.checked)} className="h-4 w-4 accent-primary" />
+          <span className="text-sm">Show my email on my profile</span>
+        </label>
+        <p className="text-xs text-muted-foreground">
+          Read our <Link to="/guidelines" className="text-primary underline">community guidelines</Link>.
+        </p>
+      </Card>
+
       <div className="fixed bottom-0 left-0 right-0 z-40 bg-background/90 backdrop-blur border-t border-border">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 py-3 flex items-center justify-end gap-3">
           {saved && <span className="text-sm text-primary inline-flex items-center gap-1"><Check className="h-4 w-4" /> Saved</span>}
