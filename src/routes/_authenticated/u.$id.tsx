@@ -127,11 +127,21 @@ function ProfileBody({ profile, isMe, initials, edu, exp, sent, sending, blocked
                 Edit profile <ArrowUpRight className="h-4 w-4" />
               </Link>
             )}
-            {socials.map((s) => (
+            {socials.map((s: any) => (
               <a key={s.label} href={s.url} target="_blank" rel="noopener noreferrer" title={s.label} className="h-10 w-10 inline-flex items-center justify-center rounded-full border border-border hover:bg-secondary transition">
                 <s.Icon className="h-4 w-4" />
               </a>
             ))}
+            {!isMe && (
+              <>
+                <button onClick={onReport} title="Report" className="h-10 w-10 inline-flex items-center justify-center rounded-full border border-border hover:bg-destructive/10 hover:text-destructive transition">
+                  <ShieldAlert className="h-4 w-4" />
+                </button>
+                <button onClick={onBlock} title={blocked ? "Unblock" : "Block"} className={`h-10 w-10 inline-flex items-center justify-center rounded-full border border-border hover:bg-destructive/10 hover:text-destructive transition ${blocked ? "bg-destructive/10 text-destructive" : ""}`}>
+                  <Ban className="h-4 w-4" />
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>
