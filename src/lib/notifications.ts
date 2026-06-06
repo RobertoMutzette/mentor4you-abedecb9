@@ -26,7 +26,7 @@ export async function createNotification(input: {
     title: input.title,
     body: input.body ?? "",
     link: input.link ?? "",
-    data: input.data ?? {},
+    data: (input.data ?? {}) as any,
   });
 }
 
