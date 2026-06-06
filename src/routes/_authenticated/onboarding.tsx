@@ -18,6 +18,13 @@ const INDUSTRY_OPTIONS = ["Software", "Healthcare", "Finance", "Education", "Ene
 const GOAL_OPTIONS = ["Find a co-founder", "Land an internship", "Ship my first project", "Apply to an accelerator", "Raise funding", "Win a hackathon", "Switch careers", "Grow my network", "Learn a new skill", "Mentor others", "Find research collab", "Apply to a fellowship"];
 const PROJECT_PREFS = ["Solo experiments", "Small team (2–4)", "Larger team (5+)", "Open-source", "Commercial / startup", "Research", "Social impact", "Hackathon-style sprints", "Long-term build"];
 const EXP_LEVELS = ["Student", "Early career (0–3 yrs)", "Mid-career (3–8 yrs)", "Senior (8+ yrs)"];
+const AGE_RANGES = ["Under 18", "18–24", "25–34", "35–44", "45–54", "55+"];
+const COMM_STYLES = ["Async (text-first)", "Sync (calls)", "Mix of both"];
+const MEETING_FREQ = ["Weekly", "Bi-weekly", "Monthly", "As needed"];
+const LEARN_STYLES = ["Hands-on building", "Discussion & feedback", "Structured curriculum", "Pair programming"];
+const RESPONSE_TIMES = ["Within hours", "Within a day", "Within a few days"];
+const PERSONALITY = ["Direct", "Empathetic", "Analytical", "Creative", "Methodical", "Big-picture", "Detail-oriented", "Energetic", "Calm"];
+const TIMEZONES = ["UTC-8 (PT)", "UTC-5 (ET)", "UTC+0 (GMT)", "UTC+1 (CET)", "UTC+2 (EET)", "UTC+5:30 (IST)", "UTC+8 (CST/SGT)", "UTC+10 (AEST)"];
 
 function OnboardingPage() {
   const navigate = useNavigate();
@@ -41,6 +48,14 @@ function OnboardingPage() {
   const [projectPrefs, setProjectPrefs] = useState<string[]>([]);
   const [education, setEducation] = useState<EduItem[]>([]);
   const [workExperience, setWorkExperience] = useState<ExpItem[]>([]);
+  // v2
+  const [ageRange, setAgeRange] = useState("");
+  const [timezone, setTimezone] = useState("");
+  const [commStyle, setCommStyle] = useState("");
+  const [meetingFreq, setMeetingFreq] = useState("");
+  const [learnStyle, setLearnStyle] = useState("");
+  const [responseTime, setResponseTime] = useState("");
+  const [personalityTags, setPersonalityTags] = useState<string[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -65,19 +80,27 @@ function OnboardingPage() {
         setProjectPrefs(((data as any).project_preferences as string[]) || []);
         setEducation(((data as any).education as EduItem[]) || []);
         setWorkExperience(((data as any).experience as ExpItem[]) || []);
+        setAgeRange((data as any).age_range || "");
+        setTimezone((data as any).timezone || "");
+        setCommStyle((data as any).communication_style || "");
+        setMeetingFreq((data as any).meeting_frequency || "");
+        setLearnStyle((data as any).learning_style || "");
+        setResponseTime((data as any).response_time || "");
+        setPersonalityTags(((data as any).personality as string[]) || []);
       }
       setLoading(false);
     })();
   }, [navigate]);
 
-  const totalSteps = 6;
+  const totalSteps = 7;
   const canNext = () => {
     if (step === 0) return !!role;
     if (step === 1) return fullName.trim().length > 1 && !!experience;
     if (step === 2) return skills.length >= 1;
     if (step === 3) return interests.length >= 1 && industries.length >= 1;
     if (step === 4) return goals.length >= 1 && projectPrefs.length >= 1;
-    if (step === 5) return true; // background optional
+    if (step === 5) return !!commStyle && !!meetingFreq; // working style
+    if (step === 6) return true; // background optional
     return false;
   };
 
@@ -103,6 +126,13 @@ function OnboardingPage() {
       project_preferences: projectPrefs,
       education: education.filter((e) => e.school || e.degree),
       experience: workExperience.filter((e) => e.company || e.title),
+      age_range: ageRange,
+      timezone,
+      communication_style: commStyle,
+      meeting_frequency: meetingFreq,
+      learning_style: learnStyle,
+      response_time: responseTime,
+      personality: personalityTags,
       onboarded: true,
     };
     const { error } = await supabase.from("profiles").upsert(payload);
@@ -177,6 +207,18 @@ function OnboardingPage() {
       )}
 
       {step === 5 && (
+        <Stage title="Working style" subtitle="How you like to collaborate. Drives our deeper matches.">
+          <SelectChips label="Age range" options={AGE_RANGES} value={ageRange ? [ageRange] : []} onChange={(v) => setAgeRange(v[v.length - 1] || "")} single />
+          <SelectChips label="Timezone" options={TIMEZONES} value={timezone ? [timezone] : []} onChange={(v) => setTimezone(v[v.length - 1] || "")} single />
+          <SelectChips label="Communication style" options={COMM_STYLES} value={commStyle ? [commStyle] : []} onChange={(v) => setCommStyle(v[v.length - 1] || "")} single />
+          <SelectChips label="Meeting frequency" options={MEETING_FREQ} value={meetingFreq ? [meetingFreq] : []} onChange={(v) => setMeetingFreq(v[v.length - 1] || "")} single />
+          <SelectChips label="Learning style" options={LEARN_STYLES} value={learnStyle ? [learnStyle] : []} onChange={(v) => setLearnStyle(v[v.length - 1] || "")} single />
+          <SelectChips label="Typical response time" options={RESPONSE_TIMES} value={responseTime ? [responseTime] : []} onChange={(v) => setResponseTime(v[v.length - 1] || "")} single />
+          <SelectChips label="Personality (pick all that fit)" options={PERSONALITY} value={personalityTags} onChange={setPersonalityTags} />
+        </Stage>
+      )}
+
+      {step === 6 && (
         <Stage title="Background" subtitle="Optional — but it strengthens your matches and builds trust.">
           <RepeaterEdu items={education} onChange={setEducation} />
           <RepeaterExp items={workExperience} onChange={setWorkExperience} />

@@ -1,7 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Github, Globe, Loader2, Pencil, Plus, Rocket, Trash2, X } from "lucide-react";
+import { ArrowUpRight, Github, Globe, Loader2, Pencil, Plus, Rocket, Trash2, X } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/projects")({
   head: () => ({ meta: [{ title: "Projects — Mentor4You" }] }),
@@ -138,12 +138,13 @@ function ProjectCard({ p, owner, mine, onEdit, onDelete }: { p: Project; owner?:
         </div>
       )}
 
-      {(p.github_url || p.demo_url) && (
-        <div className="mt-5 pt-4 border-t border-border flex gap-3 text-sm font-medium">
+      <div className="mt-5 pt-4 border-t border-border flex items-center justify-between gap-3 text-sm font-medium">
+        <div className="flex gap-3">
           {p.github_url && <a href={p.github_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 hover:text-primary"><Github className="h-4 w-4" /> Code</a>}
           {p.demo_url && <a href={p.demo_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 hover:text-primary"><Globe className="h-4 w-4" /> Demo</a>}
         </div>
-      )}
+        <Link to="/project/$id" params={{ id: p.id }} className="inline-flex items-center gap-1 text-primary hover:underline">Workspace <ArrowUpRight className="h-3.5 w-3.5" /></Link>
+      </div>
     </article>
   );
 }

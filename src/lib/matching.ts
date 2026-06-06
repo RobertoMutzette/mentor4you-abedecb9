@@ -15,6 +15,14 @@ export type ProfileLite = {
   project_preferences?: string[];
   looking_for_partners: boolean;
   open_to_collab: boolean;
+  // v2
+  age_range?: string;
+  communication_style?: string;
+  personality?: string[];
+  meeting_frequency?: string;
+  learning_style?: string;
+  response_time?: string;
+  timezone?: string;
 };
 
 const LEVELS = ["student", "early career (0–3 yrs)", "mid-career (3–8 yrs)", "senior (8+ yrs)"];
@@ -27,6 +35,7 @@ export type Scored<T extends ProfileLite> = T & {
 };
 
 const inter = (a: string[] = [], b: string[] = []) => a.filter((x) => b.includes(x));
+const same = (a?: string, b?: string) => !!a && !!b && a.toLowerCase() === b.toLowerCase();
 
 export function score<T extends ProfileLite>(me: ProfileLite, other: T): Scored<T> {
   const skills = inter(me.skills, other.skills);
@@ -34,6 +43,7 @@ export function score<T extends ProfileLite>(me: ProfileLite, other: T): Scored<
   const goals = inter(me.goals, other.goals);
   const industries = inter(me.industries, other.industries);
   const prefs = inter(me.project_preferences, other.project_preferences);
+  const personality = inter(me.personality, other.personality);
 
   const complementary = Array.from(new Set([
     ...inter(me.interests, other.skills),
@@ -49,6 +59,12 @@ export function score<T extends ProfileLite>(me: ProfileLite, other: T): Scored<
   if (complementary.length){ raw += complementary.length * 9; reasons.push(`Can teach you ${complementary.slice(0, 2).join(", ")}`); }
   if (prefs.length)        { raw += prefs.length * 5;        reasons.push(`Same project style`); }
   if (skills.length)       { raw += skills.length * 3; }
+  if (personality.length)  { raw += personality.length * 4;  reasons.push(`Similar working style`); }
+
+  if (same(me.communication_style, other.communication_style)) { raw += 5; reasons.push("Matching communication style"); }
+  if (same(me.meeting_frequency, other.meeting_frequency))     { raw += 4; reasons.push("Same meeting rhythm"); }
+  if (same(me.timezone, other.timezone))                       { raw += 4; reasons.push("Same timezone"); }
+  if (same(me.response_time, other.response_time))             { raw += 2; }
 
   if (me.role && other.role && me.role !== other.role) {
     const mentor = me.role === "mentor" ? me : other;

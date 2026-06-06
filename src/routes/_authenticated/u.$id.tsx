@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { sendConnectionRequest } from "@/lib/connections";
 import { useSignedImage } from "@/lib/storage";
-import { ArrowUpRight, Award, Briefcase, Clock, Globe, GraduationCap, Instagram, Linkedin, Loader2, MapPin, Sparkles, Compass, Facebook } from "lucide-react";
+import { blockUser, isBlocked, reportUser, unblockUser } from "@/lib/safety";
+import { ArrowUpRight, Award, Briefcase, Clock, Globe, GraduationCap, Instagram, Linkedin, Loader2, MapPin, Sparkles, Compass, Facebook, ShieldAlert, Ban, X } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/u/$id")({
   head: () => ({ meta: [{ title: "Profile — Mentor4You" }] }),
@@ -20,6 +21,8 @@ function ProfileView() {
   const [loading, setLoading] = useState(true);
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
+  const [blocked, setBlocked] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -35,6 +38,7 @@ function ProfileView() {
           .eq("to_user", id)
           .maybeSingle();
         setSent(!!req);
+        setBlocked(await isBlocked(id));
       }
       setLoading(false);
     })();
@@ -59,13 +63,25 @@ function ProfileView() {
   const handleConnect = async () => {
     setSending(true);
     try { await sendConnectionRequest(profile.id); setSent(true); }
+    catch (e: any) { alert(e.message); }
     finally { setSending(false); }
   };
 
-  return <ProfileBody profile={profile} isMe={isMe} initials={initials} edu={edu} exp={exp} sent={sent} sending={sending} onConnect={handleConnect} />;
+  const handleBlock = async () => {
+    if (blocked) { await unblockUser(profile.id); setBlocked(false); }
+    else if (confirm("Block this user? They won't be able to connect with you.")) {
+      await blockUser(profile.id); setBlocked(true);
+    }
+  };
+
+  return <>
+    <ProfileBody profile={profile} isMe={isMe} initials={initials} edu={edu} exp={exp} sent={sent} sending={sending} blocked={blocked}
+      onConnect={handleConnect} onBlock={handleBlock} onReport={() => setReportOpen(true)} />
+    {reportOpen && <ReportModal userId={profile.id} onClose={() => setReportOpen(false)} />}
+  </>;
 }
 
-function ProfileBody({ profile, isMe, initials, edu, exp, sent, sending, onConnect }: any) {
+function ProfileBody({ profile, isMe, initials, edu, exp, sent, sending, blocked, onConnect, onBlock, onReport }: any) {
   const avatar = useSignedImage("avatars", profile.avatar_url);
   const cover = useSignedImage("covers", profile.cover_url);
   const socials = [
@@ -111,11 +127,21 @@ function ProfileBody({ profile, isMe, initials, edu, exp, sent, sending, onConne
                 Edit profile <ArrowUpRight className="h-4 w-4" />
               </Link>
             )}
-            {socials.map((s) => (
+            {socials.map((s: any) => (
               <a key={s.label} href={s.url} target="_blank" rel="noopener noreferrer" title={s.label} className="h-10 w-10 inline-flex items-center justify-center rounded-full border border-border hover:bg-secondary transition">
                 <s.Icon className="h-4 w-4" />
               </a>
             ))}
+            {!isMe && (
+              <>
+                <button onClick={onReport} title="Report" className="h-10 w-10 inline-flex items-center justify-center rounded-full border border-border hover:bg-destructive/10 hover:text-destructive transition">
+                  <ShieldAlert className="h-4 w-4" />
+                </button>
+                <button onClick={onBlock} title={blocked ? "Unblock" : "Block"} className={`h-10 w-10 inline-flex items-center justify-center rounded-full border border-border hover:bg-destructive/10 hover:text-destructive transition ${blocked ? "bg-destructive/10 text-destructive" : ""}`}>
+                  <Ban className="h-4 w-4" />
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -216,6 +242,57 @@ function InfoSection({ title, value, sub }: { title: string; value: string | nul
       <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">{title}</div>
       {value && <div className="font-display font-semibold">{value}</div>}
       {sub && <div className="text-sm text-muted-foreground mt-0.5">{sub}</div>}
+    </div>
+  );
+}
+
+function ReportModal({ userId, onClose }: { userId: string; onClose: () => void }) {
+  const REASONS = ["Spam or scam", "Harassment or hate", "Inappropriate content", "Fake profile", "Other"];
+  const [reason, setReason] = useState(REASONS[0]);
+  const [details, setDetails] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [done, setDone] = useState(false);
+  const [err, setErr] = useState("");
+
+  const submit = async () => {
+    setBusy(true); setErr("");
+    try { await reportUser(userId, reason, details); setDone(true); setTimeout(onClose, 1500); }
+    catch (e: any) { setErr(e.message); }
+    finally { setBusy(false); }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-foreground/40 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()} className="w-full max-w-md bg-card rounded-3xl border border-border p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-display text-xl font-bold inline-flex items-center gap-2"><ShieldAlert className="h-5 w-5" /> Report user</h2>
+          <button onClick={onClose} className="p-1.5 rounded-full hover:bg-secondary"><X className="h-4 w-4" /></button>
+        </div>
+        {done ? (
+          <p className="text-sm text-primary">Thanks — we'll review this report.</p>
+        ) : (
+          <div className="space-y-3">
+            <label className="block">
+              <span className="text-sm font-medium">Reason</span>
+              <select value={reason} onChange={(e) => setReason(e.target.value)} className="mt-1.5 w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm">
+                {REASONS.map((r) => <option key={r}>{r}</option>)}
+              </select>
+            </label>
+            <label className="block">
+              <span className="text-sm font-medium">Details (optional)</span>
+              <textarea value={details} onChange={(e) => setDetails(e.target.value)} rows={3} maxLength={1000}
+                className="mt-1.5 w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm resize-none" />
+            </label>
+            {err && <p className="text-sm text-destructive">{err}</p>}
+            <div className="flex justify-end gap-2 pt-2">
+              <button onClick={onClose} className="px-4 py-2 rounded-full text-sm font-medium hover:bg-secondary">Cancel</button>
+              <button onClick={submit} disabled={busy} className="px-5 py-2 rounded-full bg-destructive text-destructive-foreground text-sm font-medium disabled:opacity-60">
+                {busy ? "Sending…" : "Submit report"}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
