@@ -82,6 +82,7 @@ function SettingsPage() {
       social_instagram: p.social_instagram, social_facebook: p.social_facebook,
       social_linkedin: p.social_linkedin, social_x: p.social_x, website: p.website,
       contact_pref: p.contact_pref, availability_schedule: p.availability_schedule,
+      profile_visibility: p.profile_visibility, show_email: p.show_email, allow_messages_from: p.allow_messages_from,
     }).eq("id", u.user.id);
     setSaving(false);
     if (!error) { setSaved(true); setTimeout(() => setSaved(false), 2000); }
