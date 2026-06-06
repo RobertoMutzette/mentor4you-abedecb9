@@ -245,3 +245,54 @@ function InfoSection({ title, value, sub }: { title: string; value: string | nul
     </div>
   );
 }
+
+function ReportModal({ userId, onClose }: { userId: string; onClose: () => void }) {
+  const REASONS = ["Spam or scam", "Harassment or hate", "Inappropriate content", "Fake profile", "Other"];
+  const [reason, setReason] = useState(REASONS[0]);
+  const [details, setDetails] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [done, setDone] = useState(false);
+  const [err, setErr] = useState("");
+
+  const submit = async () => {
+    setBusy(true); setErr("");
+    try { await reportUser(userId, reason, details); setDone(true); setTimeout(onClose, 1500); }
+    catch (e: any) { setErr(e.message); }
+    finally { setBusy(false); }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-foreground/40 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()} className="w-full max-w-md bg-card rounded-3xl border border-border p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-display text-xl font-bold inline-flex items-center gap-2"><ShieldAlert className="h-5 w-5" /> Report user</h2>
+          <button onClick={onClose} className="p-1.5 rounded-full hover:bg-secondary"><X className="h-4 w-4" /></button>
+        </div>
+        {done ? (
+          <p className="text-sm text-primary">Thanks — we'll review this report.</p>
+        ) : (
+          <div className="space-y-3">
+            <label className="block">
+              <span className="text-sm font-medium">Reason</span>
+              <select value={reason} onChange={(e) => setReason(e.target.value)} className="mt-1.5 w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm">
+                {REASONS.map((r) => <option key={r}>{r}</option>)}
+              </select>
+            </label>
+            <label className="block">
+              <span className="text-sm font-medium">Details (optional)</span>
+              <textarea value={details} onChange={(e) => setDetails(e.target.value)} rows={3} maxLength={1000}
+                className="mt-1.5 w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm resize-none" />
+            </label>
+            {err && <p className="text-sm text-destructive">{err}</p>}
+            <div className="flex justify-end gap-2 pt-2">
+              <button onClick={onClose} className="px-4 py-2 rounded-full text-sm font-medium hover:bg-secondary">Cancel</button>
+              <button onClick={submit} disabled={busy} className="px-5 py-2 rounded-full bg-destructive text-destructive-foreground text-sm font-medium disabled:opacity-60">
+                {busy ? "Sending…" : "Submit report"}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
