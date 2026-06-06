@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { sendConnectionRequest } from "@/lib/connections";
 import { useSignedImage } from "@/lib/storage";
-import { ArrowUpRight, Award, Briefcase, Clock, Globe, GraduationCap, Instagram, Linkedin, Loader2, MapPin, Sparkles, Compass, Facebook } from "lucide-react";
+import { blockUser, isBlocked, reportUser, unblockUser } from "@/lib/safety";
+import { ArrowUpRight, Award, Briefcase, Clock, Globe, GraduationCap, Instagram, Linkedin, Loader2, MapPin, Sparkles, Compass, Facebook, ShieldAlert, Ban, X } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/u/$id")({
   head: () => ({ meta: [{ title: "Profile — Mentor4You" }] }),
