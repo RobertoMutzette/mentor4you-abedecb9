@@ -52,7 +52,10 @@ function LoginPage() {
         {loading ? "Signing in…" : "Sign in"} <ArrowUpRight className="h-4 w-4" />
       </button>
     </form>
-    <p className="text-sm text-center text-muted-foreground mt-6">
+    <p className="text-sm text-center text-muted-foreground mt-3">
+      <Link to="/forgot-password" className="text-primary font-medium">Forgot your password?</Link>
+    </p>
+    <p className="text-sm text-center text-muted-foreground mt-3">
       New to Mentor4You? <Link to="/signup" className="text-primary font-medium">Create an account</Link>
     </p>
   </AuthShell>;
