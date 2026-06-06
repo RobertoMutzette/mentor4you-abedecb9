@@ -80,19 +80,27 @@ function OnboardingPage() {
         setProjectPrefs(((data as any).project_preferences as string[]) || []);
         setEducation(((data as any).education as EduItem[]) || []);
         setWorkExperience(((data as any).experience as ExpItem[]) || []);
+        setAgeRange((data as any).age_range || "");
+        setTimezone((data as any).timezone || "");
+        setCommStyle((data as any).communication_style || "");
+        setMeetingFreq((data as any).meeting_frequency || "");
+        setLearnStyle((data as any).learning_style || "");
+        setResponseTime((data as any).response_time || "");
+        setPersonalityTags(((data as any).personality as string[]) || []);
       }
       setLoading(false);
     })();
   }, [navigate]);
 
-  const totalSteps = 6;
+  const totalSteps = 7;
   const canNext = () => {
     if (step === 0) return !!role;
     if (step === 1) return fullName.trim().length > 1 && !!experience;
     if (step === 2) return skills.length >= 1;
     if (step === 3) return interests.length >= 1 && industries.length >= 1;
     if (step === 4) return goals.length >= 1 && projectPrefs.length >= 1;
-    if (step === 5) return true; // background optional
+    if (step === 5) return !!commStyle && !!meetingFreq; // working style
+    if (step === 6) return true; // background optional
     return false;
   };
 
@@ -118,6 +126,13 @@ function OnboardingPage() {
       project_preferences: projectPrefs,
       education: education.filter((e) => e.school || e.degree),
       experience: workExperience.filter((e) => e.company || e.title),
+      age_range: ageRange,
+      timezone,
+      communication_style: commStyle,
+      meeting_frequency: meetingFreq,
+      learning_style: learnStyle,
+      response_time: responseTime,
+      personality: personalityTags,
       onboarded: true,
     };
     const { error } = await supabase.from("profiles").upsert(payload);
