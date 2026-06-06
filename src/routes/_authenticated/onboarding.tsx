@@ -48,6 +48,14 @@ function OnboardingPage() {
   const [projectPrefs, setProjectPrefs] = useState<string[]>([]);
   const [education, setEducation] = useState<EduItem[]>([]);
   const [workExperience, setWorkExperience] = useState<ExpItem[]>([]);
+  // v2
+  const [ageRange, setAgeRange] = useState("");
+  const [timezone, setTimezone] = useState("");
+  const [commStyle, setCommStyle] = useState("");
+  const [meetingFreq, setMeetingFreq] = useState("");
+  const [learnStyle, setLearnStyle] = useState("");
+  const [responseTime, setResponseTime] = useState("");
+  const [personalityTags, setPersonalityTags] = useState<string[]>([]);
 
   useEffect(() => {
     (async () => {
