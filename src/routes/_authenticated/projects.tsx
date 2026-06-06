@@ -1,7 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Github, Globe, Loader2, Pencil, Plus, Rocket, Trash2, X } from "lucide-react";
+import { ArrowUpRight, Github, Globe, Loader2, Pencil, Plus, Rocket, Trash2, X } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/projects")({
   head: () => ({ meta: [{ title: "Projects — Mentor4You" }] }),
