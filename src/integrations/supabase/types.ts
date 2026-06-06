@@ -59,12 +59,51 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          body: string
+          created_at: string
+          data: Json
+          id: string
+          link: string
+          read: boolean
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          body?: string
+          created_at?: string
+          data?: Json
+          id?: string
+          link?: string
+          read?: boolean
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          data?: Json
+          id?: string
+          link?: string
+          read?: boolean
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
+          age_range: string
+          allow_messages_from: string
           availability_schedule: Json
           avatar_url: string
           bio: string
           certifications: Json
+          communication_style: string
           contact_pref: string
           cover_url: string
           created_at: string
@@ -79,13 +118,19 @@ export type Database = {
           industries: string[]
           interests: string[]
           languages: string[]
+          learning_style: string
           location: string
           looking_for_partners: boolean
+          meeting_frequency: string
           mentorship_topics: string[]
           onboarded: boolean
           open_to_collab: boolean
+          personality: string[]
+          profile_visibility: string
           project_preferences: string[]
+          response_time: string
           role: Database["public"]["Enums"]["app_role"] | null
+          show_email: boolean
           skills: string[]
           social_facebook: string
           social_instagram: string
@@ -96,10 +141,13 @@ export type Database = {
           website: string
         }
         Insert: {
+          age_range?: string
+          allow_messages_from?: string
           availability_schedule?: Json
           avatar_url?: string
           bio?: string
           certifications?: Json
+          communication_style?: string
           contact_pref?: string
           cover_url?: string
           created_at?: string
@@ -114,13 +162,19 @@ export type Database = {
           industries?: string[]
           interests?: string[]
           languages?: string[]
+          learning_style?: string
           location?: string
           looking_for_partners?: boolean
+          meeting_frequency?: string
           mentorship_topics?: string[]
           onboarded?: boolean
           open_to_collab?: boolean
+          personality?: string[]
+          profile_visibility?: string
           project_preferences?: string[]
+          response_time?: string
           role?: Database["public"]["Enums"]["app_role"] | null
+          show_email?: boolean
           skills?: string[]
           social_facebook?: string
           social_instagram?: string
@@ -131,10 +185,13 @@ export type Database = {
           website?: string
         }
         Update: {
+          age_range?: string
+          allow_messages_from?: string
           availability_schedule?: Json
           avatar_url?: string
           bio?: string
           certifications?: Json
+          communication_style?: string
           contact_pref?: string
           cover_url?: string
           created_at?: string
@@ -149,13 +206,19 @@ export type Database = {
           industries?: string[]
           interests?: string[]
           languages?: string[]
+          learning_style?: string
           location?: string
           looking_for_partners?: boolean
+          meeting_frequency?: string
           mentorship_topics?: string[]
           onboarded?: boolean
           open_to_collab?: boolean
+          personality?: string[]
+          profile_visibility?: string
           project_preferences?: string[]
+          response_time?: string
           role?: Database["public"]["Enums"]["app_role"] | null
+          show_email?: boolean
           skills?: string[]
           social_facebook?: string
           social_instagram?: string
@@ -164,6 +227,114 @@ export type Database = {
           timezone?: string
           updated_at?: string
           website?: string
+        }
+        Relationships: []
+      }
+      project_comments: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          project_id: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          project_id: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          project_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      project_invites: {
+        Row: {
+          created_at: string
+          from_user: string
+          id: string
+          message: string
+          project_id: string
+          status: string
+          to_user: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          from_user: string
+          id?: string
+          message?: string
+          project_id: string
+          status?: string
+          to_user: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          from_user?: string
+          id?: string
+          message?: string
+          project_id?: string
+          status?: string
+          to_user?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      project_members: {
+        Row: {
+          id: string
+          joined_at: string
+          project_id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          joined_at?: string
+          project_id: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          joined_at?: string
+          project_id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      project_updates: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          project_id: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body?: string
+          created_at?: string
+          id?: string
+          project_id: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          project_id?: string
+          title?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -250,12 +421,70 @@ export type Database = {
         }
         Relationships: []
       }
+      user_blocks: {
+        Row: {
+          blocked_id: string
+          blocker_id: string
+          created_at: string
+          id: string
+        }
+        Insert: {
+          blocked_id: string
+          blocker_id: string
+          created_at?: string
+          id?: string
+        }
+        Update: {
+          blocked_id?: string
+          blocker_id?: string
+          created_at?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      user_reports: {
+        Row: {
+          created_at: string
+          details: string
+          id: string
+          reason: string
+          reported_id: string
+          reporter_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          details?: string
+          id?: string
+          reason: string
+          reported_id: string
+          reporter_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          details?: string
+          id?: string
+          reason?: string
+          reported_id?: string
+          reporter_id?: string
+          status?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_project_member: {
+        Args: { _project_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_project_owner: {
+        Args: { _project_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "mentor" | "mentee"
