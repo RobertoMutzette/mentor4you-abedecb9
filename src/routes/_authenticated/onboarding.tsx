@@ -207,6 +207,18 @@ function OnboardingPage() {
       )}
 
       {step === 5 && (
+        <Stage title="Working style" subtitle="How you like to collaborate. Drives our deeper matches.">
+          <SelectChips label="Age range" options={AGE_RANGES} value={ageRange ? [ageRange] : []} onChange={(v) => setAgeRange(v[v.length - 1] || "")} single />
+          <SelectChips label="Timezone" options={TIMEZONES} value={timezone ? [timezone] : []} onChange={(v) => setTimezone(v[v.length - 1] || "")} single />
+          <SelectChips label="Communication style" options={COMM_STYLES} value={commStyle ? [commStyle] : []} onChange={(v) => setCommStyle(v[v.length - 1] || "")} single />
+          <SelectChips label="Meeting frequency" options={MEETING_FREQ} value={meetingFreq ? [meetingFreq] : []} onChange={(v) => setMeetingFreq(v[v.length - 1] || "")} single />
+          <SelectChips label="Learning style" options={LEARN_STYLES} value={learnStyle ? [learnStyle] : []} onChange={(v) => setLearnStyle(v[v.length - 1] || "")} single />
+          <SelectChips label="Typical response time" options={RESPONSE_TIMES} value={responseTime ? [responseTime] : []} onChange={(v) => setResponseTime(v[v.length - 1] || "")} single />
+          <SelectChips label="Personality (pick all that fit)" options={PERSONALITY} value={personalityTags} onChange={setPersonalityTags} />
+        </Stage>
+      )}
+
+      {step === 6 && (
         <Stage title="Background" subtitle="Optional — but it strengthens your matches and builds trust.">
           <RepeaterEdu items={education} onChange={setEducation} />
           <RepeaterExp items={workExperience} onChange={setWorkExperience} />
