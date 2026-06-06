@@ -41,6 +41,9 @@ function SettingsPage() {
     social_instagram: "", social_facebook: "", social_linkedin: "", social_x: "", website: "",
     contact_pref: "in-app",
     availability_schedule: {} as Record<string, boolean>,
+    profile_visibility: "public",
+    show_email: false,
+    allow_messages_from: "connections",
   });
 
   const avatar = useSignedImage("avatars", p.avatar_url);
