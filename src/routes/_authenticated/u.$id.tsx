@@ -81,7 +81,7 @@ function ProfileView() {
   </>;
 }
 
-function ProfileBody({ profile, isMe, initials, edu, exp, sent, sending, onConnect }: any) {
+function ProfileBody({ profile, isMe, initials, edu, exp, sent, sending, blocked, onConnect, onBlock, onReport }: any) {
   const avatar = useSignedImage("avatars", profile.avatar_url);
   const cover = useSignedImage("covers", profile.cover_url);
   const socials = [
