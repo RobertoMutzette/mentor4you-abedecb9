@@ -138,7 +138,7 @@ function ProfileBody({ profile, isMe, initials, edu, exp, sent, sending, blocked
               <span><span className="font-semibold">{counts.followers}</span> <span className="text-muted-foreground">followers</span></span>
               <span><span className="font-semibold">{counts.following}</span> <span className="text-muted-foreground">following</span></span>
             </div>
-          </div>
+
 
           <div className="mt-5 flex flex-wrap gap-2">
             {!isMe && (
