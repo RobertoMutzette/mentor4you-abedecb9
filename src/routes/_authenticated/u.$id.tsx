@@ -134,12 +134,28 @@ function ProfileBody({ profile, isMe, initials, edu, exp, sent, sending, blocked
             </div>
           </div>
 
+            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+              <span><span className="font-semibold">{counts.followers}</span> <span className="text-muted-foreground">followers</span></span>
+              <span><span className="font-semibold">{counts.following}</span> <span className="text-muted-foreground">following</span></span>
+            </div>
+          </div>
+
           <div className="mt-5 flex flex-wrap gap-2">
             {!isMe && (
-              <button onClick={onConnect} disabled={sent || sending}
-                className="inline-flex items-center gap-1.5 text-sm font-medium px-5 py-2.5 rounded-full bg-foreground text-background hover:opacity-90 disabled:opacity-60 transition">
-                {sent ? <><Clock className="h-4 w-4" /> Request sent</> : sending ? <><Loader2 className="h-4 w-4 animate-spin" /> Sending…</> : <>Connect <ArrowUpRight className="h-4 w-4" /></>}
-              </button>
+              <>
+                <button onClick={onFollow}
+                  className={`inline-flex items-center gap-1.5 text-sm font-medium px-5 py-2.5 rounded-full transition ${following ? "bg-secondary text-foreground hover:bg-secondary/80" : "bg-primary text-primary-foreground hover:opacity-90"}`}>
+                  {following ? <><UserCheck className="h-4 w-4" /> Following</> : <><UserPlus className="h-4 w-4" /> Follow</>}
+                </button>
+                <button onClick={onMessage}
+                  className="inline-flex items-center gap-1.5 text-sm font-medium px-5 py-2.5 rounded-full border border-border bg-card hover:bg-secondary transition">
+                  <MessageSquare className="h-4 w-4" /> Message
+                </button>
+                <button onClick={onConnect} disabled={sent || sending}
+                  className="inline-flex items-center gap-1.5 text-sm font-medium px-5 py-2.5 rounded-full border border-border bg-card hover:bg-secondary disabled:opacity-60 transition">
+                  {sent ? <><Clock className="h-4 w-4" /> Request sent</> : sending ? <><Loader2 className="h-4 w-4 animate-spin" /> Sending…</> : <>Connect <ArrowUpRight className="h-4 w-4" /></>}
+                </button>
+              </>
             )}
             {isMe && (
               <Link to="/settings" className="inline-flex items-center gap-1.5 text-sm font-medium px-5 py-2.5 rounded-full border border-border bg-card hover:bg-secondary transition">
