@@ -79,7 +79,7 @@ export async function uploadPostMedia(file: File): Promise<string> {
 
 /** Server-enforced per-hour rate limiter via SECURITY DEFINER function. */
 export async function checkRateLimit(action: string, max: number): Promise<boolean> {
-  const { data, error } = await supabase.rpc("check_and_increment_rate_limit", {
+  const { data, error } = await (supabase.rpc as any)("check_and_increment_rate_limit", {
     _action: action, _limit: max,
   });
   if (error) return false;
