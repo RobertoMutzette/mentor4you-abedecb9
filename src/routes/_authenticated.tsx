@@ -69,6 +69,9 @@ function AuthLayout() {
             <span className="font-display font-bold text-lg hidden sm:block">Mentor4You</span>
           </Link>
           <nav className="flex items-center gap-1 overflow-x-auto">
+            <Link to="/feed" className={navLink} activeProps={{ className: navLink + " bg-secondary" }}>
+              <Home className="h-4 w-4" /><span className="hidden md:inline">Feed</span>
+            </Link>
             <Link to="/dashboard" className={navLink} activeProps={{ className: navLink + " bg-secondary" }}>
               <LayoutDashboard className="h-4 w-4" /><span className="hidden md:inline">Matches</span>
             </Link>
@@ -78,8 +81,11 @@ function AuthLayout() {
             <Link to="/projects" className={navLink} activeProps={{ className: navLink + " bg-secondary" }}>
               <Rocket className="h-4 w-4" /><span className="hidden md:inline">Projects</span>
             </Link>
+            <Link to="/messages" className={navLink} activeProps={{ className: navLink + " bg-secondary" }}>
+              <MessageSquare className="h-4 w-4" /><span className="hidden md:inline">Messages</span>
+            </Link>
             <Link to="/requests" className={navLink + " relative"} activeProps={{ className: navLink + " bg-secondary relative" }}>
-              <Inbox className="h-4 w-4" /><span className="hidden md:inline">Inbox</span>
+              <Inbox className="h-4 w-4" /><span className="hidden md:inline">Requests</span>
               {pending > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 h-4 min-w-4 px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">{pending}</span>
               )}
