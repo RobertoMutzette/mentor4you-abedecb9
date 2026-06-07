@@ -3,15 +3,13 @@ import { useEffect, useState } from "react";
 
 const cache = new Map<string, { url: string; expires: number }>();
 
+type Bucket = "avatars" | "covers" | "post-media";
+
 /**
- * For private buckets (`avatars`, `covers`) we store the storage path
- * (e.g. `<uid>/avatar-123.png`) in `avatar_url` / `cover_url` and
- * resolve it to a signed URL on demand.
- *
- * If a value already looks like an http(s) URL we return it as-is so
- * legacy/external links keep working.
+ * For private buckets we store the storage path and resolve to a signed URL
+ * on demand. http(s) URLs are returned unchanged.
  */
-export async function resolveImage(bucket: "avatars" | "covers", pathOrUrl: string): Promise<string | null> {
+export async function resolveImage(bucket: Bucket, pathOrUrl: string): Promise<string | null> {
   if (!pathOrUrl) return null;
   if (/^https?:\/\//.test(pathOrUrl)) return pathOrUrl;
 
@@ -25,7 +23,7 @@ export async function resolveImage(bucket: "avatars" | "covers", pathOrUrl: stri
   return data.signedUrl;
 }
 
-export function useSignedImage(bucket: "avatars" | "covers", pathOrUrl: string | null | undefined) {
+export function useSignedImage(bucket: Bucket, pathOrUrl: string | null | undefined) {
   const [url, setUrl] = useState<string | null>(null);
   useEffect(() => {
     let cancelled = false;
@@ -34,6 +32,20 @@ export function useSignedImage(bucket: "avatars" | "covers", pathOrUrl: string |
     return () => { cancelled = true; };
   }, [bucket, pathOrUrl]);
   return url;
+}
+
+export function useSignedImages(bucket: Bucket, paths: string[]) {
+  const [urls, setUrls] = useState<string[]>([]);
+  const key = paths.join("|");
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all(paths.map((p) => resolveImage(bucket, p))).then((res) => {
+      if (!cancelled) setUrls(res.filter(Boolean) as string[]);
+    });
+    return () => { cancelled = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bucket, key]);
+  return urls;
 }
 
 export async function uploadProfileImage(
@@ -52,29 +64,24 @@ export async function uploadProfileImage(
   return path;
 }
 
-/** Ad-hoc per-hour rate limiter. Returns true if allowed. */
-export async function checkRateLimit(action: string, max: number): Promise<boolean> {
+export async function uploadPostMedia(file: File): Promise<string> {
   const { data: u } = await supabase.auth.getUser();
-  if (!u.user) return false;
-  const windowStart = new Date();
-  windowStart.setMinutes(0, 0, 0);
+  if (!u.user) throw new Error("Not signed in");
+  const ext = (file.name.split(".").pop() || "png").toLowerCase();
+  const path = `${u.user.id}/${crypto.randomUUID()}.${ext}`;
+  const { error } = await supabase.storage.from("post-media").upload(path, file, {
+    upsert: false,
+    contentType: file.type,
+  });
+  if (error) throw error;
+  return path;
+}
 
-  const { data: row } = await supabase
-    .from("rate_limits")
-    .select("count")
-    .eq("user_id", u.user.id)
-    .eq("action", action)
-    .eq("window_start", windowStart.toISOString())
-    .maybeSingle();
-
-  const current = row?.count ?? 0;
-  if (current >= max) return false;
-
-  await supabase.from("rate_limits").upsert({
-    user_id: u.user.id,
-    action,
-    window_start: windowStart.toISOString(),
-    count: current + 1,
-  }, { onConflict: "user_id,action,window_start" });
-  return true;
+/** Server-enforced per-hour rate limiter via SECURITY DEFINER function. */
+export async function checkRateLimit(action: string, max: number): Promise<boolean> {
+  const { data, error } = await (supabase.rpc as any)("check_and_increment_rate_limit", {
+    _action: action, _limit: max,
+  });
+  if (error) return false;
+  return !!data;
 }

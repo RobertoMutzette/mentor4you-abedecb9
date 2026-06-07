@@ -1,10 +1,12 @@
-import { createFileRoute, Link, useParams } from "@tanstack/react-router";
+import { createFileRoute, Link, useParams, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { sendConnectionRequest } from "@/lib/connections";
 import { useSignedImage } from "@/lib/storage";
 import { blockUser, isBlocked, reportUser, unblockUser } from "@/lib/safety";
-import { ArrowUpRight, Award, Briefcase, Clock, Globe, GraduationCap, Instagram, Linkedin, Loader2, MapPin, Sparkles, Compass, Facebook, ShieldAlert, Ban, X } from "lucide-react";
+import { followUser, unfollowUser, isFollowing, followCounts } from "@/lib/social";
+import { getOrCreateConversation } from "@/lib/messaging";
+import { ArrowUpRight, Award, Briefcase, Clock, Globe, GraduationCap, Instagram, Linkedin, Loader2, MapPin, Sparkles, Compass, Facebook, ShieldAlert, Ban, X, MessageSquare, UserPlus, UserCheck } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/u/$id")({
   head: () => ({ meta: [{ title: "Profile — Mentor4You" }] }),
@@ -16,6 +18,7 @@ type ExpItem = { company: string; title: string; years: string };
 
 function ProfileView() {
   const { id } = useParams({ from: "/_authenticated/u/$id" });
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<any>(null);
   const [me, setMe] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -23,6 +26,8 @@ function ProfileView() {
   const [sending, setSending] = useState(false);
   const [blocked, setBlocked] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
+  const [following, setFollowing] = useState(false);
+  const [counts, setCounts] = useState<{followers:number;following:number}>({followers:0,following:0});
 
   useEffect(() => {
     (async () => {
@@ -30,6 +35,7 @@ function ProfileView() {
       setMe(u.user?.id ?? null);
       const { data } = await supabase.from("profiles").select("*").eq("id", id).maybeSingle();
       setProfile(data);
+      setCounts(await followCounts(id));
       if (u.user) {
         const { data: req } = await supabase
           .from("connection_requests")
@@ -39,6 +45,7 @@ function ProfileView() {
           .maybeSingle();
         setSent(!!req);
         setBlocked(await isBlocked(id));
+        setFollowing(await isFollowing(id));
       }
       setLoading(false);
     })();
@@ -67,6 +74,16 @@ function ProfileView() {
     finally { setSending(false); }
   };
 
+  const handleFollow = async () => {
+    if (following) { await unfollowUser(profile.id); setFollowing(false); setCounts({...counts, followers: Math.max(counts.followers-1,0)}); }
+    else { await followUser(profile.id); setFollowing(true); setCounts({...counts, followers: counts.followers+1}); }
+  };
+
+  const handleMessage = async () => {
+    try { const cid = await getOrCreateConversation(profile.id); navigate({ to: "/messages/$id", params: { id: cid } }); }
+    catch (e: any) { alert(e.message); }
+  };
+
   const handleBlock = async () => {
     if (blocked) { await unblockUser(profile.id); setBlocked(false); }
     else if (confirm("Block this user? They won't be able to connect with you.")) {
@@ -76,12 +93,14 @@ function ProfileView() {
 
   return <>
     <ProfileBody profile={profile} isMe={isMe} initials={initials} edu={edu} exp={exp} sent={sent} sending={sending} blocked={blocked}
-      onConnect={handleConnect} onBlock={handleBlock} onReport={() => setReportOpen(true)} />
+      following={following} counts={counts}
+      onConnect={handleConnect} onBlock={handleBlock} onReport={() => setReportOpen(true)}
+      onFollow={handleFollow} onMessage={handleMessage} />
     {reportOpen && <ReportModal userId={profile.id} onClose={() => setReportOpen(false)} />}
   </>;
 }
 
-function ProfileBody({ profile, isMe, initials, edu, exp, sent, sending, blocked, onConnect, onBlock, onReport }: any) {
+function ProfileBody({ profile, isMe, initials, edu, exp, sent, sending, blocked, following, counts, onConnect, onBlock, onReport, onFollow, onMessage }: any) {
   const avatar = useSignedImage("avatars", profile.avatar_url);
   const cover = useSignedImage("covers", profile.cover_url);
   const socials = [
@@ -115,12 +134,28 @@ function ProfileBody({ profile, isMe, initials, edu, exp, sent, sending, blocked
             </div>
           </div>
 
+            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+              <span><span className="font-semibold">{counts.followers}</span> <span className="text-muted-foreground">followers</span></span>
+              <span><span className="font-semibold">{counts.following}</span> <span className="text-muted-foreground">following</span></span>
+            </div>
+
+
           <div className="mt-5 flex flex-wrap gap-2">
             {!isMe && (
-              <button onClick={onConnect} disabled={sent || sending}
-                className="inline-flex items-center gap-1.5 text-sm font-medium px-5 py-2.5 rounded-full bg-foreground text-background hover:opacity-90 disabled:opacity-60 transition">
-                {sent ? <><Clock className="h-4 w-4" /> Request sent</> : sending ? <><Loader2 className="h-4 w-4 animate-spin" /> Sending…</> : <>Connect <ArrowUpRight className="h-4 w-4" /></>}
-              </button>
+              <>
+                <button onClick={onFollow}
+                  className={`inline-flex items-center gap-1.5 text-sm font-medium px-5 py-2.5 rounded-full transition ${following ? "bg-secondary text-foreground hover:bg-secondary/80" : "bg-primary text-primary-foreground hover:opacity-90"}`}>
+                  {following ? <><UserCheck className="h-4 w-4" /> Following</> : <><UserPlus className="h-4 w-4" /> Follow</>}
+                </button>
+                <button onClick={onMessage}
+                  className="inline-flex items-center gap-1.5 text-sm font-medium px-5 py-2.5 rounded-full border border-border bg-card hover:bg-secondary transition">
+                  <MessageSquare className="h-4 w-4" /> Message
+                </button>
+                <button onClick={onConnect} disabled={sent || sending}
+                  className="inline-flex items-center gap-1.5 text-sm font-medium px-5 py-2.5 rounded-full border border-border bg-card hover:bg-secondary disabled:opacity-60 transition">
+                  {sent ? <><Clock className="h-4 w-4" /> Request sent</> : sending ? <><Loader2 className="h-4 w-4 animate-spin" /> Sending…</> : <>Connect <ArrowUpRight className="h-4 w-4" /></>}
+                </button>
+              </>
             )}
             {isMe && (
               <Link to="/settings" className="inline-flex items-center gap-1.5 text-sm font-medium px-5 py-2.5 rounded-full border border-border bg-card hover:bg-secondary transition">
