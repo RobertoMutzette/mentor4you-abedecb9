@@ -1,10 +1,12 @@
-import { createFileRoute, Link, useParams } from "@tanstack/react-router";
+import { createFileRoute, Link, useParams, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { sendConnectionRequest } from "@/lib/connections";
 import { useSignedImage } from "@/lib/storage";
 import { blockUser, isBlocked, reportUser, unblockUser } from "@/lib/safety";
-import { ArrowUpRight, Award, Briefcase, Clock, Globe, GraduationCap, Instagram, Linkedin, Loader2, MapPin, Sparkles, Compass, Facebook, ShieldAlert, Ban, X } from "lucide-react";
+import { followUser, unfollowUser, isFollowing, followCounts } from "@/lib/social";
+import { getOrCreateConversation } from "@/lib/messaging";
+import { ArrowUpRight, Award, Briefcase, Clock, Globe, GraduationCap, Instagram, Linkedin, Loader2, MapPin, Sparkles, Compass, Facebook, ShieldAlert, Ban, X, MessageSquare, UserPlus, UserCheck } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/u/$id")({
   head: () => ({ meta: [{ title: "Profile — Mentor4You" }] }),
