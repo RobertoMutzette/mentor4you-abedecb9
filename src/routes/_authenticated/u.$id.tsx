@@ -18,6 +18,7 @@ type ExpItem = { company: string; title: string; years: string };
 
 function ProfileView() {
   const { id } = useParams({ from: "/_authenticated/u/$id" });
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<any>(null);
   const [me, setMe] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -25,6 +26,8 @@ function ProfileView() {
   const [sending, setSending] = useState(false);
   const [blocked, setBlocked] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
+  const [following, setFollowing] = useState(false);
+  const [counts, setCounts] = useState<{followers:number;following:number}>({followers:0,following:0});
 
   useEffect(() => {
     (async () => {
@@ -32,6 +35,7 @@ function ProfileView() {
       setMe(u.user?.id ?? null);
       const { data } = await supabase.from("profiles").select("*").eq("id", id).maybeSingle();
       setProfile(data);
+      setCounts(await followCounts(id));
       if (u.user) {
         const { data: req } = await supabase
           .from("connection_requests")
@@ -41,6 +45,7 @@ function ProfileView() {
           .maybeSingle();
         setSent(!!req);
         setBlocked(await isBlocked(id));
+        setFollowing(await isFollowing(id));
       }
       setLoading(false);
     })();
@@ -69,6 +74,16 @@ function ProfileView() {
     finally { setSending(false); }
   };
 
+  const handleFollow = async () => {
+    if (following) { await unfollowUser(profile.id); setFollowing(false); setCounts({...counts, followers: Math.max(counts.followers-1,0)}); }
+    else { await followUser(profile.id); setFollowing(true); setCounts({...counts, followers: counts.followers+1}); }
+  };
+
+  const handleMessage = async () => {
+    try { const cid = await getOrCreateConversation(profile.id); navigate({ to: "/messages/$id", params: { id: cid } }); }
+    catch (e: any) { alert(e.message); }
+  };
+
   const handleBlock = async () => {
     if (blocked) { await unblockUser(profile.id); setBlocked(false); }
     else if (confirm("Block this user? They won't be able to connect with you.")) {
@@ -78,12 +93,14 @@ function ProfileView() {
 
   return <>
     <ProfileBody profile={profile} isMe={isMe} initials={initials} edu={edu} exp={exp} sent={sent} sending={sending} blocked={blocked}
-      onConnect={handleConnect} onBlock={handleBlock} onReport={() => setReportOpen(true)} />
+      following={following} counts={counts}
+      onConnect={handleConnect} onBlock={handleBlock} onReport={() => setReportOpen(true)}
+      onFollow={handleFollow} onMessage={handleMessage} />
     {reportOpen && <ReportModal userId={profile.id} onClose={() => setReportOpen(false)} />}
   </>;
 }
 
-function ProfileBody({ profile, isMe, initials, edu, exp, sent, sending, blocked, onConnect, onBlock, onReport }: any) {
+function ProfileBody({ profile, isMe, initials, edu, exp, sent, sending, blocked, following, counts, onConnect, onBlock, onReport, onFollow, onMessage }: any) {
   const avatar = useSignedImage("avatars", profile.avatar_url);
   const cover = useSignedImage("covers", profile.cover_url);
   const socials = [
