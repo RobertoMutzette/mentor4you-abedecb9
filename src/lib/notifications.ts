@@ -20,13 +20,18 @@ export async function createNotification(input: {
   link?: string;
   data?: Record<string, unknown>;
 }) {
-  await supabase.from("notifications").insert({
-    user_id: input.user_id,
-    type: input.type,
-    title: input.title,
-    body: input.body ?? "",
-    link: input.link ?? "",
-    data: (input.data ?? {}) as any,
+  // Cross-user notifications go through SECURITY DEFINER RPC; self-notifications via direct insert.
+  const { data: u } = await supabase.auth.getUser();
+  if (u.user && u.user.id === input.user_id) {
+    await supabase.from("notifications").insert({
+      user_id: input.user_id, type: input.type, title: input.title,
+      body: input.body ?? "", link: input.link ?? "", data: (input.data ?? {}) as any,
+    });
+    return;
+  }
+  await (supabase.rpc as any)("create_notification", {
+    _user_id: input.user_id, _type: input.type, _title: input.title,
+    _body: input.body ?? "", _link: input.link ?? "", _data: input.data ?? {},
   });
 }
 
