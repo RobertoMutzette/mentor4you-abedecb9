@@ -136,6 +136,22 @@ function AuthLayout() {
         </div>
       </header>
       <Outlet />
+      <footer className="border-t border-border mt-auto">
+        <div className="mx-auto max-w-7xl px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <img src={logo} alt="" className="h-4 w-4" />
+            <span className="font-display font-semibold text-foreground">Mentor4You</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <Link to="/privacy" className="hover:text-foreground transition">Privacy</Link>
+            <Link to="/terms" className="hover:text-foreground transition">Terms</Link>
+            <Link to="/gdpr" className="hover:text-foreground transition">GDPR</Link>
+            <Link to="/ip-info" className="hover:text-foreground transition">IP</Link>
+            <Link to="/guidelines" className="hover:text-foreground transition">Guidelines</Link>
+          </div>
+          <div>© {new Date().getFullYear()}</div>
+        </div>
+      </footer>
     </div>
   );
 }
