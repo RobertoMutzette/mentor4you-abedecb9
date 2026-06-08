@@ -56,6 +56,13 @@ function GuidelinesPage() {
         <p className="mt-10 text-sm text-muted-foreground">
           Questions or appeals: <a className="text-primary font-medium" href="mailto:safety@mentor4you.app">safety@mentor4you.app</a>
         </p>
+
+        <div className="mt-8 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+          <Link to="/privacy" className="hover:text-foreground transition">Privacy Policy</Link>
+          <Link to="/terms" className="hover:text-foreground transition">Terms of Service</Link>
+          <Link to="/gdpr" className="hover:text-foreground transition">GDPR</Link>
+          <Link to="/ip-info" className="hover:text-foreground transition">IP</Link>
+        </div>
       </main>
     </div>
   );
