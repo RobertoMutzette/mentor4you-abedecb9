@@ -54,19 +54,15 @@ function DashboardPage() {
             Welcome back, {me.full_name.split(" ")[0] || "builder"}.
           </h1>
           <p className="mt-3 text-muted-foreground max-w-lg">
-            {me.role === "mentor"
-              ? "These mentees match your expertise and goals — sorted by compatibility."
-              : "Your top mentor matches, ranked 0-100 by interests, complementary skills, experience gap and availability."}
+            Building is faster with a partner. Start there — mentors are your longer-term guide.
           </p>
           <div className="flex flex-wrap gap-2 mt-5">
+            <Link to="/partners" className="inline-flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-full bg-primary text-primary-foreground hover:shadow-glow transition">
+              Find a partner <ArrowUpRight className="h-3.5 w-3.5" />
+            </Link>
             <Link to="/onboarding" className="inline-flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-full border border-border bg-card hover:bg-secondary transition">
               Edit profile <ArrowUpRight className="h-3.5 w-3.5" />
             </Link>
-            {me.role === "mentee" && (
-              <Link to="/partners" className="inline-flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-full bg-foreground text-background hover:opacity-90 transition">
-                Find a partner <ArrowUpRight className="h-3.5 w-3.5" />
-              </Link>
-            )}
           </div>
         </div>
         <div className="rounded-3xl bg-card border border-border p-7">
