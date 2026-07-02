@@ -66,12 +66,20 @@ function PartnersPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-10">
-      <header className="mb-8">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium mb-3">
-          <Sparkles className="h-3 w-3" /> Build together
+      <header className="mb-8 relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-primary/15 via-primary/5 to-transparent p-8 md:p-10">
+        <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-primary/10 blur-3xl -z-10" />
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-medium mb-4">
+          <Sparkles className="h-3 w-3" /> Your #1 destination
         </div>
-        <h1 className="font-display text-3xl md:text-5xl font-bold tracking-tight">Find a partner</h1>
-        <p className="mt-3 text-muted-foreground max-w-xl">People who are open to collaboration, ranked by how well your skills, interests and goals align.</p>
+        <h1 className="font-display text-4xl md:text-6xl font-bold tracking-tight text-balance">Find your build partner</h1>
+        <p className="mt-4 text-muted-foreground max-w-xl text-lg">
+          People open to collaboration, ranked by how well your skills, interests and goals align. Send a request — start shipping this week.
+        </p>
+        <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+          <span className="inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-primary" />{pool.length} builder{pool.length === 1 ? "" : "s"} available</span>
+          <span className="inline-flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-primary" />Fit score 0–100</span>
+          <span className="inline-flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-primary" />1-tap connect</span>
+        </div>
       </header>
 
       <div className="flex flex-col md:flex-row gap-3 mb-6">

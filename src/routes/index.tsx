@@ -4,8 +4,8 @@ import logo from "@/assets/logo.png";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Mentor4You — Where mentorship meets momentum" },
-      { name: "description", content: "Find a mentor, join a project, and ship your first real thing. Mentor4You is the platform for ambitious young builders." },
+      { title: "Mentor4You — Find your build partner" },
+      { name: "description", content: "Find a partner to build with, join a project, and ship your first real thing. Mentorship optional, momentum guaranteed." },
     ],
   }),
   component: Landing,
@@ -53,8 +53,8 @@ function Hero() {
           Mentor4You
         </h1>
 
-        <p className="mt-4 text-lg md:text-xl text-muted-foreground max-w-md text-balance">
-          Connect with mentors and collaborators to grow your skills and build real projects.
+        <p className="mt-4 text-lg md:text-xl text-muted-foreground max-w-lg text-balance">
+          Find a build partner who complements your skills — then ship real projects together. Mentors welcome too.
         </p>
 
         <div className="mt-10 flex flex-col sm:flex-row items-center gap-4 w-full max-w-sm sm:max-w-none">
@@ -62,13 +62,13 @@ function Hero() {
             to="/signup"
             className="w-full sm:w-auto group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-primary text-primary-foreground font-medium text-lg hover:shadow-glow transition-all"
           >
-            I'm a Mentee
+            Find a partner
           </Link>
           <Link
             to="/signup"
             className="w-full sm:w-auto group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-ink text-cream font-medium text-lg hover:opacity-90 transition"
           >
-            I want to Mentor
+            I want to mentor
           </Link>
         </div>
 

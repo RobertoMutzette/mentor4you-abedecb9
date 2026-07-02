@@ -64,22 +64,22 @@ function AuthLayout() {
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-50 backdrop-blur-md bg-background/80 border-b border-border">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 h-16 flex items-center justify-between gap-2 sm:gap-4">
-          <Link to="/dashboard" className="flex items-center gap-2 shrink-0">
+          <Link to="/partners" className="flex items-center gap-2 shrink-0">
             <img src={logo} alt="" className="h-8 w-8" />
             <span className="font-display font-bold text-lg hidden sm:block">Mentor4You</span>
           </Link>
           <nav className="flex items-center gap-1 overflow-x-auto">
+            <Link to="/partners" className={navLink} activeProps={{ className: navLink + " bg-primary/10 text-primary" }}>
+              <Users2 className="h-4 w-4" /><span className="hidden md:inline">Partners</span>
+            </Link>
             <Link to="/feed" className={navLink} activeProps={{ className: navLink + " bg-secondary" }}>
               <Home className="h-4 w-4" /><span className="hidden md:inline">Feed</span>
             </Link>
-            <Link to="/dashboard" className={navLink} activeProps={{ className: navLink + " bg-secondary" }}>
-              <LayoutDashboard className="h-4 w-4" /><span className="hidden md:inline">Matches</span>
-            </Link>
-            <Link to="/partners" className={navLink} activeProps={{ className: navLink + " bg-secondary" }}>
-              <Users2 className="h-4 w-4" /><span className="hidden md:inline">Partners</span>
-            </Link>
             <Link to="/projects" className={navLink} activeProps={{ className: navLink + " bg-secondary" }}>
               <Rocket className="h-4 w-4" /><span className="hidden md:inline">Projects</span>
+            </Link>
+            <Link to="/dashboard" className={navLink} activeProps={{ className: navLink + " bg-secondary" }}>
+              <LayoutDashboard className="h-4 w-4" /><span className="hidden md:inline">Mentors</span>
             </Link>
             <Link to="/messages" className={navLink} activeProps={{ className: navLink + " bg-secondary" }}>
               <MessageSquare className="h-4 w-4" /><span className="hidden md:inline">Messages</span>
