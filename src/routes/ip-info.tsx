@@ -38,7 +38,7 @@ function IpInfoPage() {
 
         <Section title="3. Copyright policy & DMCA">
           <p className="text-muted-foreground leading-relaxed">
-            We respect the intellectual property rights of others. If you believe content on Mentor4You infringes your copyright, you may submit a DMCA takedown notice to <a className="text-primary font-medium" href="mailto:copyright@mentor4you.app">copyright@mentor4you.app</a>. Your notice must include:
+            We respect the intellectual property rights of others. If you believe content on Mentor4You infringes your copyright, you may submit a DMCA takedown notice to <a className="text-primary font-medium" href="mailto:mentor4you.startup@gmail.com">mentor4you.startup@gmail.com</a>. Your notice must include:
           </p>
           <ul className="mt-2 list-disc list-inside text-muted-foreground leading-relaxed space-y-1">
             <li>A physical or electronic signature of the copyright owner or authorized agent</li>
@@ -73,13 +73,13 @@ function IpInfoPage() {
 
         <Section title="7. Counter-notices">
           <p className="text-muted-foreground leading-relaxed">
-            If your content was removed due to a copyright complaint and you believe it was a mistake or misidentification, you may submit a counter-notice to <a className="text-primary font-medium" href="mailto:copyright@mentor4you.app">copyright@mentor4you.app</a> with the required statutory information.
+            If your content was removed due to a copyright complaint and you believe it was a mistake or misidentification, you may submit a counter-notice to <a className="text-primary font-medium" href="mailto:mentor4you.startup@gmail.com">mentor4you.startup@gmail.com</a> with the required statutory information.
           </p>
         </Section>
 
         <Section title="8. Contact">
           <p className="text-muted-foreground leading-relaxed">
-            For IP-related questions, contact <a className="text-primary font-medium" href="mailto:legal@mentor4you.app">legal@mentor4you.app</a>.
+            For IP-related questions, contact <a className="text-primary font-medium" href="mailto:mentor4you.startup@gmail.com">mentor4you.startup@gmail.com</a>.
           </p>
         </Section>
       </main>

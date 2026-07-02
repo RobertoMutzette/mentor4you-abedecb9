@@ -28,7 +28,7 @@ function GdprPage() {
 
         <Section title="1. Data Controller">
           <p className="text-muted-foreground leading-relaxed">
-            Mentor4You operates as the data controller for personal data collected through the platform. For questions about data processing, contact our Data Protection Officer at <a className="text-primary font-medium" href="mailto:dpo@mentor4you.app">dpo@mentor4you.app</a>.
+            Mentor4You operates as the data controller for personal data collected through the platform. For questions about data processing, contact our Data Protection Officer at <a className="text-primary font-medium" href="mailto:mentor4you.startup@gmail.com">mentor4you.startup@gmail.com</a>.
           </p>
         </Section>
 
@@ -61,7 +61,7 @@ function GdprPage() {
 
         <Section title="4. How to exercise your rights">
           <p className="text-muted-foreground leading-relaxed">
-            You can exercise most rights directly in your <Link to="/settings" className="text-primary font-medium">account settings</Link>. For data export, erasure requests, or questions about your rights, email us at <a className="text-primary font-medium" href="mailto:dpo@mentor4you.app">dpo@mentor4you.app</a>. We respond to all requests within 30 days.
+            You can exercise most rights directly in your <Link to="/settings" className="text-primary font-medium">account settings</Link>. For data export, erasure requests, or questions about your rights, email us at <a className="text-primary font-medium" href="mailto:mentor4you.startup@gmail.com">mentor4you.startup@gmail.com</a>. We respond to all requests within 30 days.
           </p>
         </Section>
 
@@ -97,7 +97,7 @@ function GdprPage() {
 
         <Section title="10. Contact">
           <p className="text-muted-foreground leading-relaxed">
-            Data Protection Officer: <a className="text-primary font-medium" href="mailto:dpo@mentor4you.app">dpo@mentor4you.app</a>
+            Data Protection Officer: <a className="text-primary font-medium" href="mailto:mentor4you.startup@gmail.com">mentor4you.startup@gmail.com</a>
           </p>
         </Section>
       </main>

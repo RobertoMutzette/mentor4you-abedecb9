@@ -78,7 +78,7 @@ function PrivacyPage() {
 
         <Section title="9. Contact us">
           <p className="text-muted-foreground leading-relaxed">
-            If you have questions about this Privacy Policy or your data rights, contact us at <a className="text-primary font-medium" href="mailto:privacy@mentor4you.app">privacy@mentor4you.app</a>.
+            If you have questions about this Privacy Policy or your data rights, contact us at <a className="text-primary font-medium" href="mailto:mentor4you.startup@gmail.com">mentor4you.startup@gmail.com</a>.
           </p>
         </Section>
       </main>

@@ -54,7 +54,7 @@ function GuidelinesPage() {
         </section>
 
         <p className="mt-10 text-sm text-muted-foreground">
-          Questions or appeals: <a className="text-primary font-medium" href="mailto:safety@mentor4you.app">safety@mentor4you.app</a>
+          Questions or appeals: <a className="text-primary font-medium" href="mailto:mentor4you.startup@gmail.com">mentor4you.startup@gmail.com</a>
         </p>
 
         <div className="mt-8 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
