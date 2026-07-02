@@ -88,7 +88,7 @@ function TermsPage() {
 
         <Section title="10. Contact us">
           <p className="text-muted-foreground leading-relaxed">
-            For questions about these terms, contact <a className="text-primary font-medium" href="mailto:legal@mentor4you.app">legal@mentor4you.app</a>.
+            For questions about these terms, contact <a className="text-primary font-medium" href="mailto:mentor4you.startup@gmail.com">mentor4you.startup@gmail.com</a>.
           </p>
         </Section>
       </main>
