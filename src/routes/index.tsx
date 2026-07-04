@@ -53,8 +53,9 @@ function Hero() {
           Mentor4You
         </h1>
 
-        <p className="mt-4 text-lg md:text-xl text-muted-foreground max-w-lg text-balance">
-          Find a build partner who complements your skills — then ship real projects together. Mentors welcome too.
+        <p className="mt-4 text-lg md:text-xl text-muted-foreground max-w-lg text-balance whitespace-pre-line">
+          Every great project starts with the right people.{"\n"}
+          Find mentors and partners to turn your ideas into reality.
         </p>
 
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-sm sm:max-w-none">
