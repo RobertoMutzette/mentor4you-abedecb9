@@ -6,10 +6,11 @@ import { LogOut, LayoutDashboard, Users2, Rocket, Inbox, UserCog, Bell, Home, Me
 import { markRead, type Notification } from "@/lib/notifications";
 
 export const Route = createFileRoute("/_authenticated")({
+  ssr: false,
   beforeLoad: async () => {
-    if (typeof window === "undefined") return;
-    const { data } = await supabase.auth.getSession();
-    if (!data.session) throw redirect({ to: "/login" });
+    const { data, error } = await supabase.auth.getUser();
+    if (error || !data.user) throw redirect({ to: "/login" });
+    return { user: data.user };
   },
   component: AuthLayout,
 });

@@ -48,17 +48,43 @@ export function useSignedImages(bucket: Bucket, paths: string[]) {
   return urls;
 }
 
+const ALLOWED_IMAGE_MIME: Record<string, string> = {
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  png: "image/png",
+  gif: "image/gif",
+  webp: "image/webp",
+};
+const ALLOWED_MIME_SET = new Set(Object.values(ALLOWED_IMAGE_MIME));
+const MAX_UPLOAD_BYTES = 10 * 1024 * 1024; // 10MB
+
+function validateImageFile(file: File): { ext: string; contentType: string } {
+  if (file.size > MAX_UPLOAD_BYTES) {
+    throw new Error("File too large (max 10MB)");
+  }
+  const ext = (file.name.split(".").pop() || "").toLowerCase();
+  const extMime = ALLOWED_IMAGE_MIME[ext];
+  if (!extMime) {
+    throw new Error("Unsupported file type. Use JPG, PNG, GIF or WebP.");
+  }
+  // Reject if browser-reported MIME isn't in the allowlist or doesn't match ext
+  if (!ALLOWED_MIME_SET.has(file.type) || file.type !== extMime) {
+    throw new Error("File type does not match its extension.");
+  }
+  return { ext, contentType: extMime };
+}
+
 export async function uploadProfileImage(
   bucket: "avatars" | "covers",
   file: File,
 ): Promise<string> {
   const { data: u } = await supabase.auth.getUser();
   if (!u.user) throw new Error("Not signed in");
-  const ext = (file.name.split(".").pop() || "png").toLowerCase();
+  const { ext, contentType } = validateImageFile(file);
   const path = `${u.user.id}/${bucket}-${Date.now()}.${ext}`;
   const { error } = await supabase.storage.from(bucket).upload(path, file, {
     upsert: true,
-    contentType: file.type,
+    contentType,
   });
   if (error) throw error;
   return path;
@@ -67,11 +93,11 @@ export async function uploadProfileImage(
 export async function uploadPostMedia(file: File): Promise<string> {
   const { data: u } = await supabase.auth.getUser();
   if (!u.user) throw new Error("Not signed in");
-  const ext = (file.name.split(".").pop() || "png").toLowerCase();
+  const { ext, contentType } = validateImageFile(file);
   const path = `${u.user.id}/${crypto.randomUUID()}.${ext}`;
   const { error } = await supabase.storage.from("post-media").upload(path, file, {
     upsert: false,
-    contentType: file.type,
+    contentType,
   });
   if (error) throw error;
   return path;
