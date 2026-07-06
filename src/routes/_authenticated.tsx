@@ -22,7 +22,7 @@ type NavItem = { to: string; label: string; Icon: typeof Home };
 const PRIMARY: NavItem[] = [
   { to: "/feed", label: "Feed", Icon: Sparkles },
   { to: "/partners", label: "Partners", Icon: Users2 },
-  { to: "/dashboard", label: "Mentors", Icon: Compass },
+  { to: "/mentors", label: "Mentors", Icon: Compass },
 ];
 
 function AuthLayout() {
