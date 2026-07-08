@@ -139,6 +139,164 @@ export type Database = {
         }
         Relationships: []
       }
+      institution_applications: {
+        Row: {
+          contact_email: string
+          created_at: string
+          description: string
+          id: string
+          institution_name: string
+          reviewed_at: string | null
+          status: string
+          user_id: string
+          website: string
+        }
+        Insert: {
+          contact_email: string
+          created_at?: string
+          description?: string
+          id?: string
+          institution_name: string
+          reviewed_at?: string | null
+          status?: string
+          user_id: string
+          website?: string
+        }
+        Update: {
+          contact_email?: string
+          created_at?: string
+          description?: string
+          id?: string
+          institution_name?: string
+          reviewed_at?: string | null
+          status?: string
+          user_id?: string
+          website?: string
+        }
+        Relationships: []
+      }
+      institution_positions: {
+        Row: {
+          apply_url: string
+          comment_count: number
+          cover_url: string
+          created_at: string
+          deadline: string | null
+          description: string
+          field: string
+          id: string
+          institution_id: string
+          like_count: number
+          location_label: string
+          position_type: string
+          remote: boolean
+          save_count: number
+          tags: string[]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          apply_url?: string
+          comment_count?: number
+          cover_url?: string
+          created_at?: string
+          deadline?: string | null
+          description?: string
+          field?: string
+          id?: string
+          institution_id: string
+          like_count?: number
+          location_label?: string
+          position_type?: string
+          remote?: boolean
+          save_count?: number
+          tags?: string[]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          apply_url?: string
+          comment_count?: number
+          cover_url?: string
+          created_at?: string
+          deadline?: string | null
+          description?: string
+          field?: string
+          id?: string
+          institution_id?: string
+          like_count?: number
+          location_label?: string
+          position_type?: string
+          remote?: boolean
+          save_count?: number
+          tags?: string[]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "institution_positions_institution_id_fkey"
+            columns: ["institution_id"]
+            isOneToOne: false
+            referencedRelation: "institutions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      institutions: {
+        Row: {
+          contact_email: string
+          cover_url: string
+          created_at: string
+          description: string
+          id: string
+          latitude: number | null
+          location_label: string
+          logo_url: string
+          longitude: number | null
+          name: string
+          owner_id: string
+          slug: string | null
+          updated_at: string
+          verified: boolean
+          website: string
+        }
+        Insert: {
+          contact_email?: string
+          cover_url?: string
+          created_at?: string
+          description?: string
+          id?: string
+          latitude?: number | null
+          location_label?: string
+          logo_url?: string
+          longitude?: number | null
+          name: string
+          owner_id: string
+          slug?: string | null
+          updated_at?: string
+          verified?: boolean
+          website?: string
+        }
+        Update: {
+          contact_email?: string
+          cover_url?: string
+          created_at?: string
+          description?: string
+          id?: string
+          latitude?: number | null
+          location_label?: string
+          logo_url?: string
+          longitude?: number | null
+          name?: string
+          owner_id?: string
+          slug?: string | null
+          updated_at?: string
+          verified?: boolean
+          website?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           body: string
@@ -174,6 +332,99 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      position_comments: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          position_id: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          position_id: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          position_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "position_comments_position_id_fkey"
+            columns: ["position_id"]
+            isOneToOne: false
+            referencedRelation: "institution_positions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      position_reactions: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          position_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind?: string
+          position_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          position_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "position_reactions_position_id_fkey"
+            columns: ["position_id"]
+            isOneToOne: false
+            referencedRelation: "institution_positions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      position_saves: {
+        Row: {
+          created_at: string
+          id: string
+          position_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          position_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          position_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "position_saves_position_id_fkey"
+            columns: ["position_id"]
+            isOneToOne: false
+            referencedRelation: "institution_positions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       post_comments_social: {
         Row: {
@@ -258,6 +509,7 @@ export type Database = {
           id: string
           media_paths: string[]
           mentions: string[]
+          project_id: string | null
           repost_of: string | null
           updated_at: string
         }
@@ -269,6 +521,7 @@ export type Database = {
           id?: string
           media_paths?: string[]
           mentions?: string[]
+          project_id?: string | null
           repost_of?: string | null
           updated_at?: string
         }
@@ -280,10 +533,18 @@ export type Database = {
           id?: string
           media_paths?: string[]
           mentions?: string[]
+          project_id?: string | null
           repost_of?: string | null
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "posts_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "posts_repost_of_fkey"
             columns: ["repost_of"]
@@ -316,8 +577,11 @@ export type Database = {
           industries: string[]
           interests: string[]
           languages: string[]
+          latitude: number | null
           learning_style: string
           location: string
+          location_label: string
+          longitude: number | null
           looking_for_partners: boolean
           meeting_frequency: string
           mentorship_topics: string[]
@@ -360,8 +624,11 @@ export type Database = {
           industries?: string[]
           interests?: string[]
           languages?: string[]
+          latitude?: number | null
           learning_style?: string
           location?: string
+          location_label?: string
+          longitude?: number | null
           looking_for_partners?: boolean
           meeting_frequency?: string
           mentorship_topics?: string[]
@@ -404,8 +671,11 @@ export type Database = {
           industries?: string[]
           interests?: string[]
           languages?: string[]
+          latitude?: number | null
           learning_style?: string
           location?: string
+          location_label?: string
+          longitude?: number | null
           looking_for_partners?: boolean
           meeting_frequency?: string
           mentorship_topics?: string[]
@@ -580,6 +850,7 @@ export type Database = {
       projects: {
         Row: {
           completion_percentage: number
+          cover_image_url: string
           created_at: string
           demo_url: string
           description: string
@@ -587,8 +858,12 @@ export type Database = {
           funding_raised: number
           github_url: string
           id: string
+          latitude: number | null
+          location_label: string
+          longitude: number | null
           milestones: Json
           owner_id: string
+          pitch: string
           skills_needed: string[]
           status: string
           tags: string[]
@@ -597,6 +872,7 @@ export type Database = {
         }
         Insert: {
           completion_percentage?: number
+          cover_image_url?: string
           created_at?: string
           demo_url?: string
           description?: string
@@ -604,8 +880,12 @@ export type Database = {
           funding_raised?: number
           github_url?: string
           id?: string
+          latitude?: number | null
+          location_label?: string
+          longitude?: number | null
           milestones?: Json
           owner_id: string
+          pitch?: string
           skills_needed?: string[]
           status?: string
           tags?: string[]
@@ -614,6 +894,7 @@ export type Database = {
         }
         Update: {
           completion_percentage?: number
+          cover_image_url?: string
           created_at?: string
           demo_url?: string
           description?: string
@@ -621,8 +902,12 @@ export type Database = {
           funding_raised?: number
           github_url?: string
           id?: string
+          latitude?: number | null
+          location_label?: string
+          longitude?: number | null
           milestones?: Json
           owner_id?: string
+          pitch?: string
           skills_needed?: string[]
           status?: string
           tags?: string[]
@@ -711,12 +996,40 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
       get_or_create_conversation: { Args: { _other: string }; Returns: string }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       is_project_member: {
         Args: { _project_id: string; _user_id: string }
         Returns: boolean
@@ -727,7 +1040,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "mentor" | "mentee"
+      app_role: "mentor" | "mentee" | "institution" | "admin"
       request_status: "pending" | "accepted" | "declined"
     }
     CompositeTypes: {
@@ -856,7 +1169,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["mentor", "mentee"],
+      app_role: ["mentor", "mentee", "institution", "admin"],
       request_status: ["pending", "accepted", "declined"],
     },
   },

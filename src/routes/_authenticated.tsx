@@ -4,15 +4,19 @@ import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo.png";
 import {
   LogOut, Users2, Rocket, Inbox, UserCog, Bell, Home, MessageSquare,
-  Compass, ChevronDown, Sparkles,
+  Compass, ChevronDown, Sparkles, GraduationCap, LayoutDashboard,
 } from "lucide-react";
 import { markRead, type Notification } from "@/lib/notifications";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
-  beforeLoad: async () => {
+  beforeLoad: async ({ location }) => {
     const { data, error } = await supabase.auth.getUser();
     if (error || !data.user) throw redirect({ to: "/login" });
+    // Land on Feed after login instead of dashboard
+    if (location.pathname === "/" || location.pathname === "/_authenticated") {
+      throw redirect({ to: "/feed" });
+    }
     return { user: data.user };
   },
   component: AuthLayout,
@@ -21,8 +25,10 @@ export const Route = createFileRoute("/_authenticated")({
 type NavItem = { to: string; label: string; Icon: typeof Home };
 const PRIMARY: NavItem[] = [
   { to: "/feed", label: "Feed", Icon: Sparkles },
-  { to: "/partners", label: "Partners", Icon: Users2 },
+  { to: "/institutions", label: "Institutions", Icon: GraduationCap },
   { to: "/mentors", label: "Mentors", Icon: Compass },
+  { to: "/partners", label: "Partners", Icon: Users2 },
+  { to: "/dashboard", label: "Home", Icon: LayoutDashboard },
 ];
 
 function AuthLayout() {
@@ -63,7 +69,7 @@ function AuthLayout() {
     (async () => {
       const { data: u } = await supabase.auth.getUser();
       if (!u.user) return;
-      channel = supabase.channel("notif-bell")
+      channel = supabase.channel(`notif-bell-${u.user.id}-${Math.random().toString(36).slice(2, 8)}`)
         .on("postgres_changes", { event: "*", schema: "public", table: "notifications", filter: `user_id=eq.${u.user.id}` }, () => loadCounts())
         .subscribe();
     })();

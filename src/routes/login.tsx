@@ -19,7 +19,7 @@ function LoginPage() {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
-      if (session) navigate({ to: "/dashboard" });
+      if (session) navigate({ to: "/feed" });
     });
     return () => subscription.unsubscribe();
   }, [navigate]);
@@ -35,7 +35,7 @@ function LoginPage() {
 
   const handleGoogle = async () => {
     setError("");
-    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/dashboard" });
+    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
     if (result.error) setError(result.error.message ?? "Google sign-in failed");
   };
 

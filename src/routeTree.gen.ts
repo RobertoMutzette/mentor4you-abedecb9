@@ -20,6 +20,7 @@ import { Route as GdprRouteImport } from './routes/gdpr'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SignupInstitutionRouteImport } from './routes/signup.institution'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedRequestsRouteImport } from './routes/_authenticated/requests'
 import { Route as AuthenticatedProjectsRouteImport } from './routes/_authenticated/projects'
@@ -28,11 +29,15 @@ import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authentic
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
 import { Route as AuthenticatedMentorsRouteImport } from './routes/_authenticated/mentors'
+import { Route as AuthenticatedInstitutionsRouteImport } from './routes/_authenticated/institutions'
 import { Route as AuthenticatedFeedRouteImport } from './routes/_authenticated/feed'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedUIdRouteImport } from './routes/_authenticated/u.$id'
 import { Route as AuthenticatedProjectIdRouteImport } from './routes/_authenticated/project.$id'
+import { Route as AuthenticatedPositionIdRouteImport } from './routes/_authenticated/position.$id'
 import { Route as AuthenticatedMessagesIdRouteImport } from './routes/_authenticated/messages.$id'
+import { Route as AuthenticatedInstitutionDashboardRouteImport } from './routes/_authenticated/institution.dashboard'
+import { Route as AuthenticatedInstitutionIdRouteImport } from './routes/_authenticated/institution.$id'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -88,6 +93,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SignupInstitutionRoute = SignupInstitutionRouteImport.update({
+  id: '/institution',
+  path: '/institution',
+  getParentRoute: () => SignupRoute,
+} as any)
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -129,6 +139,12 @@ const AuthenticatedMentorsRoute = AuthenticatedMentorsRouteImport.update({
   path: '/mentors',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedInstitutionsRoute =
+  AuthenticatedInstitutionsRouteImport.update({
+    id: '/institutions',
+    path: '/institutions',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedFeedRoute = AuthenticatedFeedRouteImport.update({
   id: '/feed',
   path: '/feed',
@@ -149,11 +165,28 @@ const AuthenticatedProjectIdRoute = AuthenticatedProjectIdRouteImport.update({
   path: '/project/$id',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedPositionIdRoute = AuthenticatedPositionIdRouteImport.update({
+  id: '/position/$id',
+  path: '/position/$id',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedMessagesIdRoute = AuthenticatedMessagesIdRouteImport.update({
   id: '/$id',
   path: '/$id',
   getParentRoute: () => AuthenticatedMessagesRoute,
 } as any)
+const AuthenticatedInstitutionDashboardRoute =
+  AuthenticatedInstitutionDashboardRouteImport.update({
+    id: '/institution/dashboard',
+    path: '/institution/dashboard',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedInstitutionIdRoute =
+  AuthenticatedInstitutionIdRouteImport.update({
+    id: '/institution/$id',
+    path: '/institution/$id',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -164,10 +197,11 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/signup': typeof SignupRoute
+  '/signup': typeof SignupRouteWithChildren
   '/terms': typeof TermsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/feed': typeof AuthenticatedFeedRoute
+  '/institutions': typeof AuthenticatedInstitutionsRoute
   '/mentors': typeof AuthenticatedMentorsRoute
   '/messages': typeof AuthenticatedMessagesRouteWithChildren
   '/notifications': typeof AuthenticatedNotificationsRoute
@@ -176,7 +210,11 @@ export interface FileRoutesByFullPath {
   '/projects': typeof AuthenticatedProjectsRoute
   '/requests': typeof AuthenticatedRequestsRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/signup/institution': typeof SignupInstitutionRoute
+  '/institution/$id': typeof AuthenticatedInstitutionIdRoute
+  '/institution/dashboard': typeof AuthenticatedInstitutionDashboardRoute
   '/messages/$id': typeof AuthenticatedMessagesIdRoute
+  '/position/$id': typeof AuthenticatedPositionIdRoute
   '/project/$id': typeof AuthenticatedProjectIdRoute
   '/u/$id': typeof AuthenticatedUIdRoute
 }
@@ -189,10 +227,11 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/signup': typeof SignupRoute
+  '/signup': typeof SignupRouteWithChildren
   '/terms': typeof TermsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/feed': typeof AuthenticatedFeedRoute
+  '/institutions': typeof AuthenticatedInstitutionsRoute
   '/mentors': typeof AuthenticatedMentorsRoute
   '/messages': typeof AuthenticatedMessagesRouteWithChildren
   '/notifications': typeof AuthenticatedNotificationsRoute
@@ -201,7 +240,11 @@ export interface FileRoutesByTo {
   '/projects': typeof AuthenticatedProjectsRoute
   '/requests': typeof AuthenticatedRequestsRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/signup/institution': typeof SignupInstitutionRoute
+  '/institution/$id': typeof AuthenticatedInstitutionIdRoute
+  '/institution/dashboard': typeof AuthenticatedInstitutionDashboardRoute
   '/messages/$id': typeof AuthenticatedMessagesIdRoute
+  '/position/$id': typeof AuthenticatedPositionIdRoute
   '/project/$id': typeof AuthenticatedProjectIdRoute
   '/u/$id': typeof AuthenticatedUIdRoute
 }
@@ -216,10 +259,11 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/signup': typeof SignupRoute
+  '/signup': typeof SignupRouteWithChildren
   '/terms': typeof TermsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/feed': typeof AuthenticatedFeedRoute
+  '/_authenticated/institutions': typeof AuthenticatedInstitutionsRoute
   '/_authenticated/mentors': typeof AuthenticatedMentorsRoute
   '/_authenticated/messages': typeof AuthenticatedMessagesRouteWithChildren
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
@@ -228,7 +272,11 @@ export interface FileRoutesById {
   '/_authenticated/projects': typeof AuthenticatedProjectsRoute
   '/_authenticated/requests': typeof AuthenticatedRequestsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/signup/institution': typeof SignupInstitutionRoute
+  '/_authenticated/institution/$id': typeof AuthenticatedInstitutionIdRoute
+  '/_authenticated/institution/dashboard': typeof AuthenticatedInstitutionDashboardRoute
   '/_authenticated/messages/$id': typeof AuthenticatedMessagesIdRoute
+  '/_authenticated/position/$id': typeof AuthenticatedPositionIdRoute
   '/_authenticated/project/$id': typeof AuthenticatedProjectIdRoute
   '/_authenticated/u/$id': typeof AuthenticatedUIdRoute
 }
@@ -247,6 +295,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/dashboard'
     | '/feed'
+    | '/institutions'
     | '/mentors'
     | '/messages'
     | '/notifications'
@@ -255,7 +304,11 @@ export interface FileRouteTypes {
     | '/projects'
     | '/requests'
     | '/settings'
+    | '/signup/institution'
+    | '/institution/$id'
+    | '/institution/dashboard'
     | '/messages/$id'
+    | '/position/$id'
     | '/project/$id'
     | '/u/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -272,6 +325,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/dashboard'
     | '/feed'
+    | '/institutions'
     | '/mentors'
     | '/messages'
     | '/notifications'
@@ -280,7 +334,11 @@ export interface FileRouteTypes {
     | '/projects'
     | '/requests'
     | '/settings'
+    | '/signup/institution'
+    | '/institution/$id'
+    | '/institution/dashboard'
     | '/messages/$id'
+    | '/position/$id'
     | '/project/$id'
     | '/u/$id'
   id:
@@ -298,6 +356,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/_authenticated/dashboard'
     | '/_authenticated/feed'
+    | '/_authenticated/institutions'
     | '/_authenticated/mentors'
     | '/_authenticated/messages'
     | '/_authenticated/notifications'
@@ -306,7 +365,11 @@ export interface FileRouteTypes {
     | '/_authenticated/projects'
     | '/_authenticated/requests'
     | '/_authenticated/settings'
+    | '/signup/institution'
+    | '/_authenticated/institution/$id'
+    | '/_authenticated/institution/dashboard'
     | '/_authenticated/messages/$id'
+    | '/_authenticated/position/$id'
     | '/_authenticated/project/$id'
     | '/_authenticated/u/$id'
   fileRoutesById: FileRoutesById
@@ -321,7 +384,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   PrivacyRoute: typeof PrivacyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
-  SignupRoute: typeof SignupRoute
+  SignupRoute: typeof SignupRouteWithChildren
   TermsRoute: typeof TermsRoute
 }
 
@@ -404,6 +467,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/signup/institution': {
+      id: '/signup/institution'
+      path: '/institution'
+      fullPath: '/signup/institution'
+      preLoaderRoute: typeof SignupInstitutionRouteImport
+      parentRoute: typeof SignupRoute
+    }
     '/_authenticated/settings': {
       id: '/_authenticated/settings'
       path: '/settings'
@@ -460,6 +530,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMentorsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/institutions': {
+      id: '/_authenticated/institutions'
+      path: '/institutions'
+      fullPath: '/institutions'
+      preLoaderRoute: typeof AuthenticatedInstitutionsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/feed': {
       id: '/_authenticated/feed'
       path: '/feed'
@@ -488,12 +565,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProjectIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/position/$id': {
+      id: '/_authenticated/position/$id'
+      path: '/position/$id'
+      fullPath: '/position/$id'
+      preLoaderRoute: typeof AuthenticatedPositionIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/messages/$id': {
       id: '/_authenticated/messages/$id'
       path: '/$id'
       fullPath: '/messages/$id'
       preLoaderRoute: typeof AuthenticatedMessagesIdRouteImport
       parentRoute: typeof AuthenticatedMessagesRoute
+    }
+    '/_authenticated/institution/dashboard': {
+      id: '/_authenticated/institution/dashboard'
+      path: '/institution/dashboard'
+      fullPath: '/institution/dashboard'
+      preLoaderRoute: typeof AuthenticatedInstitutionDashboardRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/institution/$id': {
+      id: '/_authenticated/institution/$id'
+      path: '/institution/$id'
+      fullPath: '/institution/$id'
+      preLoaderRoute: typeof AuthenticatedInstitutionIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
   }
 }
@@ -514,6 +612,7 @@ const AuthenticatedMessagesRouteWithChildren =
 interface AuthenticatedRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedFeedRoute: typeof AuthenticatedFeedRoute
+  AuthenticatedInstitutionsRoute: typeof AuthenticatedInstitutionsRoute
   AuthenticatedMentorsRoute: typeof AuthenticatedMentorsRoute
   AuthenticatedMessagesRoute: typeof AuthenticatedMessagesRouteWithChildren
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
@@ -522,6 +621,9 @@ interface AuthenticatedRouteChildren {
   AuthenticatedProjectsRoute: typeof AuthenticatedProjectsRoute
   AuthenticatedRequestsRoute: typeof AuthenticatedRequestsRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedInstitutionIdRoute: typeof AuthenticatedInstitutionIdRoute
+  AuthenticatedInstitutionDashboardRoute: typeof AuthenticatedInstitutionDashboardRoute
+  AuthenticatedPositionIdRoute: typeof AuthenticatedPositionIdRoute
   AuthenticatedProjectIdRoute: typeof AuthenticatedProjectIdRoute
   AuthenticatedUIdRoute: typeof AuthenticatedUIdRoute
 }
@@ -529,6 +631,7 @@ interface AuthenticatedRouteChildren {
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedFeedRoute: AuthenticatedFeedRoute,
+  AuthenticatedInstitutionsRoute: AuthenticatedInstitutionsRoute,
   AuthenticatedMentorsRoute: AuthenticatedMentorsRoute,
   AuthenticatedMessagesRoute: AuthenticatedMessagesRouteWithChildren,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
@@ -537,6 +640,10 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedProjectsRoute: AuthenticatedProjectsRoute,
   AuthenticatedRequestsRoute: AuthenticatedRequestsRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedInstitutionIdRoute: AuthenticatedInstitutionIdRoute,
+  AuthenticatedInstitutionDashboardRoute:
+    AuthenticatedInstitutionDashboardRoute,
+  AuthenticatedPositionIdRoute: AuthenticatedPositionIdRoute,
   AuthenticatedProjectIdRoute: AuthenticatedProjectIdRoute,
   AuthenticatedUIdRoute: AuthenticatedUIdRoute,
 }
@@ -544,6 +651,17 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
 )
+
+interface SignupRouteChildren {
+  SignupInstitutionRoute: typeof SignupInstitutionRoute
+}
+
+const SignupRouteChildren: SignupRouteChildren = {
+  SignupInstitutionRoute: SignupInstitutionRoute,
+}
+
+const SignupRouteWithChildren =
+  SignupRoute._addFileChildren(SignupRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -555,19 +673,9 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   PrivacyRoute: PrivacyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
-  SignupRoute: SignupRoute,
+  SignupRoute: SignupRouteWithChildren,
   TermsRoute: TermsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
