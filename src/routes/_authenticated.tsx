@@ -69,7 +69,7 @@ function AuthLayout() {
     (async () => {
       const { data: u } = await supabase.auth.getUser();
       if (!u.user) return;
-      channel = supabase.channel("notif-bell")
+      channel = supabase.channel(`notif-bell-${u.user.id}-${Math.random().toString(36).slice(2, 8)}`)
         .on("postgres_changes", { event: "*", schema: "public", table: "notifications", filter: `user_id=eq.${u.user.id}` }, () => loadCounts())
         .subscribe();
     })();
