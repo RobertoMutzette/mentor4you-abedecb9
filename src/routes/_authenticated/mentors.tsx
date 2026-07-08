@@ -19,6 +19,7 @@ function MentorsPage() {
   const [others, setOthers] = useState<Profile[]>([]);
   const [sent, setSent] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
+  const [view, setView] = useState<"list" | "map">("list");
 
   useEffect(() => {
     (async () => {
