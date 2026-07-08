@@ -63,7 +63,7 @@ function OnboardingPage() {
       if (!u.user) return;
       const { data } = await supabase.from("profiles").select("*").eq("id", u.user.id).maybeSingle();
       if (data) {
-        if (data.onboarded) { navigate({ to: "/dashboard" }); return; }
+        if (data.onboarded) { navigate({ to: "/feed" }); return; }
         setFullName(data.full_name || u.user.user_metadata?.full_name || "");
         setHeadline((data as any).headline || "");
         setRole(data.role as Role | null);
@@ -137,7 +137,7 @@ function OnboardingPage() {
     };
     const { error } = await supabase.from("profiles").upsert(payload);
     setSaving(false);
-    if (!error) navigate({ to: "/dashboard" });
+    if (!error) navigate({ to: "/feed" });
   };
 
   if (loading) return <div className="mx-auto max-w-2xl px-6 py-20 text-muted-foreground">Loading…</div>;
