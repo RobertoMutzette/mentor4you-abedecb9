@@ -62,8 +62,25 @@ function MentorsPage() {
             {me.role === "mentor" ? "Guide someone" : "Find your guide"}
           </h1>
         </div>
-        <span className="text-sm text-muted-foreground">{matches.length} match{matches.length === 1 ? "" : "es"}</span>
+        <div className="flex items-center gap-1 p-1 rounded-full border border-border bg-card">
+          <button onClick={() => setView("list")} className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition ${view === "list" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
+            <LayoutGrid className="h-3.5 w-3.5" /> List
+          </button>
+          <button onClick={() => setView("map")} className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition ${view === "map" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
+            <MapIcon className="h-3.5 w-3.5" /> Map
+          </button>
+        </div>
       </div>
+
+      {view === "map" ? (
+        <LocationMap
+          height={520}
+          markers={matches.filter((p: any) => p.latitude && p.longitude).map((p: any) => ({
+            id: p.id, latitude: p.latitude, longitude: p.longitude,
+            title: p.full_name || "Mentor", subtitle: p.headline || p.role, href: `/u/${p.id}`,
+          }))}
+        />
+      ) : (
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
         {matches.map((p) => (
