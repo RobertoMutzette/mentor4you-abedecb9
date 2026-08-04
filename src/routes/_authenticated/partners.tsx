@@ -19,7 +19,9 @@ function PartnersPage() {
   const [pool, setPool] = useState<Profile[]>([]);
   const [sent, setSent] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
+  const [view, setView] = useState<"list" | "map">("list");
   const [q, setQ] = useState("");
+
   const [skillFilter, setSkillFilter] = useState<string | null>(null);
 
   useEffect(() => {
