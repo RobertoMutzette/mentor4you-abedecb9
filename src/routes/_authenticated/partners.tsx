@@ -150,7 +150,9 @@ function PartnersPage() {
           </div>
         )}
       </div>
+      )}
     </div>
+
   );
 }
 
