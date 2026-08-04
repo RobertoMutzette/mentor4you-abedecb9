@@ -3,7 +3,9 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { rankMatches, type ProfileLite, type Scored } from "@/lib/matching";
 import { sendConnectionRequest } from "@/lib/connections";
-import { ArrowUpRight, Check, Clock, Loader2, MapPin, Search, Sparkles, X } from "lucide-react";
+import { LocationMap } from "@/components/LocationMap";
+import { ArrowUpRight, Check, Clock, Loader2, Map as MapIcon, MapPin, Rows3, Search, Sparkles, X } from "lucide-react";
+
 
 export const Route = createFileRoute("/_authenticated/partners")({
   head: () => ({ meta: [{ title: "Find a Partner — Mentor4You" }] }),
@@ -17,7 +19,9 @@ function PartnersPage() {
   const [pool, setPool] = useState<Profile[]>([]);
   const [sent, setSent] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
+  const [view, setView] = useState<"list" | "map">("list");
   const [q, setQ] = useState("");
+
   const [skillFilter, setSkillFilter] = useState<string | null>(null);
 
   useEffect(() => {
@@ -102,7 +106,40 @@ function PartnersPage() {
         </div>
       </div>
 
+      <div className="flex items-center gap-2 mb-5">
+        <button onClick={() => setView("list")}
+          className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition ${view === "list" ? "bg-primary text-primary-foreground" : "bg-card border border-border hover:bg-secondary"}`}>
+          <Rows3 className="h-4 w-4" /> List
+        </button>
+        <button onClick={() => setView("map")}
+          className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition ${view === "map" ? "bg-primary text-primary-foreground" : "bg-card border border-border hover:bg-secondary"}`}>
+          <MapIcon className="h-4 w-4" /> Map
+        </button>
+        <span className="text-xs text-muted-foreground ml-1">{ranked.length} result{ranked.length === 1 ? "" : "s"}</span>
+      </div>
+
+      {view === "map" ? (
+        <div className="mb-6">
+          <LocationMap
+            height={520}
+            markers={ranked
+              .filter((p: any) => p.latitude && p.longitude)
+              .map((p: any) => ({
+                id: p.id,
+                latitude: p.latitude,
+                longitude: p.longitude,
+                title: p.full_name,
+                subtitle: p.headline || p.location_label || p.location || "",
+                href: `/u/${p.id}`,
+              }))}
+          />
+          <p className="mt-3 text-xs text-muted-foreground">
+            Only partners who shared a location appear on the map. Add yours in profile settings.
+          </p>
+        </div>
+      ) : (
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+
         {ranked.map((p) => (
           <PartnerCard key={p.id} p={p} alreadySent={sent.has(p.id)} onConnect={async () => {
             await sendConnectionRequest(p.id);
@@ -115,7 +152,9 @@ function PartnersPage() {
           </div>
         )}
       </div>
+      )}
     </div>
+
   );
 }
 

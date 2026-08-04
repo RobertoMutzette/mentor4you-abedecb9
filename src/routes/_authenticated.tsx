@@ -4,9 +4,11 @@ import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo.png";
 import {
   LogOut, Users2, Rocket, Inbox, UserCog, Bell, Home, MessageSquare,
-  Compass, ChevronDown, Sparkles, GraduationCap, LayoutDashboard,
+  Compass, ChevronDown, Sparkles, GraduationCap, LayoutDashboard, ShieldCheck,
 } from "lucide-react";
 import { markRead, type Notification } from "@/lib/notifications";
+import { isAdmin, isInstitutionOwner } from "@/lib/institutions";
+
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -39,16 +41,21 @@ function AuthLayout() {
   const [unread, setUnread] = useState(0);
   const [bellOpen, setBellOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [admin, setAdmin] = useState(false);
+  const [isInst, setIsInst] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? ""));
+    isAdmin().then(setAdmin).catch(() => {});
+    isInstitutionOwner().then((i) => setIsInst(!!i)).catch(() => {});
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
       if (!session) navigate({ to: "/login" });
       else setEmail(session.user.email ?? "");
     });
     return () => subscription.unsubscribe();
   }, [navigate]);
+
 
   const loadCounts = async () => {
     const { data: u } = await supabase.auth.getUser();
@@ -166,7 +173,10 @@ function AuthLayout() {
                   <MenuLink to="/requests" onClick={() => setMenuOpen(false)} Icon={Inbox} label="Requests" badge={pending} />
                   <MenuLink to="/notifications" onClick={() => setMenuOpen(false)} Icon={Bell} label="Notifications" badge={unread} />
                   <MenuLink to="/projects" onClick={() => setMenuOpen(false)} Icon={Rocket} label="Projects" />
+                  {isInst && <MenuLink to="/institution/dashboard" onClick={() => setMenuOpen(false)} Icon={GraduationCap} label="Institution portal" />}
+                  {admin && <MenuLink to="/admin/institutions" onClick={() => setMenuOpen(false)} Icon={ShieldCheck} label="Institution review" />}
                   <MenuLink to="/settings" onClick={() => setMenuOpen(false)} Icon={UserCog} label="Profile & settings" />
+
                   <div className="border-t border-border">
                     <button
                       onClick={async () => { setMenuOpen(false); await supabase.auth.signOut(); }}

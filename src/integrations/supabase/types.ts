@@ -1022,6 +1022,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      approve_institution_application: {
+        Args: { _app_id: string }
+        Returns: string
+      }
       get_or_create_conversation: { Args: { _other: string }; Returns: string }
       has_role: {
         Args: {
@@ -1037,6 +1041,10 @@ export type Database = {
       is_project_owner: {
         Args: { _project_id: string; _user_id: string }
         Returns: boolean
+      }
+      reject_institution_application: {
+        Args: { _app_id: string }
+        Returns: undefined
       }
     }
     Enums: {

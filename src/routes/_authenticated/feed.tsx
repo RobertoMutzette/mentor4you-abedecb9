@@ -1,22 +1,38 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { fetchFeed, createPost, toggleReaction, fetchComments, postComment, type PostWithAuthor } from "@/lib/social";
+import {
+  fetchFeed, createPost, toggleReaction, fetchComments, postComment,
+  fetchMyProjects, type PostWithAuthor, type PostProject,
+} from "@/lib/social";
 import { uploadPostMedia, useSignedImage, resolveImage } from "@/lib/storage";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Heart, MessageCircle, Repeat2, Image as ImageIcon, X, Send, Globe2, Users2 } from "lucide-react";
+import { Heart, MessageCircle, Repeat2, Image as ImageIcon, X, Send, Plus, Rocket } from "lucide-react";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/_authenticated/feed")({ component: FeedPage });
+export const Route = createFileRoute("/_authenticated/feed")({
+  head: () => ({
+    meta: [
+      { title: "Feed — Mentor4You" },
+      { name: "description", content: "See what builders are shipping: project updates, ideas and opportunities from your network." },
+      { property: "og:title", content: "Feed — Mentor4You" },
+      { property: "og:description", content: "See what builders are shipping across the Mentor4You community." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: FeedPage,
+});
 
 function FeedPage() {
   const [scope, setScope] = useState<"for-you" | "following">("for-you");
   const [posts, setPosts] = useState<PostWithAuthor[]>([]);
   const [loading, setLoading] = useState(true);
   const [me, setMe] = useState<{ id: string; full_name: string; avatar_url: string } | null>(null);
+  const [composerOpen, setComposerOpen] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -44,38 +60,104 @@ function FeedPage() {
           className={`px-4 py-2 rounded-full text-sm font-medium transition ${scope==="for-you"?"bg-primary text-primary-foreground":"bg-secondary text-foreground hover:bg-secondary/80"}`}>For you</button>
         <button onClick={() => setScope("following")}
           className={`px-4 py-2 rounded-full text-sm font-medium transition ${scope==="following"?"bg-primary text-primary-foreground":"bg-secondary text-foreground hover:bg-secondary/80"}`}>Following</button>
-      </div>
 
-      <Composer me={me} onPosted={load} />
+        <button
+          onClick={() => setComposerOpen(true)}
+          aria-label="Create a post"
+          className="ml-auto inline-flex items-center gap-1.5 h-10 px-4 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition shadow-[0_10px_30px_-12px_oklch(0.42_0.28_264/0.8)]"
+        >
+          <Plus className="h-4 w-4" /> <span className="hidden sm:inline">Post</span>
+        </button>
+      </div>
 
       {loading ? (
         <div className="text-center text-muted-foreground py-12">Loading…</div>
       ) : posts.length === 0 ? (
         <Card className="p-8 text-center text-muted-foreground">
-          {scope === "following" ? "Follow people to see their posts here." : "Be the first to post something."}
+          {scope === "following" ? "Follow people to see their posts here." : "Nothing here yet — tap Post to share a project."}
         </Card>
       ) : (
         posts.map((p) => <PostCard key={p.id} post={p} onChange={load} />)
+      )}
+
+      {composerOpen && (
+        <ComposerModal me={me} onClose={() => setComposerOpen(false)} onPosted={() => { setComposerOpen(false); load(); }} />
       )}
     </div>
   );
 }
 
-function Composer({ me, onPosted, repostOf }: { me: any; onPosted: () => void; repostOf?: string }) {
+function ComposerModal({ me, onClose, onPosted }: { me: any; onClose: () => void; onPosted: () => void }) {
+  const [projects, setProjects] = useState<PostProject[]>([]);
+  const [projectId, setProjectId] = useState<string | null>(null);
+  const [loadingProjects, setLoadingProjects] = useState(true);
+
+  useEffect(() => {
+    fetchMyProjects().then((p) => { setProjects(p); setLoadingProjects(false); }).catch(() => setLoadingProjects(false));
+  }, []);
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-6">
+      <div className="absolute inset-0 bg-background/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full sm:max-w-lg max-h-[90vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border border-border bg-card shadow-2xl">
+        <div className="sticky top-0 z-10 flex items-center justify-between px-5 py-4 border-b border-border bg-card/95 backdrop-blur">
+          <h2 className="font-display font-bold text-lg">New post</h2>
+          <button onClick={onClose} className="p-2 rounded-full hover:bg-secondary" aria-label="Close"><X className="h-4 w-4" /></button>
+        </div>
+
+        <div className="p-5 space-y-4">
+          <div>
+            <div className="text-xs font-medium text-muted-foreground mb-2">Share one of your projects (optional)</div>
+            {loadingProjects ? (
+              <div className="text-sm text-muted-foreground">Loading your projects…</div>
+            ) : projects.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-border p-4 text-sm text-muted-foreground">
+                You don't have a project yet.{" "}
+                <Link to="/projects" className="text-primary font-medium">Create one →</Link>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {projects.map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => setProjectId(projectId === p.id ? null : p.id)}
+                    className={`w-full text-left rounded-2xl border p-3 transition ${projectId === p.id ? "border-primary bg-primary/5" : "border-border hover:bg-secondary"}`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Rocket className="h-4 w-4 text-primary shrink-0" />
+                      <span className="text-sm font-semibold truncate">{p.title}</span>
+                      <span className="ml-auto text-[11px] text-muted-foreground shrink-0">{p.completion_percentage}%</span>
+                    </div>
+                    {p.description && <div className="text-xs text-muted-foreground line-clamp-2 mt-1">{p.description}</div>}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <Composer me={me} projectId={projectId} onPosted={onPosted} autoFocus />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Composer({ me, onPosted, repostOf, projectId, autoFocus }: { me: any; onPosted: () => void; repostOf?: string; projectId?: string | null; autoFocus?: boolean }) {
   const [body, setBody] = useState("");
   const [files, setFiles] = useState<File[]>([]);
-  const [visibility, setVisibility] = useState<"public" | "followers">("public");
   const [busy, setBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const avatar = useSignedImage("avatars", me?.avatar_url);
 
+  const canSubmit = !!body.trim() || files.length > 0 || !!repostOf || !!projectId;
+
   const submit = async () => {
-    if (!body.trim() && files.length === 0 && !repostOf) return;
+    if (!canSubmit) return;
     setBusy(true);
     try {
       const media_urls: string[] = [];
       for (const f of files) media_urls.push(await uploadPostMedia(f));
-      await createPost({ body: body.trim(), media_urls, visibility, repost_of: repostOf });
+      await createPost({ body: body.trim(), media_urls, repost_of: repostOf, project_id: projectId ?? null });
       setBody(""); setFiles([]);
       toast.success(repostOf ? "Reshared" : "Posted");
       onPosted();
@@ -91,8 +173,8 @@ function Composer({ me, onPosted, repostOf }: { me: any; onPosted: () => void; r
           <AvatarFallback>{(me?.full_name || "?").slice(0,1)}</AvatarFallback>
         </Avatar>
         <div className="flex-1 space-y-2">
-          <Textarea value={body} onChange={(e)=>setBody(e.target.value)}
-            placeholder={repostOf ? "Add a comment to your repost…" : "What's on your mind? Use #tags and @mentions."}
+          <Textarea value={body} onChange={(e)=>setBody(e.target.value)} autoFocus={autoFocus}
+            placeholder={repostOf ? "Add a comment to your repost…" : "What are you building? Use #tags and @mentions."}
             className="min-h-[80px] border-0 focus-visible:ring-0 px-0 resize-none text-base" />
           {files.length > 0 && (
             <div className="grid grid-cols-3 gap-2">
@@ -114,12 +196,8 @@ function Composer({ me, onPosted, repostOf }: { me: any; onPosted: () => void; r
               </button>
               <input ref={fileRef} type="file" accept="image/*" multiple hidden
                 onChange={(e)=>{const arr=Array.from(e.target.files||[]).slice(0,4-files.length); setFiles([...files, ...arr]);}} />
-              <button onClick={() => setVisibility(visibility === "public" ? "followers" : "public")}
-                className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium hover:bg-secondary text-muted-foreground">
-                {visibility === "public" ? <><Globe2 className="h-3 w-3"/>Public</> : <><Users2 className="h-3 w-3"/>Followers</>}
-              </button>
             </div>
-            <Button size="sm" disabled={busy || (!body.trim() && files.length===0 && !repostOf)} onClick={submit}>
+            <Button size="sm" disabled={busy || !canSubmit} onClick={submit}>
               {busy ? "…" : "Post"}
             </Button>
           </div>
@@ -163,6 +241,25 @@ function PostCard({ post, onChange }: { post: PostWithAuthor; onChange: () => vo
       </div>
 
       {post.body && <PostBody body={post.body} />}
+
+      {post.project && (
+        <Link to="/project/$id" params={{ id: post.project.id }} className="block rounded-2xl border border-border hover:border-primary transition overflow-hidden">
+          {post.project.cover_image_url && (
+            <img src={post.project.cover_image_url} alt="" className="w-full h-36 object-cover" loading="lazy" />
+          )}
+          <div className="p-4">
+            <div className="flex items-center gap-2">
+              <Rocket className="h-4 w-4 text-primary" />
+              <span className="font-display font-bold text-sm truncate">{post.project.title}</span>
+              <span className="ml-auto text-[11px] uppercase tracking-widest text-muted-foreground">{post.project.status}</span>
+            </div>
+            {post.project.description && <p className="text-xs text-muted-foreground line-clamp-2 mt-1.5">{post.project.description}</p>}
+            <div className="mt-3 h-1.5 rounded-full bg-secondary overflow-hidden">
+              <div className="h-full bg-primary" style={{ width: `${post.project.completion_percentage}%` }} />
+            </div>
+          </div>
+        </Link>
+      )}
 
       {post.media_urls.length > 0 && <MediaGrid paths={post.media_urls} />}
 

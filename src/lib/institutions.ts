@@ -103,3 +103,60 @@ export async function createPosition(input: { institution_id: string; title: str
   const { error } = await sb.from("institution_positions").insert(input);
   if (error) throw error;
 }
+
+export async function deletePosition(id: string) {
+  const { error } = await sb.from("institution_positions").delete().eq("id", id);
+  if (error) throw error;
+}
+
+export async function updateInstitution(id: string, patch: Partial<Pick<Institution, "name" | "website" | "description" | "contact_email" | "location_label" | "logo_url" | "cover_url" | "latitude" | "longitude">>) {
+  const { error } = await sb.from("institutions").update(patch).eq("id", id);
+  if (error) throw error;
+}
+
+// ---- Roles / admin review ----
+
+export type InstitutionApplication = {
+  id: string;
+  user_id: string;
+  institution_name: string;
+  website: string;
+  contact_email: string;
+  description: string;
+  status: string;
+  created_at: string;
+  reviewed_at: string | null;
+};
+
+export async function isAdmin(): Promise<boolean> {
+  const { data: u } = await supabase.auth.getUser();
+  if (!u.user) return false;
+  const { data } = await sb.from("user_roles").select("role").eq("user_id", u.user.id).eq("role", "admin").maybeSingle();
+  return !!data;
+}
+
+/** Application status for the signed-in user (so they can track their request). */
+export async function myInstitutionApplication(): Promise<InstitutionApplication | null> {
+  const { data: u } = await supabase.auth.getUser();
+  if (!u.user) return null;
+  const { data } = await sb.from("institution_applications").select("*")
+    .eq("user_id", u.user.id).order("created_at", { ascending: false }).limit(1).maybeSingle();
+  return (data as InstitutionApplication) || null;
+}
+
+/** Admin only — RLS returns nothing for non-admins. */
+export async function listInstitutionApplications(): Promise<InstitutionApplication[]> {
+  const { data, error } = await sb.from("institution_applications").select("*").order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data || []) as InstitutionApplication[];
+}
+
+export async function approveInstitutionApplication(appId: string) {
+  const { error } = await sb.rpc("approve_institution_application", { _app_id: appId });
+  if (error) throw error;
+}
+
+export async function rejectInstitutionApplication(appId: string) {
+  const { error } = await sb.rpc("reject_institution_application", { _app_id: appId });
+  if (error) throw error;
+}
