@@ -38,6 +38,7 @@ import { Route as AuthenticatedPositionIdRouteImport } from './routes/_authentic
 import { Route as AuthenticatedMessagesIdRouteImport } from './routes/_authenticated/messages.$id'
 import { Route as AuthenticatedInstitutionDashboardRouteImport } from './routes/_authenticated/institution.dashboard'
 import { Route as AuthenticatedInstitutionIdRouteImport } from './routes/_authenticated/institution.$id'
+import { Route as AuthenticatedAdminInstitutionsRouteImport } from './routes/_authenticated/admin.institutions'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -187,6 +188,12 @@ const AuthenticatedInstitutionIdRoute =
     path: '/institution/$id',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedAdminInstitutionsRoute =
+  AuthenticatedAdminInstitutionsRouteImport.update({
+    id: '/admin/institutions',
+    path: '/admin/institutions',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -211,6 +218,7 @@ export interface FileRoutesByFullPath {
   '/requests': typeof AuthenticatedRequestsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/signup/institution': typeof SignupInstitutionRoute
+  '/admin/institutions': typeof AuthenticatedAdminInstitutionsRoute
   '/institution/$id': typeof AuthenticatedInstitutionIdRoute
   '/institution/dashboard': typeof AuthenticatedInstitutionDashboardRoute
   '/messages/$id': typeof AuthenticatedMessagesIdRoute
@@ -241,6 +249,7 @@ export interface FileRoutesByTo {
   '/requests': typeof AuthenticatedRequestsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/signup/institution': typeof SignupInstitutionRoute
+  '/admin/institutions': typeof AuthenticatedAdminInstitutionsRoute
   '/institution/$id': typeof AuthenticatedInstitutionIdRoute
   '/institution/dashboard': typeof AuthenticatedInstitutionDashboardRoute
   '/messages/$id': typeof AuthenticatedMessagesIdRoute
@@ -273,6 +282,7 @@ export interface FileRoutesById {
   '/_authenticated/requests': typeof AuthenticatedRequestsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/signup/institution': typeof SignupInstitutionRoute
+  '/_authenticated/admin/institutions': typeof AuthenticatedAdminInstitutionsRoute
   '/_authenticated/institution/$id': typeof AuthenticatedInstitutionIdRoute
   '/_authenticated/institution/dashboard': typeof AuthenticatedInstitutionDashboardRoute
   '/_authenticated/messages/$id': typeof AuthenticatedMessagesIdRoute
@@ -305,6 +315,7 @@ export interface FileRouteTypes {
     | '/requests'
     | '/settings'
     | '/signup/institution'
+    | '/admin/institutions'
     | '/institution/$id'
     | '/institution/dashboard'
     | '/messages/$id'
@@ -335,6 +346,7 @@ export interface FileRouteTypes {
     | '/requests'
     | '/settings'
     | '/signup/institution'
+    | '/admin/institutions'
     | '/institution/$id'
     | '/institution/dashboard'
     | '/messages/$id'
@@ -366,6 +378,7 @@ export interface FileRouteTypes {
     | '/_authenticated/requests'
     | '/_authenticated/settings'
     | '/signup/institution'
+    | '/_authenticated/admin/institutions'
     | '/_authenticated/institution/$id'
     | '/_authenticated/institution/dashboard'
     | '/_authenticated/messages/$id'
@@ -593,6 +606,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedInstitutionIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/admin/institutions': {
+      id: '/_authenticated/admin/institutions'
+      path: '/admin/institutions'
+      fullPath: '/admin/institutions'
+      preLoaderRoute: typeof AuthenticatedAdminInstitutionsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
@@ -621,6 +641,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedProjectsRoute: typeof AuthenticatedProjectsRoute
   AuthenticatedRequestsRoute: typeof AuthenticatedRequestsRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedAdminInstitutionsRoute: typeof AuthenticatedAdminInstitutionsRoute
   AuthenticatedInstitutionIdRoute: typeof AuthenticatedInstitutionIdRoute
   AuthenticatedInstitutionDashboardRoute: typeof AuthenticatedInstitutionDashboardRoute
   AuthenticatedPositionIdRoute: typeof AuthenticatedPositionIdRoute
@@ -640,6 +661,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedProjectsRoute: AuthenticatedProjectsRoute,
   AuthenticatedRequestsRoute: AuthenticatedRequestsRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedAdminInstitutionsRoute: AuthenticatedAdminInstitutionsRoute,
   AuthenticatedInstitutionIdRoute: AuthenticatedInstitutionIdRoute,
   AuthenticatedInstitutionDashboardRoute:
     AuthenticatedInstitutionDashboardRoute,
