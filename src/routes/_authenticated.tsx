@@ -4,9 +4,11 @@ import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo.png";
 import {
   LogOut, Users2, Rocket, Inbox, UserCog, Bell, Home, MessageSquare,
-  Compass, ChevronDown, Sparkles, GraduationCap, LayoutDashboard,
+  Compass, ChevronDown, Sparkles, GraduationCap, LayoutDashboard, ShieldCheck,
 } from "lucide-react";
 import { markRead, type Notification } from "@/lib/notifications";
+import { isAdmin, isInstitutionOwner } from "@/lib/institutions";
+
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
