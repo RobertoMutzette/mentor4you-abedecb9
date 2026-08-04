@@ -166,7 +166,10 @@ function AuthLayout() {
                   <MenuLink to="/requests" onClick={() => setMenuOpen(false)} Icon={Inbox} label="Requests" badge={pending} />
                   <MenuLink to="/notifications" onClick={() => setMenuOpen(false)} Icon={Bell} label="Notifications" badge={unread} />
                   <MenuLink to="/projects" onClick={() => setMenuOpen(false)} Icon={Rocket} label="Projects" />
+                  {isInst && <MenuLink to="/institution/dashboard" onClick={() => setMenuOpen(false)} Icon={GraduationCap} label="Institution portal" />}
+                  {admin && <MenuLink to="/admin/institutions" onClick={() => setMenuOpen(false)} Icon={ShieldCheck} label="Institution review" />}
                   <MenuLink to="/settings" onClick={() => setMenuOpen(false)} Icon={UserCog} label="Profile & settings" />
+
                   <div className="border-t border-border">
                     <button
                       onClick={async () => { setMenuOpen(false); await supabase.auth.signOut(); }}
