@@ -104,7 +104,40 @@ function PartnersPage() {
         </div>
       </div>
 
+      <div className="flex items-center gap-2 mb-5">
+        <button onClick={() => setView("list")}
+          className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition ${view === "list" ? "bg-primary text-primary-foreground" : "bg-card border border-border hover:bg-secondary"}`}>
+          <Rows3 className="h-4 w-4" /> List
+        </button>
+        <button onClick={() => setView("map")}
+          className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition ${view === "map" ? "bg-primary text-primary-foreground" : "bg-card border border-border hover:bg-secondary"}`}>
+          <MapIcon className="h-4 w-4" /> Map
+        </button>
+        <span className="text-xs text-muted-foreground ml-1">{ranked.length} result{ranked.length === 1 ? "" : "s"}</span>
+      </div>
+
+      {view === "map" ? (
+        <div className="mb-6">
+          <LocationMap
+            height={520}
+            markers={ranked
+              .filter((p: any) => p.latitude && p.longitude)
+              .map((p: any) => ({
+                id: p.id,
+                latitude: p.latitude,
+                longitude: p.longitude,
+                title: p.full_name,
+                subtitle: p.headline || p.location_label || p.location || "",
+                href: `/u/${p.id}`,
+              }))}
+          />
+          <p className="mt-3 text-xs text-muted-foreground">
+            Only partners who shared a location appear on the map. Add yours in profile settings.
+          </p>
+        </div>
+      ) : (
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+
         {ranked.map((p) => (
           <PartnerCard key={p.id} p={p} alreadySent={sent.has(p.id)} onConnect={async () => {
             await sendConnectionRequest(p.id);
