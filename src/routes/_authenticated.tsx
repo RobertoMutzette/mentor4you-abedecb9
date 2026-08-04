@@ -39,16 +39,21 @@ function AuthLayout() {
   const [unread, setUnread] = useState(0);
   const [bellOpen, setBellOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [admin, setAdmin] = useState(false);
+  const [isInst, setIsInst] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? ""));
+    isAdmin().then(setAdmin).catch(() => {});
+    isInstitutionOwner().then((i) => setIsInst(!!i)).catch(() => {});
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
       if (!session) navigate({ to: "/login" });
       else setEmail(session.user.email ?? "");
     });
     return () => subscription.unsubscribe();
   }, [navigate]);
+
 
   const loadCounts = async () => {
     const { data: u } = await supabase.auth.getUser();
