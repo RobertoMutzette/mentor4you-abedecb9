@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { safeUrl } from "@/lib/safe-url";
 
 const sb = supabase as any;
 
@@ -95,12 +96,12 @@ export async function isInstitutionOwner(): Promise<Institution | null> {
 export async function submitInstitutionApplication(input: { institution_name: string; website: string; contact_email: string; description: string; }) {
   const { data: u } = await supabase.auth.getUser();
   if (!u.user) throw new Error("Not signed in");
-  const { error } = await sb.from("institution_applications").insert({ ...input, user_id: u.user.id });
+  const { error } = await sb.from("institution_applications").insert({ ...input, website: safeUrl(input.website) ?? "", user_id: u.user.id });
   if (error) throw error;
 }
 
 export async function createPosition(input: { institution_id: string; title: string; field: string; description: string; position_type: string; location_label: string; remote: boolean; deadline: string | null; apply_url: string; tags: string[]; cover_url: string }) {
-  const { error } = await sb.from("institution_positions").insert(input);
+  const { error } = await sb.from("institution_positions").insert({ ...input, apply_url: safeUrl(input.apply_url) ?? "" });
   if (error) throw error;
 }
 
@@ -110,7 +111,7 @@ export async function deletePosition(id: string) {
 }
 
 export async function updateInstitution(id: string, patch: Partial<Pick<Institution, "name" | "website" | "description" | "contact_email" | "location_label" | "logo_url" | "cover_url" | "latitude" | "longitude">>) {
-  const { error } = await sb.from("institutions").update(patch).eq("id", id);
+  const { error } = await sb.from("institutions").update(patch.website !== undefined ? { ...patch, website: safeUrl(patch.website) ?? "" } : patch).eq("id", id);
   if (error) throw error;
 }
 
