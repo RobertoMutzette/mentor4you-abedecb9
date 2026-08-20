@@ -79,8 +79,8 @@ function SettingsPage() {
       avatar_url: p.avatar_url, cover_url: p.cover_url,
       languages: p.languages, education: p.education, experience: p.experience,
       certifications: p.certifications, mentorship_topics: p.mentorship_topics,
-      social_instagram: p.social_instagram, social_facebook: p.social_facebook,
-      social_linkedin: p.social_linkedin, social_x: p.social_x, website: p.website,
+      social_instagram: p.social_instagram, social_facebook: safeUrl(p.social_facebook) ?? "",
+      social_linkedin: safeUrl(p.social_linkedin) ?? "", social_x: p.social_x, website: safeUrl(p.website) ?? "",
       contact_pref: p.contact_pref, availability_schedule: p.availability_schedule,
       profile_visibility: p.profile_visibility, show_email: p.show_email, allow_messages_from: p.allow_messages_from,
     }).eq("id", u.user.id);
