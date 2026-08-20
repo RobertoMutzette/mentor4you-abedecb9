@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Institution, Position } from "@/lib/institutions";
 import { LocationMap } from "@/components/LocationMap";
 import { Globe, Mail, MapPin, GraduationCap, ExternalLink } from "lucide-react";
+import { safeUrl } from "@/lib/safe-url";
 
 const sb = supabase as any;
 
@@ -42,7 +43,7 @@ function InstitutionPage() {
           </h1>
           <div className="mt-2 flex flex-wrap gap-3 text-sm text-muted-foreground">
             {inst.location_label && <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{inst.location_label}</span>}
-            {inst.website && <a href={inst.website} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 hover:text-primary"><Globe className="h-3.5 w-3.5" />Website</a>}
+            {safeUrl(inst.website) && <a href={safeUrl(inst.website)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 hover:text-primary"><Globe className="h-3.5 w-3.5" />Website</a>}
             {inst.contact_email && <a href={`mailto:${inst.contact_email}`} className="inline-flex items-center gap-1 hover:text-primary"><Mail className="h-3.5 w-3.5" />Contact</a>}
           </div>
         </div>

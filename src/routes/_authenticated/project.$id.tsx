@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { inviteToProject, leaveProject, postComment, postUpdate } from "@/lib/projects";
 import { ArrowLeft, Github, Globe, Loader2, MessageSquare, Megaphone, UserPlus, Users2, X, LogOut } from "lucide-react";
+import { safeUrl } from "@/lib/safe-url";
 
 export const Route = createFileRoute("/_authenticated/project/$id")({
   head: () => ({ meta: [{ title: "Project — Mentor4You" }] }),
@@ -89,10 +90,10 @@ function ProjectWorkspace() {
             )}
           </div>
         </div>
-        {(project.github_url || project.demo_url) && (
+        {(safeUrl(project.github_url) || safeUrl(project.demo_url)) && (
           <div className="mt-5 flex gap-4 text-sm font-medium">
-            {project.github_url && <a href={project.github_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 hover:text-primary"><Github className="h-4 w-4" /> Code</a>}
-            {project.demo_url && <a href={project.demo_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 hover:text-primary"><Globe className="h-4 w-4" /> Demo</a>}
+            {safeUrl(project.github_url) && <a href={safeUrl(project.github_url)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 hover:text-primary"><Github className="h-4 w-4" /> Code</a>}
+            {safeUrl(project.demo_url) && <a href={safeUrl(project.demo_url)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 hover:text-primary"><Globe className="h-4 w-4" /> Demo</a>}
           </div>
         )}
       </header>

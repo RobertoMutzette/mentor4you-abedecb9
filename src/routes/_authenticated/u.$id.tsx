@@ -7,6 +7,7 @@ import { blockUser, isBlocked, reportUser, unblockUser } from "@/lib/safety";
 import { followUser, unfollowUser, isFollowing, followCounts } from "@/lib/social";
 import { getOrCreateConversation } from "@/lib/messaging";
 import { ArrowUpRight, Award, Briefcase, Clock, Globe, GraduationCap, Instagram, Linkedin, Loader2, MapPin, Sparkles, Compass, Facebook, ShieldAlert, Ban, X, MessageSquare, UserPlus, UserCheck } from "lucide-react";
+import { safeUrl } from "@/lib/safe-url";
 
 export const Route = createFileRoute("/_authenticated/u/$id")({
   head: () => ({ meta: [{ title: "Profile — Mentor4You" }] }),
@@ -109,7 +110,7 @@ function ProfileBody({ profile, isMe, initials, edu, exp, sent, sending, blocked
     profile.social_x && { Icon: () => <span className="font-bold text-sm">𝕏</span>, url: profile.social_x.startsWith("http") ? profile.social_x : `https://x.com/${profile.social_x.replace(/^@/, "")}`, label: "X" },
     profile.social_instagram && { Icon: Instagram, url: profile.social_instagram.startsWith("http") ? profile.social_instagram : `https://instagram.com/${profile.social_instagram.replace(/^@/, "")}`, label: "Instagram" },
     profile.social_facebook && { Icon: Facebook, url: profile.social_facebook, label: "Facebook" },
-  ].filter(Boolean) as { Icon: any; url: string; label: string }[];
+  ].filter(Boolean).map((s: any) => ({ ...s, url: safeUrl(s.url) })).filter((s: any) => !!s.url) as { Icon: any; url: string; label: string }[];
   const certs = profile.certifications || [];
 
   return (
