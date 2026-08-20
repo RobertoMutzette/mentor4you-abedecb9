@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { togglePositionLike, togglePositionSave, type Position, type Institution } from "@/lib/institutions";
 import { Heart, Bookmark, MapPin, Calendar, ExternalLink, Send } from "lucide-react";
+import { safeUrl } from "@/lib/safe-url";
 
 const sb = supabase as any;
 
@@ -98,8 +99,8 @@ function PositionPage() {
         >
           <Bookmark className={`h-4 w-4 ${pos.saved_by_me ? "fill-current" : ""}`} /> Save
         </button>
-        {pos.apply_url && (
-          <a href={pos.apply_url} target="_blank" rel="noreferrer" className="ml-auto inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:opacity-90">
+        {safeUrl(pos.apply_url) && (
+          <a href={safeUrl(pos.apply_url)} target="_blank" rel="noreferrer" className="ml-auto inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:opacity-90">
             Apply <ExternalLink className="h-3.5 w-3.5" />
           </a>
         )}

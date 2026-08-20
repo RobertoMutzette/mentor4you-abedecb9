@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { fetchPositions, togglePositionLike, togglePositionSave, isInstitutionOwner, type PositionWithInstitution } from "@/lib/institutions";
 import { Heart, Bookmark, MapPin, ExternalLink, Calendar, Plus, GraduationCap, Building2 } from "lucide-react";
+import { safeUrl } from "@/lib/safe-url";
 
 export const Route = createFileRoute("/_authenticated/institutions")({
   head: () => ({ meta: [{ title: "Institutions — Mentor4You" }] }),
@@ -92,8 +93,8 @@ function InstitutionsFeed() {
                   <button onClick={() => onSave(p.id)} className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-secondary transition text-sm ${p.saved_by_me ? "text-primary" : ""}`}>
                     <Bookmark className={`h-4 w-4 ${p.saved_by_me ? "fill-current" : ""}`} /> Save
                   </button>
-                  {p.apply_url && (
-                    <a href={p.apply_url} target="_blank" rel="noreferrer" className="ml-auto inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:opacity-90">
+                  {safeUrl(p.apply_url) && (
+                    <a href={safeUrl(p.apply_url)} target="_blank" rel="noreferrer" className="ml-auto inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:opacity-90">
                       Apply <ExternalLink className="h-3.5 w-3.5" />
                     </a>
                   )}
