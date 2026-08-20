@@ -1,3 +1,4 @@
+import { safeUrl } from "@/lib/safe-url";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -140,8 +141,8 @@ function ProjectCard({ p, owner, mine, onEdit, onDelete }: { p: Project; owner?:
 
       <div className="mt-5 pt-4 border-t border-border flex items-center justify-between gap-3 text-sm font-medium">
         <div className="flex gap-3">
-          {p.github_url && <a href={p.github_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 hover:text-primary"><Github className="h-4 w-4" /> Code</a>}
-          {p.demo_url && <a href={p.demo_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 hover:text-primary"><Globe className="h-4 w-4" /> Demo</a>}
+          {safeUrl(p.github_url) && <a href={safeUrl(p.github_url)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 hover:text-primary"><Github className="h-4 w-4" /> Code</a>}
+          {safeUrl(p.demo_url) && <a href={safeUrl(p.demo_url)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 hover:text-primary"><Globe className="h-4 w-4" /> Demo</a>}
         </div>
         <Link to="/project/$id" params={{ id: p.id }} className="inline-flex items-center gap-1 text-primary hover:underline">Workspace <ArrowUpRight className="h-3.5 w-3.5" /></Link>
       </div>
@@ -192,8 +193,8 @@ function ProjectModal({ project, ownerId, onClose, onSaved }: { project: Project
       funding_raised: Number(f.funding_raised),
       tags: f.tags.split(",").map((s) => s.trim()).filter(Boolean),
       skills_needed: f.skills_needed.split(",").map((s) => s.trim()).filter(Boolean),
-      github_url: f.github_url.trim(),
-      demo_url: f.demo_url.trim(),
+      github_url: safeUrl(f.github_url) ?? "",
+      demo_url: safeUrl(f.demo_url) ?? "",
     };
     const res = project
       ? await supabase.from("projects").update(payload).eq("id", project.id)
