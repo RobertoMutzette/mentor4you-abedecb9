@@ -139,13 +139,65 @@ export type Database = {
         }
         Relationships: []
       }
-      institution_applications: {
+      funders: {
         Row: {
           contact_email: string
           created_at: string
           description: string
+          focus_areas: string[]
+          funder_type: string
+          id: string
+          location_label: string
+          logo_url: string
+          name: string
+          ticket_range: string
+          verified: boolean
+          website: string
+        }
+        Insert: {
+          contact_email?: string
+          created_at?: string
+          description?: string
+          focus_areas?: string[]
+          funder_type?: string
+          id?: string
+          location_label?: string
+          logo_url?: string
+          name: string
+          ticket_range?: string
+          verified?: boolean
+          website?: string
+        }
+        Update: {
+          contact_email?: string
+          created_at?: string
+          description?: string
+          focus_areas?: string[]
+          funder_type?: string
+          id?: string
+          location_label?: string
+          logo_url?: string
+          name?: string
+          ticket_range?: string
+          verified?: boolean
+          website?: string
+        }
+        Relationships: []
+      }
+      institution_applications: {
+        Row: {
+          contact_email: string
+          contact_name: string
+          contact_phone: string
+          contact_role: string
+          created_at: string
+          description: string
+          document_path: string
+          email_domain: string
           id: string
           institution_name: string
+          institution_type: string
+          registration_id: string
           reviewed_at: string | null
           status: string
           user_id: string
@@ -153,10 +205,17 @@ export type Database = {
         }
         Insert: {
           contact_email: string
+          contact_name?: string
+          contact_phone?: string
+          contact_role?: string
           created_at?: string
           description?: string
+          document_path?: string
+          email_domain?: string
           id?: string
           institution_name: string
+          institution_type?: string
+          registration_id?: string
           reviewed_at?: string | null
           status?: string
           user_id: string
@@ -164,16 +223,153 @@ export type Database = {
         }
         Update: {
           contact_email?: string
+          contact_name?: string
+          contact_phone?: string
+          contact_role?: string
           created_at?: string
           description?: string
+          document_path?: string
+          email_domain?: string
           id?: string
           institution_name?: string
+          institution_type?: string
+          registration_id?: string
           reviewed_at?: string | null
           status?: string
           user_id?: string
           website?: string
         }
         Relationships: []
+      }
+      institution_invites: {
+        Row: {
+          accepted_by: string | null
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          institution_id: string
+          invited_by: string
+          role: string
+          status: string
+          token: string
+        }
+        Insert: {
+          accepted_by?: string | null
+          created_at?: string
+          email: string
+          expires_at?: string
+          id?: string
+          institution_id: string
+          invited_by: string
+          role?: string
+          status?: string
+          token?: string
+        }
+        Update: {
+          accepted_by?: string | null
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          institution_id?: string
+          invited_by?: string
+          role?: string
+          status?: string
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "institution_invites_institution_id_fkey"
+            columns: ["institution_id"]
+            isOneToOne: false
+            referencedRelation: "institutions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      institution_members: {
+        Row: {
+          created_at: string
+          id: string
+          institution_id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          institution_id: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          institution_id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "institution_members_institution_id_fkey"
+            columns: ["institution_id"]
+            isOneToOne: false
+            referencedRelation: "institutions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      institution_pitches: {
+        Row: {
+          amount_requested: number
+          body: string
+          created_at: string
+          created_by: string
+          funder_id: string
+          id: string
+          institution_id: string
+          status: string
+          subject: string
+        }
+        Insert: {
+          amount_requested?: number
+          body: string
+          created_at?: string
+          created_by: string
+          funder_id: string
+          id?: string
+          institution_id: string
+          status?: string
+          subject: string
+        }
+        Update: {
+          amount_requested?: number
+          body?: string
+          created_at?: string
+          created_by?: string
+          funder_id?: string
+          id?: string
+          institution_id?: string
+          status?: string
+          subject?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "institution_pitches_funder_id_fkey"
+            columns: ["funder_id"]
+            isOneToOne: false
+            referencedRelation: "funders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "institution_pitches_institution_id_fkey"
+            columns: ["institution_id"]
+            isOneToOne: false
+            referencedRelation: "institutions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       institution_positions: {
         Row: {
@@ -249,13 +445,16 @@ export type Database = {
           cover_url: string
           created_at: string
           description: string
+          email_domain: string
           id: string
+          institution_type: string
           latitude: number | null
           location_label: string
           logo_url: string
           longitude: number | null
           name: string
           owner_id: string
+          registration_id: string
           slug: string | null
           updated_at: string
           verified: boolean
@@ -266,13 +465,16 @@ export type Database = {
           cover_url?: string
           created_at?: string
           description?: string
+          email_domain?: string
           id?: string
+          institution_type?: string
           latitude?: number | null
           location_label?: string
           logo_url?: string
           longitude?: number | null
           name: string
           owner_id: string
+          registration_id?: string
           slug?: string | null
           updated_at?: string
           verified?: boolean
@@ -283,13 +485,16 @@ export type Database = {
           cover_url?: string
           created_at?: string
           description?: string
+          email_domain?: string
           id?: string
+          institution_type?: string
           latitude?: number | null
           location_label?: string
           logo_url?: string
           longitude?: number | null
           name?: string
           owner_id?: string
+          registration_id?: string
           slug?: string | null
           updated_at?: string
           verified?: boolean
@@ -1022,6 +1227,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_institution_invite: { Args: { _token: string }; Returns: string }
       approve_institution_application: {
         Args: { _app_id: string }
         Returns: string
@@ -1032,6 +1238,14 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      is_institution_admin: {
+        Args: { _inst: string; _user: string }
+        Returns: boolean
+      }
+      is_institution_member: {
+        Args: { _inst: string; _user: string }
         Returns: boolean
       }
       is_project_member: {
