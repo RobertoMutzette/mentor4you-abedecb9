@@ -31,6 +31,7 @@ import { Route as AuthenticatedPartnersRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedProjectsRouteImport } from './routes/_authenticated/projects'
 import { Route as AuthenticatedRequestsRouteImport } from './routes/_authenticated/requests'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as InstitutionsJoinRouteImport } from './routes/institutions_.join'
 import { Route as SignupInstitutionRouteImport } from './routes/signup.institution'
 import { Route as AuthenticatedAdminInstitutionsRouteImport } from './routes/_authenticated/admin.institutions'
 import { Route as AuthenticatedInstitutionIdRouteImport } from './routes/_authenticated/institution.$id'
@@ -151,6 +152,11 @@ const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const InstitutionsJoinRoute = InstitutionsJoinRouteImport.update({
+  id: '/institutions_/join',
+  path: '/institutions/join',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignupInstitutionRoute = SignupInstitutionRouteImport.update({
   id: '/institution',
   path: '/institution',
@@ -217,6 +223,7 @@ export interface FileRoutesByFullPath {
   '/projects': typeof AuthenticatedProjectsRoute
   '/requests': typeof AuthenticatedRequestsRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/institutions/join': typeof InstitutionsJoinRoute
   '/signup/institution': typeof SignupInstitutionRoute
   '/admin/institutions': typeof AuthenticatedAdminInstitutionsRoute
   '/institution/$id': typeof AuthenticatedInstitutionIdRoute
@@ -248,6 +255,7 @@ export interface FileRoutesByTo {
   '/projects': typeof AuthenticatedProjectsRoute
   '/requests': typeof AuthenticatedRequestsRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/institutions/join': typeof InstitutionsJoinRoute
   '/signup/institution': typeof SignupInstitutionRoute
   '/admin/institutions': typeof AuthenticatedAdminInstitutionsRoute
   '/institution/$id': typeof AuthenticatedInstitutionIdRoute
@@ -281,6 +289,7 @@ export interface FileRoutesById {
   '/_authenticated/projects': typeof AuthenticatedProjectsRoute
   '/_authenticated/requests': typeof AuthenticatedRequestsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/institutions_/join': typeof InstitutionsJoinRoute
   '/signup/institution': typeof SignupInstitutionRoute
   '/_authenticated/admin/institutions': typeof AuthenticatedAdminInstitutionsRoute
   '/_authenticated/institution/$id': typeof AuthenticatedInstitutionIdRoute
@@ -314,6 +323,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/requests'
     | '/settings'
+    | '/institutions/join'
     | '/signup/institution'
     | '/admin/institutions'
     | '/institution/$id'
@@ -345,6 +355,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/requests'
     | '/settings'
+    | '/institutions/join'
     | '/signup/institution'
     | '/admin/institutions'
     | '/institution/$id'
@@ -377,6 +388,7 @@ export interface FileRouteTypes {
     | '/_authenticated/projects'
     | '/_authenticated/requests'
     | '/_authenticated/settings'
+    | '/institutions_/join'
     | '/signup/institution'
     | '/_authenticated/admin/institutions'
     | '/_authenticated/institution/$id'
@@ -399,6 +411,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRouteWithChildren
   TermsRoute: typeof TermsRoute
+  InstitutionsJoinRoute: typeof InstitutionsJoinRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -557,6 +570,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/institutions_/join': {
+      id: '/institutions_/join'
+      path: '/institutions/join'
+      fullPath: '/institutions/join'
+      preLoaderRoute: typeof InstitutionsJoinRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signup/institution': {
       id: '/signup/institution'
       path: '/institution'
@@ -697,6 +717,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRouteWithChildren,
   TermsRoute: TermsRoute,
+  InstitutionsJoinRoute: InstitutionsJoinRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -273,8 +273,8 @@ export async function listOrgMembers(institutionId: string): Promise<OrgMember[]
     .from("profiles")
     .select("id, full_name, headline, avatar_url")
     .in("id", members.map((m) => m.user_id));
-  const map = new Map((profiles || []).map((p: any) => [p.id, p]));
-  return members.map((m) => ({ ...m, profile: map.get(m.user_id) || null }));
+  const map = new Map<string, OrgMember["profile"]>((profiles || []).map((p: any) => [p.id as string, p]));
+  return members.map((m) => ({ ...m, profile: map.get(m.user_id) ?? null }));
 }
 
 export async function updateOrgMemberRole(memberId: string, role: OrgRole) {

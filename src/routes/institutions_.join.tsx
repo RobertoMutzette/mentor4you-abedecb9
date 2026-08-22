@@ -3,7 +3,7 @@ import {
   Building2, ShieldCheck, Users, Banknote, FileCheck2, Globe2, ArrowRight, CheckCircle2,
 } from "lucide-react";
 
-export const Route = createFileRoute("/institutions/join")({
+export const Route = createFileRoute("/institutions_/join")({
   head: () => ({
     meta: [
       { title: "Institutional Partnership — Mentor4You for universities" },
