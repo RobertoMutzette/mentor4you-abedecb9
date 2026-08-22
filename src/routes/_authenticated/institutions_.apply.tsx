@@ -9,7 +9,7 @@ import { uploadInstitutionDocument } from "@/lib/storage";
 import { Building2, ShieldCheck, Clock, CheckCircle2, XCircle, Upload } from "lucide-react";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/_authenticated/institutions/apply")({
+export const Route = createFileRoute("/_authenticated/institutions_/apply")({
   head: () => ({
     meta: [
       { title: "Request institutional partnership — Mentor4You" },
