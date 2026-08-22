@@ -93,10 +93,30 @@ export async function isInstitutionOwner(): Promise<Institution | null> {
   return (data as Institution) || null;
 }
 
-export async function submitInstitutionApplication(input: { institution_name: string; website: string; contact_email: string; description: string; }) {
+export type InstitutionApplicationInput = {
+  institution_name: string;
+  website: string;
+  contact_email: string;
+  description: string;
+  institution_type?: string;
+  email_domain?: string;
+  registration_id?: string;
+  document_path?: string;
+  contact_name?: string;
+  contact_role?: string;
+  contact_phone?: string;
+};
+
+export async function submitInstitutionApplication(input: InstitutionApplicationInput) {
   const { data: u } = await supabase.auth.getUser();
   if (!u.user) throw new Error("Not signed in");
-  const { error } = await sb.from("institution_applications").insert({ ...input, website: safeUrl(input.website) ?? "", user_id: u.user.id });
+  const { error } = await sb.from("institution_applications").insert({
+    institution_type: "", email_domain: "", registration_id: "", document_path: "",
+    contact_name: "", contact_role: "", contact_phone: "",
+    ...input,
+    website: safeUrl(input.website) ?? "",
+    user_id: u.user.id,
+  });
   if (error) throw error;
 }
 
@@ -159,5 +179,170 @@ export async function approveInstitutionApplication(appId: string) {
 
 export async function rejectInstitutionApplication(appId: string) {
   const { error } = await sb.rpc("reject_institution_application", { _app_id: appId });
+  if (error) throw error;
+}
+
+// ---------------------------------------------------------------------------
+// Multi-agent organization layer (institution members, invites, funders)
+// ---------------------------------------------------------------------------
+
+export type OrgRole = "org_admin" | "org_member";
+
+export type OrgMembership = {
+  institution: Institution;
+  role: OrgRole;
+  member_id: string;
+};
+
+export type OrgMember = {
+  id: string;
+  institution_id: string;
+  user_id: string;
+  role: OrgRole;
+  created_at: string;
+  profile?: { id: string; full_name: string; headline: string; avatar_url: string } | null;
+};
+
+export type OrgInvite = {
+  id: string;
+  institution_id: string;
+  email: string;
+  role: OrgRole;
+  token: string;
+  status: string;
+  expires_at: string;
+  created_at: string;
+};
+
+export type Funder = {
+  id: string;
+  name: string;
+  funder_type: string;
+  description: string;
+  focus_areas: string[];
+  ticket_range: string;
+  location_label: string;
+  website: string;
+  contact_email: string;
+  logo_url: string;
+  verified: boolean;
+};
+
+export type Pitch = {
+  id: string;
+  institution_id: string;
+  funder_id: string;
+  created_by: string;
+  subject: string;
+  body: string;
+  amount_requested: number;
+  status: string;
+  created_at: string;
+};
+
+/** The verified institution workspace the signed-in user belongs to (if any). */
+export async function myOrgMembership(): Promise<OrgMembership | null> {
+  const { data: u } = await supabase.auth.getUser();
+  if (!u.user) return null;
+  const { data: rows } = await sb
+    .from("institution_members")
+    .select("id, role, institution_id")
+    .eq("user_id", u.user.id)
+    .order("created_at", { ascending: true });
+  const membership = (rows || [])[0];
+  if (!membership) {
+    // legacy: owner without membership row
+    const inst = await isInstitutionOwner();
+    return inst ? { institution: inst, role: "org_admin", member_id: "" } : null;
+  }
+  const { data: inst } = await sb.from("institutions").select("*").eq("id", membership.institution_id).maybeSingle();
+  if (!inst) return null;
+  return { institution: inst as Institution, role: membership.role as OrgRole, member_id: membership.id };
+}
+
+export async function listOrgMembers(institutionId: string): Promise<OrgMember[]> {
+  const { data, error } = await sb
+    .from("institution_members")
+    .select("*")
+    .eq("institution_id", institutionId)
+    .order("created_at", { ascending: true });
+  if (error) throw error;
+  const members = (data || []) as OrgMember[];
+  if (members.length === 0) return [];
+  const { data: profiles } = await sb
+    .from("profiles")
+    .select("id, full_name, headline, avatar_url")
+    .in("id", members.map((m) => m.user_id));
+  const map = new Map<string, OrgMember["profile"]>((profiles || []).map((p: any) => [p.id as string, p]));
+  return members.map((m) => ({ ...m, profile: map.get(m.user_id) ?? null }));
+}
+
+export async function updateOrgMemberRole(memberId: string, role: OrgRole) {
+  const { error } = await sb.from("institution_members").update({ role }).eq("id", memberId);
+  if (error) throw error;
+}
+
+export async function removeOrgMember(memberId: string) {
+  const { error } = await sb.from("institution_members").delete().eq("id", memberId);
+  if (error) throw error;
+}
+
+export async function listOrgInvites(institutionId: string): Promise<OrgInvite[]> {
+  const { data, error } = await sb
+    .from("institution_invites")
+    .select("*")
+    .eq("institution_id", institutionId)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data || []) as OrgInvite[];
+}
+
+export async function createOrgInvite(institutionId: string, email: string, role: OrgRole): Promise<OrgInvite> {
+  const { data: u } = await supabase.auth.getUser();
+  if (!u.user) throw new Error("Not signed in");
+  const clean = email.trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean)) throw new Error("Enter a valid email address");
+  const { data, error } = await sb
+    .from("institution_invites")
+    .insert({ institution_id: institutionId, email: clean, role, invited_by: u.user.id })
+    .select("*")
+    .single();
+  if (error) throw error;
+  return data as OrgInvite;
+}
+
+export async function revokeOrgInvite(id: string) {
+  const { error } = await sb.from("institution_invites").delete().eq("id", id);
+  if (error) throw error;
+}
+
+export async function acceptOrgInvite(token: string): Promise<string> {
+  const { data, error } = await sb.rpc("accept_institution_invite", { _token: token });
+  if (error) throw error;
+  return data as string;
+}
+
+export async function listFunders(): Promise<Funder[]> {
+  const { data, error } = await sb.from("funders").select("*").order("name");
+  if (error) throw error;
+  return (data || []) as Funder[];
+}
+
+export async function listPitches(institutionId: string): Promise<Pitch[]> {
+  const { data, error } = await sb
+    .from("institution_pitches")
+    .select("*")
+    .eq("institution_id", institutionId)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data || []) as Pitch[];
+}
+
+export async function createPitch(input: {
+  institution_id: string; funder_id: string; subject: string; body: string; amount_requested: number;
+}) {
+  const { data: u } = await supabase.auth.getUser();
+  if (!u.user) throw new Error("Not signed in");
+  const { error } = await sb.from("institution_pitches").insert({ ...input, created_by: u.user.id });
   if (error) throw error;
 }
