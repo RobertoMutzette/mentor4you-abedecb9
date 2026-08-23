@@ -111,3 +111,29 @@ export async function checkRateLimit(action: string, max: number): Promise<boole
   if (error) return false;
   return !!data;
 }
+
+const ALLOWED_DOC_MIME: Record<string, string> = {
+  pdf: "application/pdf",
+  png: "image/png",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  webp: "image/webp",
+};
+
+/** Private verification document upload (institution vetting). */
+export async function uploadInstitutionDocument(file: File): Promise<string> {
+  const { data: u } = await supabase.auth.getUser();
+  if (!u.user) throw new Error("Not signed in");
+  if (file.size > MAX_UPLOAD_BYTES) throw new Error("File too large (max 10MB)");
+  const ext = (file.name.split(".").pop() || "").toLowerCase();
+  const mime = ALLOWED_DOC_MIME[ext];
+  if (!mime) throw new Error("Unsupported file type. Use PDF, JPG, PNG or WebP.");
+  if (file.type && file.type !== mime) throw new Error("File type does not match its extension.");
+  const path = `${u.user.id}/${crypto.randomUUID()}.${ext}`;
+  const { error } = await supabase.storage.from("institution-docs").upload(path, file, {
+    upsert: false,
+    contentType: mime,
+  });
+  if (error) throw error;
+  return path;
+}

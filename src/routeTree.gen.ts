@@ -37,6 +37,7 @@ import { Route as AuthenticatedAdminInstitutionsRouteImport } from './routes/_au
 import { Route as AuthenticatedInstitutionIdRouteImport } from './routes/_authenticated/institution.$id'
 import { Route as AuthenticatedInstitutionDashboardRouteImport } from './routes/_authenticated/institution.dashboard'
 import { Route as AuthenticatedInstitutionsApplyRouteImport } from './routes/_authenticated/institutions_.apply'
+import { Route as AuthenticatedInstitutionsDashboardRouteImport } from './routes/_authenticated/institutions_.dashboard'
 import { Route as AuthenticatedMessagesIdRouteImport } from './routes/_authenticated/messages.$id'
 import { Route as AuthenticatedPositionIdRouteImport } from './routes/_authenticated/position.$id'
 import { Route as AuthenticatedProjectIdRouteImport } from './routes/_authenticated/project.$id'
@@ -187,6 +188,12 @@ const AuthenticatedInstitutionsApplyRoute =
     path: '/institutions/apply',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedInstitutionsDashboardRoute =
+  AuthenticatedInstitutionsDashboardRouteImport.update({
+    id: '/institutions_/dashboard',
+    path: '/institutions/dashboard',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedMessagesIdRoute = AuthenticatedMessagesIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -236,6 +243,7 @@ export interface FileRoutesByFullPath {
   '/institution/$id': typeof AuthenticatedInstitutionIdRoute
   '/institution/dashboard': typeof AuthenticatedInstitutionDashboardRoute
   '/institutions/apply': typeof AuthenticatedInstitutionsApplyRoute
+  '/institutions/dashboard': typeof AuthenticatedInstitutionsDashboardRoute
   '/messages/$id': typeof AuthenticatedMessagesIdRoute
   '/position/$id': typeof AuthenticatedPositionIdRoute
   '/project/$id': typeof AuthenticatedProjectIdRoute
@@ -269,6 +277,7 @@ export interface FileRoutesByTo {
   '/institution/$id': typeof AuthenticatedInstitutionIdRoute
   '/institution/dashboard': typeof AuthenticatedInstitutionDashboardRoute
   '/institutions/apply': typeof AuthenticatedInstitutionsApplyRoute
+  '/institutions/dashboard': typeof AuthenticatedInstitutionsDashboardRoute
   '/messages/$id': typeof AuthenticatedMessagesIdRoute
   '/position/$id': typeof AuthenticatedPositionIdRoute
   '/project/$id': typeof AuthenticatedProjectIdRoute
@@ -304,6 +313,7 @@ export interface FileRoutesById {
   '/_authenticated/institution/$id': typeof AuthenticatedInstitutionIdRoute
   '/_authenticated/institution/dashboard': typeof AuthenticatedInstitutionDashboardRoute
   '/_authenticated/institutions_/apply': typeof AuthenticatedInstitutionsApplyRoute
+  '/_authenticated/institutions_/dashboard': typeof AuthenticatedInstitutionsDashboardRoute
   '/_authenticated/messages/$id': typeof AuthenticatedMessagesIdRoute
   '/_authenticated/position/$id': typeof AuthenticatedPositionIdRoute
   '/_authenticated/project/$id': typeof AuthenticatedProjectIdRoute
@@ -339,6 +349,7 @@ export interface FileRouteTypes {
     | '/institution/$id'
     | '/institution/dashboard'
     | '/institutions/apply'
+    | '/institutions/dashboard'
     | '/messages/$id'
     | '/position/$id'
     | '/project/$id'
@@ -372,6 +383,7 @@ export interface FileRouteTypes {
     | '/institution/$id'
     | '/institution/dashboard'
     | '/institutions/apply'
+    | '/institutions/dashboard'
     | '/messages/$id'
     | '/position/$id'
     | '/project/$id'
@@ -406,6 +418,7 @@ export interface FileRouteTypes {
     | '/_authenticated/institution/$id'
     | '/_authenticated/institution/dashboard'
     | '/_authenticated/institutions_/apply'
+    | '/_authenticated/institutions_/dashboard'
     | '/_authenticated/messages/$id'
     | '/_authenticated/position/$id'
     | '/_authenticated/project/$id'
@@ -625,6 +638,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedInstitutionsApplyRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/institutions_/dashboard': {
+      id: '/_authenticated/institutions_/dashboard'
+      path: '/institutions/dashboard'
+      fullPath: '/institutions/dashboard'
+      preLoaderRoute: typeof AuthenticatedInstitutionsDashboardRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/messages/$id': {
       id: '/_authenticated/messages/$id'
       path: '/$id'
@@ -685,6 +705,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedInstitutionIdRoute: typeof AuthenticatedInstitutionIdRoute
   AuthenticatedInstitutionDashboardRoute: typeof AuthenticatedInstitutionDashboardRoute
   AuthenticatedInstitutionsApplyRoute: typeof AuthenticatedInstitutionsApplyRoute
+  AuthenticatedInstitutionsDashboardRoute: typeof AuthenticatedInstitutionsDashboardRoute
   AuthenticatedPositionIdRoute: typeof AuthenticatedPositionIdRoute
   AuthenticatedProjectIdRoute: typeof AuthenticatedProjectIdRoute
   AuthenticatedUIdRoute: typeof AuthenticatedUIdRoute
@@ -707,6 +728,8 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedInstitutionDashboardRoute:
     AuthenticatedInstitutionDashboardRoute,
   AuthenticatedInstitutionsApplyRoute: AuthenticatedInstitutionsApplyRoute,
+  AuthenticatedInstitutionsDashboardRoute:
+    AuthenticatedInstitutionsDashboardRoute,
   AuthenticatedPositionIdRoute: AuthenticatedPositionIdRoute,
   AuthenticatedProjectIdRoute: AuthenticatedProjectIdRoute,
   AuthenticatedUIdRoute: AuthenticatedUIdRoute,
