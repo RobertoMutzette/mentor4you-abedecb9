@@ -17,7 +17,7 @@ import { toast } from "sonner";
 
 const sb = supabase as any;
 
-export const Route = createFileRoute("/_authenticated/institutions/dashboard")({
+export const Route = createFileRoute("/_authenticated/institutions_/dashboard")({
   head: () => ({
     meta: [
       { title: "Institutional workspace — Mentor4You" },
