@@ -19,7 +19,7 @@ export const Route = createFileRoute("/_authenticated/institutions_/invite/$toke
 });
 
 function AcceptInvitePage() {
-  const { token } = useParams({ from: "/_authenticated/institutions/invite/$token" });
+  const { token } = useParams({ from: "/_authenticated/institutions_/invite/$token" });
   const navigate = useNavigate();
   const [state, setState] = useState<"working" | "ok" | "error">("working");
   const [message, setMessage] = useState("");
