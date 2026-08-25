@@ -24,12 +24,11 @@ export const Route = createFileRoute("/_authenticated")({
   component: AuthLayout,
 });
 
-type NavItem = { to: string; label: string; Icon: typeof Home };
+type NavItem = { to: string; label: string; Icon: typeof Home; highlight?: boolean };
 const PRIMARY: NavItem[] = [
   { to: "/feed", label: "Feed", Icon: Sparkles },
-  { to: "/institutions", label: "Institutions", Icon: GraduationCap },
-  { to: "/mentors", label: "Mentors", Icon: Compass },
-  { to: "/partners", label: "Partners", Icon: Users2 },
+  { to: "/mentors", label: "Mentors", Icon: Compass, highlight: true },
+  { to: "/partners", label: "Partners", Icon: Users2, highlight: true },
   { to: "/dashboard", label: "Home", Icon: LayoutDashboard },
 ];
 
