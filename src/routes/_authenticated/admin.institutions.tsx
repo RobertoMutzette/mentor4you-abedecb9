@@ -4,7 +4,9 @@ import {
   isAdmin, listInstitutionApplications, approveInstitutionApplication,
   rejectInstitutionApplication, type InstitutionApplication,
 } from "@/lib/institutions";
-import { ShieldCheck, Check, X, Globe, Mail, Loader2 } from "lucide-react";
+import { ShieldCheck, Check, X, Globe, Mail, Loader2, FileText } from "lucide-react";
+import { safeUrl } from "@/lib/safe-url";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/admin/institutions")({
@@ -123,5 +125,29 @@ function AdminInstitutions() {
         </>
       )}
     </div>
+  );
+}
+
+function Detail({ label, value }: { label: string; value?: string }) {
+  return (
+    <div className="flex gap-1.5">
+      <dt className="font-medium text-muted-foreground">{label}:</dt>
+      <dd className="truncate">{value || "—"}</dd>
+    </div>
+  );
+}
+
+function DocumentLink({ path }: { path: string }) {
+  const [url, setUrl] = useState<string | null>(null);
+  useEffect(() => {
+    supabase.storage.from("institution-docs").createSignedUrl(path, 300)
+      .then(({ data }) => setUrl(data?.signedUrl ?? null));
+  }, [path]);
+  if (!url) return <div className="mt-3 text-xs text-muted-foreground">Verification document attached.</div>;
+  return (
+    <a href={url} target="_blank" rel="noreferrer"
+      className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-medium hover:bg-secondary">
+      <FileText className="h-3.5 w-3.5" /> View verification document
+    </a>
   );
 }
