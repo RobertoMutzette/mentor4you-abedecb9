@@ -24,12 +24,11 @@ export const Route = createFileRoute("/_authenticated")({
   component: AuthLayout,
 });
 
-type NavItem = { to: string; label: string; Icon: typeof Home };
+type NavItem = { to: string; label: string; Icon: typeof Home; highlight?: boolean };
 const PRIMARY: NavItem[] = [
   { to: "/feed", label: "Feed", Icon: Sparkles },
-  { to: "/institutions", label: "Institutions", Icon: GraduationCap },
-  { to: "/mentors", label: "Mentors", Icon: Compass },
-  { to: "/partners", label: "Partners", Icon: Users2 },
+  { to: "/mentors", label: "Mentors", Icon: Compass, highlight: true },
+  { to: "/partners", label: "Partners", Icon: Users2, highlight: true },
   { to: "/dashboard", label: "Home", Icon: LayoutDashboard },
 ];
 
@@ -202,11 +201,14 @@ function AuthLayout() {
         className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-card/85 backdrop-blur-xl rounded-full p-1.5 flex items-center gap-1 border border-border shadow-[0_20px_60px_-20px_oklch(0_0_0/0.25)]"
         aria-label="Primary"
       >
-        {PRIMARY.map(({ to, label, Icon }) => (
+        {PRIMARY.map(({ to, label, Icon, highlight }) => (
           <Link
             key={to}
             to={to}
-            className="group/nav inline-flex items-center gap-0 hover:gap-2 data-[status=active]:gap-2 px-4 py-3 rounded-full text-muted-foreground hover:bg-primary hover:text-primary-foreground data-[status=active]:bg-primary data-[status=active]:text-primary-foreground transition-[gap,background-color,color] duration-300 ease-out"
+            className={[
+              "group/nav inline-flex items-center gap-0 hover:gap-2 data-[status=active]:gap-2 px-4 py-3 rounded-full text-muted-foreground hover:bg-primary hover:text-primary-foreground data-[status=active]:bg-primary data-[status=active]:text-primary-foreground transition-[gap,background-color,color] duration-300 ease-out",
+              highlight ? "bg-primary/10 text-primary ring-1 ring-primary/40 hover:ring-primary" : "",
+            ].join(" ")}
           >
             <Icon className="h-5 w-5 shrink-0" />
             <span className="font-medium text-sm max-w-0 overflow-hidden whitespace-nowrap transition-[max-width] duration-300 ease-out group-hover/nav:max-w-24 group-data-[status=active]/nav:max-w-24">
