@@ -4,7 +4,9 @@ import {
   isAdmin, listInstitutionApplications, approveInstitutionApplication,
   rejectInstitutionApplication, type InstitutionApplication,
 } from "@/lib/institutions";
-import { ShieldCheck, Check, X, Globe, Mail, Loader2 } from "lucide-react";
+import { ShieldCheck, Check, X, Globe, Mail, Loader2, FileText } from "lucide-react";
+import { safeUrl } from "@/lib/safe-url";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/admin/institutions")({
@@ -81,11 +83,20 @@ function AdminInstitutions() {
           <article key={a.id} className="rounded-3xl border border-border bg-card p-5">
             <div className="font-display font-bold">{a.institution_name}</div>
             <div className="mt-1.5 flex flex-wrap gap-3 text-xs text-muted-foreground">
-              {a.website && <a href={a.website} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 hover:text-primary"><Globe className="h-3 w-3" />{a.website}</a>}
+              {safeUrl(a.website) && <a href={safeUrl(a.website)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 hover:text-primary"><Globe className="h-3 w-3" />{a.website}</a>}
               {a.contact_email && <a href={`mailto:${a.contact_email}`} className="inline-flex items-center gap-1 hover:text-primary"><Mail className="h-3 w-3" />{a.contact_email}</a>}
               <span>{new Date(a.created_at).toLocaleDateString()}</span>
             </div>
+            <dl className="mt-3 grid gap-x-4 gap-y-1 text-xs sm:grid-cols-2">
+              <Detail label="Type" value={a.institution_type} />
+              <Detail label="Official domain" value={a.email_domain ? `@${a.email_domain}` : ""} />
+              <Detail label="Registration / Tax ID" value={a.registration_id} />
+              <Detail label="Primary contact" value={[a.contact_name, a.contact_role].filter(Boolean).join(" · ")} />
+              <Detail label="Phone" value={a.contact_phone} />
+            </dl>
+            {a.document_path && <DocumentLink path={a.document_path} />}
             {a.description && <p className="mt-3 text-sm text-foreground/80 whitespace-pre-wrap">{a.description}</p>}
+
             <div className="mt-4 flex gap-2">
               <button disabled={busyId === a.id} onClick={() => act(a.id, true)}
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium disabled:opacity-50">
@@ -114,5 +125,29 @@ function AdminInstitutions() {
         </>
       )}
     </div>
+  );
+}
+
+function Detail({ label, value }: { label: string; value?: string }) {
+  return (
+    <div className="flex gap-1.5">
+      <dt className="font-medium text-muted-foreground">{label}:</dt>
+      <dd className="truncate">{value || "—"}</dd>
+    </div>
+  );
+}
+
+function DocumentLink({ path }: { path: string }) {
+  const [url, setUrl] = useState<string | null>(null);
+  useEffect(() => {
+    supabase.storage.from("institution-docs").createSignedUrl(path, 300)
+      .then(({ data }) => setUrl(data?.signedUrl ?? null));
+  }, [path]);
+  if (!url) return <div className="mt-3 text-xs text-muted-foreground">Verification document attached.</div>;
+  return (
+    <a href={url} target="_blank" rel="noreferrer"
+      className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-medium hover:bg-secondary">
+      <FileText className="h-3.5 w-3.5" /> View verification document
+    </a>
   );
 }

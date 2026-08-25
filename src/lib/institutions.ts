@@ -18,6 +18,9 @@ export type Institution = {
   verified: boolean;
   contact_email: string;
   created_at: string;
+  institution_type?: string;
+  email_domain?: string;
+  registration_id?: string;
 };
 
 export type Position = {
@@ -147,6 +150,13 @@ export type InstitutionApplication = {
   status: string;
   created_at: string;
   reviewed_at: string | null;
+  institution_type?: string;
+  email_domain?: string;
+  registration_id?: string;
+  document_path?: string;
+  contact_name?: string;
+  contact_role?: string;
+  contact_phone?: string;
 };
 
 export async function isAdmin(): Promise<boolean> {

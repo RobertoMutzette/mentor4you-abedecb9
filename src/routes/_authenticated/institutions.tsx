@@ -36,11 +36,11 @@ function InstitutionsFeed() {
           <p className="text-sm text-muted-foreground mt-1">Research positions, PhD, postdoc and internship openings.</p>
         </div>
         {ownedInst ? (
-          <Link to="/institution/dashboard" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition">
+          <Link to="/institutions/dashboard" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition">
             <Plus className="h-4 w-4" /> Post
           </Link>
         ) : (
-          <Link to="/signup/institution" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-border bg-card text-sm font-medium hover:bg-secondary transition">
+          <Link to="/institutions/join" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-border bg-card text-sm font-medium hover:bg-secondary transition">
             <Building2 className="h-4 w-4" /> Register institution
           </Link>
         )}
@@ -119,7 +119,7 @@ function EmptyState() {
       <GraduationCap className="h-8 w-8 mx-auto text-muted-foreground" />
       <h3 className="mt-3 font-display font-bold text-lg">No positions yet</h3>
       <p className="text-sm text-muted-foreground mt-1">Verified institutions post research opportunities here.</p>
-      <Link to="/signup/institution" className="inline-block mt-4 px-4 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium">Are you an institution?</Link>
+      <Link to="/institutions/join" className="inline-block mt-4 px-4 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium">Are you an institution?</Link>
     </div>
   );
 }
