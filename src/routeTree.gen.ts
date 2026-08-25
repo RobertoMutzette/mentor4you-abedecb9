@@ -42,6 +42,7 @@ import { Route as AuthenticatedMessagesIdRouteImport } from './routes/_authentic
 import { Route as AuthenticatedPositionIdRouteImport } from './routes/_authenticated/position.$id'
 import { Route as AuthenticatedProjectIdRouteImport } from './routes/_authenticated/project.$id'
 import { Route as AuthenticatedUIdRouteImport } from './routes/_authenticated/u.$id'
+import { Route as AuthenticatedInstitutionsInviteTokenRouteImport } from './routes/_authenticated/institutions_.invite.$token'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -214,6 +215,12 @@ const AuthenticatedUIdRoute = AuthenticatedUIdRouteImport.update({
   path: '/u/$id',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedInstitutionsInviteTokenRoute =
+  AuthenticatedInstitutionsInviteTokenRouteImport.update({
+    id: '/institutions_/invite/$token',
+    path: '/institutions/invite/$token',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -248,6 +255,7 @@ export interface FileRoutesByFullPath {
   '/position/$id': typeof AuthenticatedPositionIdRoute
   '/project/$id': typeof AuthenticatedProjectIdRoute
   '/u/$id': typeof AuthenticatedUIdRoute
+  '/institutions/invite/$token': typeof AuthenticatedInstitutionsInviteTokenRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -282,6 +290,7 @@ export interface FileRoutesByTo {
   '/position/$id': typeof AuthenticatedPositionIdRoute
   '/project/$id': typeof AuthenticatedProjectIdRoute
   '/u/$id': typeof AuthenticatedUIdRoute
+  '/institutions/invite/$token': typeof AuthenticatedInstitutionsInviteTokenRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -318,6 +327,7 @@ export interface FileRoutesById {
   '/_authenticated/position/$id': typeof AuthenticatedPositionIdRoute
   '/_authenticated/project/$id': typeof AuthenticatedProjectIdRoute
   '/_authenticated/u/$id': typeof AuthenticatedUIdRoute
+  '/_authenticated/institutions_/invite/$token': typeof AuthenticatedInstitutionsInviteTokenRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -354,6 +364,7 @@ export interface FileRouteTypes {
     | '/position/$id'
     | '/project/$id'
     | '/u/$id'
+    | '/institutions/invite/$token'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -388,6 +399,7 @@ export interface FileRouteTypes {
     | '/position/$id'
     | '/project/$id'
     | '/u/$id'
+    | '/institutions/invite/$token'
   id:
     | '__root__'
     | '/'
@@ -423,6 +435,7 @@ export interface FileRouteTypes {
     | '/_authenticated/position/$id'
     | '/_authenticated/project/$id'
     | '/_authenticated/u/$id'
+    | '/_authenticated/institutions_/invite/$token'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -673,6 +686,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedUIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/institutions_/invite/$token': {
+      id: '/_authenticated/institutions_/invite/$token'
+      path: '/institutions/invite/$token'
+      fullPath: '/institutions/invite/$token'
+      preLoaderRoute: typeof AuthenticatedInstitutionsInviteTokenRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
@@ -709,6 +729,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedPositionIdRoute: typeof AuthenticatedPositionIdRoute
   AuthenticatedProjectIdRoute: typeof AuthenticatedProjectIdRoute
   AuthenticatedUIdRoute: typeof AuthenticatedUIdRoute
+  AuthenticatedInstitutionsInviteTokenRoute: typeof AuthenticatedInstitutionsInviteTokenRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -733,6 +754,8 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedPositionIdRoute: AuthenticatedPositionIdRoute,
   AuthenticatedProjectIdRoute: AuthenticatedProjectIdRoute,
   AuthenticatedUIdRoute: AuthenticatedUIdRoute,
+  AuthenticatedInstitutionsInviteTokenRoute:
+    AuthenticatedInstitutionsInviteTokenRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(

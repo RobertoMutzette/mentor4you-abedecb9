@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { acceptOrgInvite } from "@/lib/institutions";
 import { Building2, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 
-export const Route = createFileRoute("/_authenticated/institutions/invite/$token")({
+export const Route = createFileRoute("/_authenticated/institutions_/invite/$token")({
   head: () => ({
     meta: [
       { title: "Join an institutional workspace — Mentor4You" },
