@@ -3,8 +3,8 @@ import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo.png";
 import {
-  LogOut, Users2, Rocket, Inbox, UserCog, Bell, Home,
-  Compass, ChevronDown, Sparkles, LayoutDashboard,
+  LogOut, Users2, Rocket, Inbox, UserCog, Bell, Home, MessageSquare,
+  Compass, ChevronDown, Sparkles, GraduationCap, LayoutDashboard, ShieldCheck,
 } from "lucide-react";
 import { markRead, type Notification } from "@/lib/notifications";
 import { isAdmin, isInstitutionOwner } from "@/lib/institutions";
