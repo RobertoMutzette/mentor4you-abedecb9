@@ -137,10 +137,21 @@ function PartnersPage() {
         <span className="text-xs text-muted-foreground ml-1">{ranked.length} result{ranked.length === 1 ? "" : "s"}</span>
       </div>
 
+      <NearbyBar
+        coords={coords}
+        source={source}
+        locating={locating}
+        locate={locate}
+        radius={radius}
+        setRadius={setRadius}
+      />
+
       {view === "map" ? (
         <div className="mb-6">
           <LocationMap
             height={520}
+            you={coords}
+            radiusKm={radius}
             markers={ranked
               .filter((p: any) => p.latitude && p.longitude)
               .map((p: any) => ({
@@ -148,7 +159,7 @@ function PartnersPage() {
                 latitude: p.latitude,
                 longitude: p.longitude,
                 title: p.full_name,
-                subtitle: p.headline || p.location_label || p.location || "",
+                subtitle: distanceFor(p) || p.headline || p.location_label || p.location || "",
                 href: `/u/${p.id}`,
               }))}
           />
@@ -160,9 +171,10 @@ function PartnersPage() {
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
 
         {ranked.map((p) => (
-          <PartnerCard key={p.id} p={p} alreadySent={sent.has(p.id)} onConnect={async () => {
+          <PartnerCard key={p.id} p={p} distance={distanceFor(p)} alreadySent={sent.has(p.id)} onConnect={async () => {
             await sendConnectionRequest(p.id);
             setSent((s) => new Set(s).add(p.id));
+
           }} />
         ))}
         {ranked.length === 0 && (
