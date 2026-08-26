@@ -91,23 +91,35 @@ function MentorsPage() {
         </div>
       </div>
 
+      <NearbyBar
+        coords={coords}
+        source={source}
+        locating={locating}
+        locate={locate}
+        radius={radius}
+        setRadius={setRadius}
+      />
+
       {view === "map" ? (
         <LocationMap
           height={520}
+          you={coords}
+          radiusKm={radius}
           markers={matches.filter((p: any) => p.latitude && p.longitude).map((p: any) => ({
             id: p.id, latitude: p.latitude, longitude: p.longitude,
-            title: p.full_name || "Mentor", subtitle: p.headline || p.role, href: `/u/${p.id}`,
+            title: p.full_name || "Mentor", subtitle: distanceFor(p) || p.headline || p.role, href: `/u/${p.id}`,
           }))}
         />
       ) : (
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
         {matches.map((p) => (
-          <MatchCard key={p.id} p={p} alreadySent={sent.has(p.id)} onConnect={async () => {
+          <MatchCard key={p.id} p={p} distance={distanceFor(p)} alreadySent={sent.has(p.id)} onConnect={async () => {
             await sendConnectionRequest(p.id);
             setSent((s) => new Set(s).add(p.id));
           }} />
         ))}
+
         {matches.length === 0 && (
           <div className="col-span-full rounded-3xl border border-dashed border-border p-10 text-center text-muted-foreground">
             No {targetRole} matches yet — check back soon.
