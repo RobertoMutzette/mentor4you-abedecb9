@@ -3,8 +3,11 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { rankMatches, type ProfileLite, type Scored } from "@/lib/matching";
 import { sendConnectionRequest } from "@/lib/connections";
-import { Sparkles, Compass, MapPin, ArrowUpRight, Check, Clock, Loader2, LayoutGrid, Map as MapIcon } from "lucide-react";
+import { Sparkles, Compass, MapPin, ArrowUpRight, Check, Clock, Loader2, LayoutGrid, Map as MapIcon, Crosshair } from "lucide-react";
 import { LocationMap } from "@/components/LocationMap";
+import { useMyLocation } from "@/hooks/useMyLocation";
+import { distanceKm, formatDistance } from "@/lib/geo";
+
 
 export const Route = createFileRoute("/_authenticated/mentors")({
   head: () => ({ meta: [{ title: "Mentors — Mentor4You" }] }),
