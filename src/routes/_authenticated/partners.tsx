@@ -69,8 +69,21 @@ function PartnersPage() {
         p.interests.some((s) => s.toLowerCase().includes(lc))
       );
     }
+    if (coords && radius) {
+      filtered = filtered.filter((p: any) =>
+        p.latitude && p.longitude
+          ? distanceKm(coords.latitude, coords.longitude, Number(p.latitude), Number(p.longitude)) <= radius
+          : false,
+      );
+    }
     return rankMatches(me, filtered, 60);
-  }, [me, pool, q, skillFilter]);
+  }, [me, pool, q, skillFilter, coords, radius]);
+
+  const distanceFor = (p: any) =>
+    coords && p.latitude && p.longitude
+      ? formatDistance(distanceKm(coords.latitude, coords.longitude, Number(p.latitude), Number(p.longitude)))
+      : null;
+
 
   if (loading) return <div className="mx-auto max-w-6xl px-6 py-16 text-muted-foreground flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Loading partners…</div>;
 
