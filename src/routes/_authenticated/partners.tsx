@@ -24,8 +24,11 @@ function PartnersPage() {
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<"list" | "map">("list");
   const [q, setQ] = useState("");
+  const [radius, setRadius] = useState<number | null>(null);
+  const { coords, source, locating, locate } = useMyLocation();
 
   const [skillFilter, setSkillFilter] = useState<string | null>(null);
+
 
   useEffect(() => {
     (async () => {
