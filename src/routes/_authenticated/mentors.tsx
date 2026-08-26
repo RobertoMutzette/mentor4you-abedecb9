@@ -23,6 +23,9 @@ function MentorsPage() {
   const [sent, setSent] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<"list" | "map">("list");
+  const [radius, setRadius] = useState<number | null>(null);
+  const { coords, source, locating, locate } = useMyLocation();
+
 
   useEffect(() => {
     (async () => {
