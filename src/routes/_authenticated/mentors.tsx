@@ -150,6 +150,7 @@ function MatchCard({ p, alreadySent, onConnect, distance }: { p: Scored<Profile>
               <span className="capitalize">{p.role}</span>
               {p.location && <><span>·</span><MapPin className="h-3 w-3" />{p.location}</>}
             </div>
+            {distance && <div className="text-[11px] text-primary font-medium mt-0.5">{distance}</div>}
           </div>
         </Link>
         <div className="text-right shrink-0">
