@@ -4,6 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { rankMatches, type ProfileLite, type Scored } from "@/lib/matching";
 import { sendConnectionRequest } from "@/lib/connections";
 import { LocationMap } from "@/components/LocationMap";
+import { NearbyBar } from "@/components/NearbyBar";
+import { useMyLocation } from "@/hooks/useMyLocation";
+import { distanceKm, formatDistance } from "@/lib/geo";
 import { ArrowUpRight, Check, Clock, Loader2, Map as MapIcon, MapPin, Rows3, Search, Sparkles, X } from "lucide-react";
 
 
