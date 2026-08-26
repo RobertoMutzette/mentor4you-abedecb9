@@ -4,7 +4,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { rankMatches, type ProfileLite, type Scored } from "@/lib/matching";
 import { sendConnectionRequest } from "@/lib/connections";
 import { Sparkles, Compass, MapPin, ArrowUpRight, Check, Clock, Loader2, LayoutGrid, Map as MapIcon } from "lucide-react";
+import { NearbyBar } from "@/components/NearbyBar";
 import { LocationMap } from "@/components/LocationMap";
+import { useMyLocation } from "@/hooks/useMyLocation";
+import { distanceKm, formatDistance } from "@/lib/geo";
+
 
 export const Route = createFileRoute("/_authenticated/mentors")({
   head: () => ({ meta: [{ title: "Mentors — Mentor4You" }] }),
@@ -20,6 +24,9 @@ function MentorsPage() {
   const [sent, setSent] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<"list" | "map">("list");
+  const [radius, setRadius] = useState<number | null>(null);
+  const { coords, source, locating, locate } = useMyLocation();
+
 
   useEffect(() => {
     (async () => {
@@ -41,9 +48,22 @@ function MentorsPage() {
   const targetRole = me?.role === "mentor" ? "mentee" : "mentor";
   const matches = useMemo(() => {
     if (!me) return [];
-    const pool = others.filter((o) => o.role === targetRole);
+    let pool = others.filter((o) => o.role === targetRole);
+    if (coords && radius) {
+      pool = pool.filter((o: any) =>
+        o.latitude && o.longitude
+          ? distanceKm(coords.latitude, coords.longitude, Number(o.latitude), Number(o.longitude)) <= radius
+          : false,
+      );
+    }
     return rankMatches(me, pool, 24);
-  }, [me, others, targetRole]);
+  }, [me, others, targetRole, coords, radius]);
+
+  const distanceFor = (p: any) =>
+    coords && p.latitude && p.longitude
+      ? formatDistance(distanceKm(coords.latitude, coords.longitude, Number(p.latitude), Number(p.longitude)))
+      : null;
+
 
   if (loading || !me) return (
     <div className="mx-auto max-w-6xl px-6 py-16 flex items-center gap-2 text-muted-foreground">
@@ -72,23 +92,35 @@ function MentorsPage() {
         </div>
       </div>
 
+      <NearbyBar
+        coords={coords}
+        source={source}
+        locating={locating}
+        locate={locate}
+        radius={radius}
+        setRadius={setRadius}
+      />
+
       {view === "map" ? (
         <LocationMap
           height={520}
+          you={coords}
+          radiusKm={radius}
           markers={matches.filter((p: any) => p.latitude && p.longitude).map((p: any) => ({
             id: p.id, latitude: p.latitude, longitude: p.longitude,
-            title: p.full_name || "Mentor", subtitle: p.headline || p.role, href: `/u/${p.id}`,
+            title: p.full_name || "Mentor", subtitle: distanceFor(p) || p.headline || p.role, href: `/u/${p.id}`,
           }))}
         />
       ) : (
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
         {matches.map((p) => (
-          <MatchCard key={p.id} p={p} alreadySent={sent.has(p.id)} onConnect={async () => {
+          <MatchCard key={p.id} p={p} distance={distanceFor(p)} alreadySent={sent.has(p.id)} onConnect={async () => {
             await sendConnectionRequest(p.id);
             setSent((s) => new Set(s).add(p.id));
           }} />
         ))}
+
         {matches.length === 0 && (
           <div className="col-span-full rounded-3xl border border-dashed border-border p-10 text-center text-muted-foreground">
             No {targetRole} matches yet — check back soon.
@@ -100,7 +132,7 @@ function MentorsPage() {
   );
 }
 
-function MatchCard({ p, alreadySent, onConnect }: { p: Scored<Profile>; alreadySent: boolean; onConnect: () => Promise<void> }) {
+function MatchCard({ p, alreadySent, onConnect, distance }: { p: Scored<Profile>; alreadySent: boolean; onConnect: () => Promise<void>; distance?: string | null }) {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(alreadySent);
   const initials = p.full_name.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase() || "?";
@@ -118,6 +150,7 @@ function MatchCard({ p, alreadySent, onConnect }: { p: Scored<Profile>; alreadyS
               <span className="capitalize">{p.role}</span>
               {p.location && <><span>·</span><MapPin className="h-3 w-3" />{p.location}</>}
             </div>
+            {distance && <div className="text-[11px] text-primary font-medium mt-0.5">{distance}</div>}
           </div>
         </Link>
         <div className="text-right shrink-0">

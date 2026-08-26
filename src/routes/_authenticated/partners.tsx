@@ -4,6 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { rankMatches, type ProfileLite, type Scored } from "@/lib/matching";
 import { sendConnectionRequest } from "@/lib/connections";
 import { LocationMap } from "@/components/LocationMap";
+import { NearbyBar } from "@/components/NearbyBar";
+import { useMyLocation } from "@/hooks/useMyLocation";
+import { distanceKm, formatDistance } from "@/lib/geo";
 import { ArrowUpRight, Check, Clock, Loader2, Map as MapIcon, MapPin, Rows3, Search, Sparkles, X } from "lucide-react";
 
 
@@ -21,8 +24,11 @@ function PartnersPage() {
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<"list" | "map">("list");
   const [q, setQ] = useState("");
+  const [radius, setRadius] = useState<number | null>(null);
+  const { coords, source, locating, locate } = useMyLocation();
 
   const [skillFilter, setSkillFilter] = useState<string | null>(null);
+
 
   useEffect(() => {
     (async () => {
@@ -63,8 +69,21 @@ function PartnersPage() {
         p.interests.some((s) => s.toLowerCase().includes(lc))
       );
     }
+    if (coords && radius) {
+      filtered = filtered.filter((p: any) =>
+        p.latitude && p.longitude
+          ? distanceKm(coords.latitude, coords.longitude, Number(p.latitude), Number(p.longitude)) <= radius
+          : false,
+      );
+    }
     return rankMatches(me, filtered, 60);
-  }, [me, pool, q, skillFilter]);
+  }, [me, pool, q, skillFilter, coords, radius]);
+
+  const distanceFor = (p: any) =>
+    coords && p.latitude && p.longitude
+      ? formatDistance(distanceKm(coords.latitude, coords.longitude, Number(p.latitude), Number(p.longitude)))
+      : null;
+
 
   if (loading) return <div className="mx-auto max-w-6xl px-6 py-16 text-muted-foreground flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Loading partners…</div>;
 
@@ -118,10 +137,21 @@ function PartnersPage() {
         <span className="text-xs text-muted-foreground ml-1">{ranked.length} result{ranked.length === 1 ? "" : "s"}</span>
       </div>
 
+      <NearbyBar
+        coords={coords}
+        source={source}
+        locating={locating}
+        locate={locate}
+        radius={radius}
+        setRadius={setRadius}
+      />
+
       {view === "map" ? (
         <div className="mb-6">
           <LocationMap
             height={520}
+            you={coords}
+            radiusKm={radius}
             markers={ranked
               .filter((p: any) => p.latitude && p.longitude)
               .map((p: any) => ({
@@ -129,7 +159,7 @@ function PartnersPage() {
                 latitude: p.latitude,
                 longitude: p.longitude,
                 title: p.full_name,
-                subtitle: p.headline || p.location_label || p.location || "",
+                subtitle: distanceFor(p) || p.headline || p.location_label || p.location || "",
                 href: `/u/${p.id}`,
               }))}
           />
@@ -141,9 +171,10 @@ function PartnersPage() {
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
 
         {ranked.map((p) => (
-          <PartnerCard key={p.id} p={p} alreadySent={sent.has(p.id)} onConnect={async () => {
+          <PartnerCard key={p.id} p={p} distance={distanceFor(p)} alreadySent={sent.has(p.id)} onConnect={async () => {
             await sendConnectionRequest(p.id);
             setSent((s) => new Set(s).add(p.id));
+
           }} />
         ))}
         {ranked.length === 0 && (
