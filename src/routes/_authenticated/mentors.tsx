@@ -47,9 +47,22 @@ function MentorsPage() {
   const targetRole = me?.role === "mentor" ? "mentee" : "mentor";
   const matches = useMemo(() => {
     if (!me) return [];
-    const pool = others.filter((o) => o.role === targetRole);
+    let pool = others.filter((o) => o.role === targetRole);
+    if (coords && radius) {
+      pool = pool.filter((o: any) =>
+        o.latitude && o.longitude
+          ? distanceKm(coords.latitude, coords.longitude, Number(o.latitude), Number(o.longitude)) <= radius
+          : false,
+      );
+    }
     return rankMatches(me, pool, 24);
-  }, [me, others, targetRole]);
+  }, [me, others, targetRole, coords, radius]);
+
+  const distanceFor = (p: any) =>
+    coords && p.latitude && p.longitude
+      ? formatDistance(distanceKm(coords.latitude, coords.longitude, Number(p.latitude), Number(p.longitude)))
+      : null;
+
 
   if (loading || !me) return (
     <div className="mx-auto max-w-6xl px-6 py-16 flex items-center gap-2 text-muted-foreground">
