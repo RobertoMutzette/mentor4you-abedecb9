@@ -189,7 +189,7 @@ function PartnersPage() {
   );
 }
 
-function PartnerCard({ p, alreadySent, onConnect }: { p: Scored<ProfileLite>; alreadySent: boolean; onConnect: () => Promise<void> }) {
+function PartnerCard({ p, alreadySent, onConnect, distance }: { p: Scored<ProfileLite>; alreadySent: boolean; onConnect: () => Promise<void>; distance?: string | null }) {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(alreadySent);
   const initials = p.full_name.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase() || "?";
