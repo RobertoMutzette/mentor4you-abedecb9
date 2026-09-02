@@ -204,6 +204,7 @@ function PartnerCard({ p, alreadySent, onConnect, distance }: { p: Scored<Profil
             <div className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5 capitalize">
               {p.role}{p.location && <><span>·</span><MapPin className="h-3 w-3" />{p.location}</>}
             </div>
+            {distance && <div className="text-[11px] text-primary font-medium mt-0.5">{distance}</div>}
           </div>
         </Link>
         <div className="text-right shrink-0">
