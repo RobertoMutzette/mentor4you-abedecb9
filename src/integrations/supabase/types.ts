@@ -1069,11 +1069,14 @@ export type Database = {
           milestones: Json
           owner_id: string
           pitch: string
+          published_at: string | null
+          share_fields: Json
           skills_needed: string[]
           status: string
           tags: string[]
           title: string
           updated_at: string
+          visibility: string
         }
         Insert: {
           completion_percentage?: number
@@ -1091,11 +1094,14 @@ export type Database = {
           milestones?: Json
           owner_id: string
           pitch?: string
+          published_at?: string | null
+          share_fields?: Json
           skills_needed?: string[]
           status?: string
           tags?: string[]
           title: string
           updated_at?: string
+          visibility?: string
         }
         Update: {
           completion_percentage?: number
@@ -1113,11 +1119,14 @@ export type Database = {
           milestones?: Json
           owner_id?: string
           pitch?: string
+          published_at?: string | null
+          share_fields?: Json
           skills_needed?: string[]
           status?: string
           tags?: string[]
           title?: string
           updated_at?: string
+          visibility?: string
         }
         Relationships: [
           {
