@@ -25,7 +25,20 @@ export type PostProject = {
   completion_percentage: number;
   tags: string[];
   cover_image_url: string;
+  pitch: string;
+  funding_goal: number;
+  funding_raised: number;
+  milestones: any;
+  github_url: string;
+  demo_url: string;
+  location_label: string;
+  skills_needed: string[];
+  visibility: string;
+  share_fields: any;
 };
+
+export const PROJECT_SELECT =
+  "id, title, description, status, completion_percentage, tags, cover_image_url, pitch, funding_goal, funding_raised, milestones, github_url, demo_url, location_label, skills_needed, visibility, share_fields";
 
 export type PostWithAuthor = Post & {
   author: { id: string; full_name: string; avatar_url: string; headline: string } | null;
