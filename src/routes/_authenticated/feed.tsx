@@ -135,7 +135,40 @@ function ComposerModal({ me, onClose, onPosted }: { me: any; onClose: () => void
             )}
           </div>
 
-          <Composer me={me} projectId={projectId} onPosted={onPosted} autoFocus />
+          {projectId && (
+            <div className="rounded-2xl border border-border p-4">
+              <div className="flex items-center gap-2 mb-1">
+                <Lock className="h-3.5 w-3.5 text-primary" />
+                <div className="text-xs font-semibold">What should people see?</div>
+              </div>
+              <p className="text-[11px] text-muted-foreground mb-3">Anything you switch off stays private to you and your team.</p>
+              <div className="grid gap-2">
+                {SHARE_FIELD_LABELS.map(({ key, label, hint }) => (
+                  <label key={key} className="flex items-start gap-2.5 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={shareFields[key]}
+                      onChange={(e) => setShareFields({ ...shareFields, [key]: e.target.checked })}
+                      className="mt-0.5 h-4 w-4 accent-[oklch(0.42_0.28_264)]"
+                    />
+                    <span className="min-w-0">
+                      <span className="block text-sm font-medium leading-tight">{label}</span>
+                      <span className="block text-[11px] text-muted-foreground">{hint}</span>
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <Composer
+            me={me}
+            projectId={projectId}
+            requireProject
+            beforeSubmit={async () => { if (projectId) await publishProject(projectId, shareFields); }}
+            onPosted={onPosted}
+            autoFocus
+          />
         </div>
       </div>
     </div>
