@@ -10,8 +10,10 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Heart, MessageCircle, Repeat2, Image as ImageIcon, X, Send, Plus, Rocket } from "lucide-react";
+import { Heart, MessageCircle, Repeat2, Image as ImageIcon, X, Send, Plus, Rocket, Lock } from "lucide-react";
+import { SHARE_FIELD_LABELS, DEFAULT_SHARE_FIELDS, normalizeShareFields, publishProject, type ShareFields } from "@/lib/project-visibility";
 import { toast } from "sonner";
+import { safeUrl } from "@/lib/safe-url";
 
 export const Route = createFileRoute("/_authenticated/feed")({
   head: () => ({
@@ -91,6 +93,7 @@ function ComposerModal({ me, onClose, onPosted }: { me: any; onClose: () => void
   const [projects, setProjects] = useState<PostProject[]>([]);
   const [projectId, setProjectId] = useState<string | null>(null);
   const [loadingProjects, setLoadingProjects] = useState(true);
+  const [shareFields, setShareFields] = useState<ShareFields>(DEFAULT_SHARE_FIELDS);
 
   useEffect(() => {
     fetchMyProjects().then((p) => { setProjects(p); setLoadingProjects(false); }).catch(() => setLoadingProjects(false));
@@ -107,7 +110,7 @@ function ComposerModal({ me, onClose, onPosted }: { me: any; onClose: () => void
 
         <div className="p-5 space-y-4">
           <div>
-            <div className="text-xs font-medium text-muted-foreground mb-2">Share one of your projects (optional)</div>
+            <div className="text-xs font-medium text-muted-foreground mb-2">Choose the project you want to share</div>
             {loadingProjects ? (
               <div className="text-sm text-muted-foreground">Loading your projects…</div>
             ) : projects.length === 0 ? (
@@ -120,7 +123,11 @@ function ComposerModal({ me, onClose, onPosted }: { me: any; onClose: () => void
                 {projects.map((p) => (
                   <button
                     key={p.id}
-                    onClick={() => setProjectId(projectId === p.id ? null : p.id)}
+                    onClick={() => {
+                      const next = projectId === p.id ? null : p.id;
+                      setProjectId(next);
+                      if (next) setShareFields(normalizeShareFields(p.share_fields));
+                    }}
                     className={`w-full text-left rounded-2xl border p-3 transition ${projectId === p.id ? "border-primary bg-primary/5" : "border-border hover:bg-secondary"}`}
                   >
                     <div className="flex items-center gap-2">
@@ -135,26 +142,60 @@ function ComposerModal({ me, onClose, onPosted }: { me: any; onClose: () => void
             )}
           </div>
 
-          <Composer me={me} projectId={projectId} onPosted={onPosted} autoFocus />
+          {projectId && (
+            <div className="rounded-2xl border border-border p-4">
+              <div className="flex items-center gap-2 mb-1">
+                <Lock className="h-3.5 w-3.5 text-primary" />
+                <div className="text-xs font-semibold">What should people see?</div>
+              </div>
+              <p className="text-[11px] text-muted-foreground mb-3">Anything you switch off stays private to you and your team.</p>
+              <div className="grid gap-2">
+                {SHARE_FIELD_LABELS.map(({ key, label, hint }) => (
+                  <label key={key} className="flex items-start gap-2.5 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={shareFields[key]}
+                      onChange={(e) => setShareFields({ ...shareFields, [key]: e.target.checked })}
+                      className="mt-0.5 h-4 w-4 accent-[oklch(0.42_0.28_264)]"
+                    />
+                    <span className="min-w-0">
+                      <span className="block text-sm font-medium leading-tight">{label}</span>
+                      <span className="block text-[11px] text-muted-foreground">{hint}</span>
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <Composer
+            me={me}
+            projectId={projectId}
+            requireProject
+            beforeSubmit={async () => { if (projectId) await publishProject(projectId, shareFields); }}
+            onPosted={onPosted}
+            autoFocus
+          />
         </div>
       </div>
     </div>
   );
 }
 
-function Composer({ me, onPosted, repostOf, projectId, autoFocus }: { me: any; onPosted: () => void; repostOf?: string; projectId?: string | null; autoFocus?: boolean }) {
+function Composer({ me, onPosted, repostOf, projectId, autoFocus, requireProject, beforeSubmit }: { me: any; onPosted: () => void; repostOf?: string; projectId?: string | null; autoFocus?: boolean; requireProject?: boolean; beforeSubmit?: () => Promise<void> }) {
   const [body, setBody] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [busy, setBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const avatar = useSignedImage("avatars", me?.avatar_url);
 
-  const canSubmit = !!body.trim() || files.length > 0 || !!repostOf || !!projectId;
+  const canSubmit = requireProject ? !!projectId : (!!body.trim() || files.length > 0 || !!repostOf);
 
   const submit = async () => {
     if (!canSubmit) return;
     setBusy(true);
     try {
+      if (beforeSubmit) await beforeSubmit();
       const media_urls: string[] = [];
       for (const f of files) media_urls.push(await uploadPostMedia(f));
       await createPost({ body: body.trim(), media_urls, repost_of: repostOf, project_id: projectId ?? null });
@@ -174,7 +215,7 @@ function Composer({ me, onPosted, repostOf, projectId, autoFocus }: { me: any; o
         </Avatar>
         <div className="flex-1 space-y-2">
           <Textarea value={body} onChange={(e)=>setBody(e.target.value)} autoFocus={autoFocus}
-            placeholder={repostOf ? "Add a comment to your repost…" : "What are you building? Use #tags and @mentions."}
+            placeholder={repostOf ? "Add a comment to your repost…" : requireProject ? "Say something about this project… #tags @mentions" : "What are you building? Use #tags and @mentions."}
             className="min-h-[80px] border-0 focus-visible:ring-0 px-0 resize-none text-base" />
           {files.length > 0 && (
             <div className="grid grid-cols-3 gap-2">
@@ -242,24 +283,7 @@ function PostCard({ post, onChange }: { post: PostWithAuthor; onChange: () => vo
 
       {post.body && <PostBody body={post.body} />}
 
-      {post.project && (
-        <Link to="/project/$id" params={{ id: post.project.id }} className="block rounded-2xl border border-border hover:border-primary transition overflow-hidden">
-          {post.project.cover_image_url && (
-            <img src={post.project.cover_image_url} alt="" className="w-full h-36 object-cover" loading="lazy" />
-          )}
-          <div className="p-4">
-            <div className="flex items-center gap-2">
-              <Rocket className="h-4 w-4 text-primary" />
-              <span className="font-display font-bold text-sm truncate">{post.project.title}</span>
-              <span className="ml-auto text-[11px] uppercase tracking-widest text-muted-foreground">{post.project.status}</span>
-            </div>
-            {post.project.description && <p className="text-xs text-muted-foreground line-clamp-2 mt-1.5">{post.project.description}</p>}
-            <div className="mt-3 h-1.5 rounded-full bg-secondary overflow-hidden">
-              <div className="h-full bg-primary" style={{ width: `${post.project.completion_percentage}%` }} />
-            </div>
-          </div>
-        </Link>
-      )}
+      {post.project && <ProjectPostCard project={post.project} />}
 
       {post.media_urls.length > 0 && <MediaGrid paths={post.media_urls} />}
 
@@ -353,5 +377,74 @@ function Comments({ postId }: { postId: string }) {
         </div>
       ))}
     </div>
+  );
+}
+
+function ProjectPostCard({ project }: { project: PostProject }) {
+  const sf = normalizeShareFields(project.share_fields);
+  const funding = Number(project.funding_goal || 0);
+  const raised = Number(project.funding_raised || 0);
+  const milestones = Array.isArray(project.milestones) ? project.milestones : [];
+  return (
+    <Link to="/project/$id" params={{ id: project.id }} className="block rounded-2xl border border-border hover:border-primary transition overflow-hidden">
+      {project.cover_image_url && (
+        <img src={project.cover_image_url} alt={project.title} className="w-full h-36 object-cover" loading="lazy" />
+      )}
+      <div className="p-4 space-y-2">
+        <div className="flex items-center gap-2">
+          <Rocket className="h-4 w-4 text-primary shrink-0" />
+          <span className="font-display font-bold text-sm truncate">{project.title}</span>
+          {sf.progress && <span className="ml-auto text-[11px] uppercase tracking-widest text-muted-foreground shrink-0">{project.status}</span>}
+        </div>
+
+        {sf.description && project.description && (
+          <p className="text-xs text-muted-foreground line-clamp-3">{project.description}</p>
+        )}
+        {sf.pitch && project.pitch && (
+          <p className="text-xs italic text-foreground/80 line-clamp-3">"{project.pitch}"</p>
+        )}
+        {sf.location && project.location_label && (
+          <div className="text-[11px] text-muted-foreground">{project.location_label}</div>
+        )}
+
+        {sf.tags && (project.tags?.length || project.skills_needed?.length) > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {[...(project.tags || []), ...(project.skills_needed || [])].slice(0, 6).map((t) => (
+              <span key={t} className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-muted-foreground">{t}</span>
+            ))}
+          </div>
+        )}
+
+        {sf.progress && (
+          <div className="pt-1">
+            <div className="h-1.5 rounded-full bg-secondary overflow-hidden">
+              <div className="h-full bg-primary" style={{ width: `${project.completion_percentage}%` }} />
+            </div>
+            <div className="text-[10px] text-muted-foreground mt-1">{project.completion_percentage}% complete</div>
+          </div>
+        )}
+
+        {sf.funding && funding > 0 && (
+          <div className="text-[11px] text-muted-foreground">
+            Funding: {raised.toLocaleString()} / {funding.toLocaleString()}
+          </div>
+        )}
+
+        {sf.milestones && milestones.length > 0 && (
+          <ul className="text-[11px] text-muted-foreground list-disc pl-4 space-y-0.5">
+            {milestones.slice(0, 3).map((m: any, i: number) => (
+              <li key={i}>{typeof m === "string" ? m : m?.title || m?.name}</li>
+            ))}
+          </ul>
+        )}
+
+        {sf.links && (safeUrl(project.github_url) || safeUrl(project.demo_url)) && (
+          <div className="flex gap-3 text-[11px] font-medium text-primary pt-1">
+            {safeUrl(project.github_url) && <span>Code</span>}
+            {safeUrl(project.demo_url) && <span>Demo</span>}
+          </div>
+        )}
+      </div>
+    </Link>
   );
 }

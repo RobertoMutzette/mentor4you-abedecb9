@@ -25,7 +25,20 @@ export type PostProject = {
   completion_percentage: number;
   tags: string[];
   cover_image_url: string;
+  pitch: string;
+  funding_goal: number;
+  funding_raised: number;
+  milestones: any;
+  github_url: string;
+  demo_url: string;
+  location_label: string;
+  skills_needed: string[];
+  visibility: string;
+  share_fields: any;
 };
+
+export const PROJECT_SELECT =
+  "id, title, description, status, completion_percentage, tags, cover_image_url, pitch, funding_goal, funding_raised, milestones, github_url, demo_url, location_label, skills_needed, visibility, share_fields";
 
 export type PostWithAuthor = Post & {
   author: { id: string; full_name: string; avatar_url: string; headline: string } | null;
@@ -162,7 +175,7 @@ async function attachAuthors(rows: any[]): Promise<PostWithAuthor[]> {
   let projectMap = new Map<string, PostProject>();
   if (projectIds.length > 0) {
     const { data: projects } = await sb.from("projects")
-      .select("id, title, description, status, completion_percentage, tags, cover_image_url")
+      .select(PROJECT_SELECT)
       .in("id", projectIds);
     projectMap = new Map((projects || []).map((p: any) => [p.id, p as PostProject]));
   }
@@ -306,7 +319,7 @@ export async function fetchMyProjects(): Promise<PostProject[]> {
   const { data: u } = await supabase.auth.getUser();
   if (!u.user) return [];
   const { data } = await sb.from("projects")
-    .select("id, title, description, status, completion_percentage, tags, cover_image_url")
+    .select(PROJECT_SELECT)
     .eq("owner_id", u.user.id)
     .order("created_at", { ascending: false });
   return (data || []) as PostProject[];

@@ -2,8 +2,10 @@ import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { inviteToProject, leaveProject, postComment, postUpdate } from "@/lib/projects";
-import { ArrowLeft, Github, Globe, Loader2, MessageSquare, Megaphone, UserPlus, Users2, X, LogOut } from "lucide-react";
+import { ArrowLeft, Github, Globe, Globe2, Lock, Loader2, MessageSquare, Megaphone, UserPlus, Users2, X, LogOut } from "lucide-react";
 import { safeUrl } from "@/lib/safe-url";
+import { SHARE_FIELD_LABELS, normalizeShareFields, publishProject, unpublishProject, updateShareFields, type ShareFields } from "@/lib/project-visibility";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/project/$id")({
   head: () => ({ meta: [{ title: "Project — Mentor4You" }] }),
@@ -21,6 +23,7 @@ function ProjectWorkspace() {
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<"updates" | "discussion" | "team">("updates");
   const [showInvite, setShowInvite] = useState(false);
+  const [showVisibility, setShowVisibility] = useState(false);
 
   const load = async () => {
     const { data: u } = await supabase.auth.getUser();
@@ -79,6 +82,11 @@ function ProjectWorkspace() {
           </div>
           <div className="flex gap-2">
             {isOwner && (
+              <button onClick={() => setShowVisibility(true)} className={`inline-flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-full border transition ${project.visibility === "public" ? "border-primary text-primary bg-primary/5" : "border-border hover:bg-secondary"}`}>
+                {project.visibility === "public" ? <><Globe2 className="h-4 w-4" /> Public</> : <><Lock className="h-4 w-4" /> Private</>}
+              </button>
+            )}
+            {isOwner && (
               <button onClick={() => setShowInvite(true)} className="inline-flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-full bg-foreground text-background hover:opacity-90 transition">
                 <UserPlus className="h-4 w-4" /> Invite
               </button>
@@ -111,6 +119,7 @@ function ProjectWorkspace() {
       </div>
 
       {showInvite && <InviteModal projectId={id} onClose={() => setShowInvite(false)} />}
+      {showVisibility && <VisibilityModal project={project} onClose={() => setShowVisibility(false)} onSaved={load} />}
     </div>
   );
 }
@@ -237,6 +246,69 @@ function InviteModal({ projectId, onClose }: { projectId: string; onClose: () =>
             </div>
           ))}
           {q.length >= 2 && results.length === 0 && <div className="text-sm text-muted-foreground text-center py-4">No matches.</div>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function VisibilityModal({ project, onClose, onSaved }: { project: any; onClose: () => void; onSaved: () => void }) {
+  const [fields, setFields] = useState<ShareFields>(normalizeShareFields(project.share_fields));
+  const [isPublic, setIsPublic] = useState(project.visibility === "public");
+  const [busy, setBusy] = useState(false);
+
+  const save = async () => {
+    setBusy(true);
+    try {
+      if (isPublic) { await publishProject(project.id, fields); toast.success("Project is now public"); }
+      else if (project.visibility === "public") { await unpublishProject(project.id); toast.success("Project is now private"); }
+      else { await updateShareFields(project.id, fields); toast.success("Saved"); }
+      onSaved(); onClose();
+    } catch (e: any) { toast.error(e.message || "Could not save"); }
+    finally { setBusy(false); }
+  };
+
+  return (
+    <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center">
+      <div className="absolute inset-0 bg-background/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full sm:max-w-lg max-h-[90vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border border-border bg-card shadow-2xl">
+        <div className="sticky top-0 flex items-center justify-between px-5 py-4 border-b border-border bg-card/95 backdrop-blur">
+          <h2 className="font-display font-bold text-lg">Visibility</h2>
+          <button onClick={onClose} className="p-2 rounded-full hover:bg-secondary" aria-label="Close"><X className="h-4 w-4" /></button>
+        </div>
+        <div className="p-5 space-y-5">
+          <div className="flex gap-2">
+            <button onClick={() => setIsPublic(false)} className={`flex-1 rounded-2xl border p-3 text-left transition ${!isPublic ? "border-primary bg-primary/5" : "border-border hover:bg-secondary"}`}>
+              <div className="flex items-center gap-2 text-sm font-semibold"><Lock className="h-4 w-4" /> Private</div>
+              <div className="text-[11px] text-muted-foreground mt-1">Only you and your team can see it.</div>
+            </button>
+            <button onClick={() => setIsPublic(true)} className={`flex-1 rounded-2xl border p-3 text-left transition ${isPublic ? "border-primary bg-primary/5" : "border-border hover:bg-secondary"}`}>
+              <div className="flex items-center gap-2 text-sm font-semibold"><Globe2 className="h-4 w-4" /> Public</div>
+              <div className="text-[11px] text-muted-foreground mt-1">Visible in the feed and to partners.</div>
+            </button>
+          </div>
+
+          <div className={isPublic ? "" : "opacity-50 pointer-events-none"}>
+            <div className="text-xs font-semibold mb-1">What should people see?</div>
+            <p className="text-[11px] text-muted-foreground mb-3">Anything switched off stays private to you and your team.</p>
+            <div className="grid gap-2">
+              {SHARE_FIELD_LABELS.map(({ key, label, hint }) => (
+                <label key={key} className="flex items-start gap-2.5 cursor-pointer">
+                  <input type="checkbox" checked={fields[key]} onChange={(e) => setFields({ ...fields, [key]: e.target.checked })} className="mt-0.5 h-4 w-4 accent-[oklch(0.42_0.28_264)]" />
+                  <span className="min-w-0">
+                    <span className="block text-sm font-medium leading-tight">{label}</span>
+                    <span className="block text-[11px] text-muted-foreground">{hint}</span>
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex justify-end">
+            <button disabled={busy} onClick={save} className="px-5 py-2 rounded-full bg-foreground text-background text-sm font-medium disabled:opacity-50">
+              {busy ? "Saving…" : "Save"}
+            </button>
+          </div>
         </div>
       </div>
     </div>
