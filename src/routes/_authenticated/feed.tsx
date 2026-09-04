@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Heart, MessageCircle, Repeat2, Image as ImageIcon, X, Send, Plus, Rocket } from "lucide-react";
+import { Heart, MessageCircle, Repeat2, Image as ImageIcon, X, Send, Plus, Rocket, Lock } from "lucide-react";
+import { SHARE_FIELD_LABELS, DEFAULT_SHARE_FIELDS, normalizeShareFields, publishProject, type ShareFields } from "@/lib/project-visibility";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/feed")({
@@ -91,6 +92,7 @@ function ComposerModal({ me, onClose, onPosted }: { me: any; onClose: () => void
   const [projects, setProjects] = useState<PostProject[]>([]);
   const [projectId, setProjectId] = useState<string | null>(null);
   const [loadingProjects, setLoadingProjects] = useState(true);
+  const [shareFields, setShareFields] = useState<ShareFields>(DEFAULT_SHARE_FIELDS);
 
   useEffect(() => {
     fetchMyProjects().then((p) => { setProjects(p); setLoadingProjects(false); }).catch(() => setLoadingProjects(false));
@@ -120,7 +122,11 @@ function ComposerModal({ me, onClose, onPosted }: { me: any; onClose: () => void
                 {projects.map((p) => (
                   <button
                     key={p.id}
-                    onClick={() => setProjectId(projectId === p.id ? null : p.id)}
+                    onClick={() => {
+                      const next = projectId === p.id ? null : p.id;
+                      setProjectId(next);
+                      if (next) setShareFields(normalizeShareFields(p.share_fields));
+                    }}
                     className={`w-full text-left rounded-2xl border p-3 transition ${projectId === p.id ? "border-primary bg-primary/5" : "border-border hover:bg-secondary"}`}
                   >
                     <div className="flex items-center gap-2">
@@ -175,19 +181,20 @@ function ComposerModal({ me, onClose, onPosted }: { me: any; onClose: () => void
   );
 }
 
-function Composer({ me, onPosted, repostOf, projectId, autoFocus }: { me: any; onPosted: () => void; repostOf?: string; projectId?: string | null; autoFocus?: boolean }) {
+function Composer({ me, onPosted, repostOf, projectId, autoFocus, requireProject, beforeSubmit }: { me: any; onPosted: () => void; repostOf?: string; projectId?: string | null; autoFocus?: boolean; requireProject?: boolean; beforeSubmit?: () => Promise<void> }) {
   const [body, setBody] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [busy, setBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const avatar = useSignedImage("avatars", me?.avatar_url);
 
-  const canSubmit = !!body.trim() || files.length > 0 || !!repostOf || !!projectId;
+  const canSubmit = requireProject ? !!projectId : (!!body.trim() || files.length > 0 || !!repostOf);
 
   const submit = async () => {
     if (!canSubmit) return;
     setBusy(true);
     try {
+      if (beforeSubmit) await beforeSubmit();
       const media_urls: string[] = [];
       for (const f of files) media_urls.push(await uploadPostMedia(f));
       await createPost({ body: body.trim(), media_urls, repost_of: repostOf, project_id: projectId ?? null });
@@ -207,7 +214,7 @@ function Composer({ me, onPosted, repostOf, projectId, autoFocus }: { me: any; o
         </Avatar>
         <div className="flex-1 space-y-2">
           <Textarea value={body} onChange={(e)=>setBody(e.target.value)} autoFocus={autoFocus}
-            placeholder={repostOf ? "Add a comment to your repost…" : "What are you building? Use #tags and @mentions."}
+            placeholder={repostOf ? "Add a comment to your repost…" : requireProject ? "Say something about this project… #tags @mentions" : "What are you building? Use #tags and @mentions."}
             className="min-h-[80px] border-0 focus-visible:ring-0 px-0 resize-none text-base" />
           {files.length > 0 && (
             <div className="grid grid-cols-3 gap-2">
