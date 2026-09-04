@@ -107,7 +107,7 @@ function ComposerModal({ me, onClose, onPosted }: { me: any; onClose: () => void
 
         <div className="p-5 space-y-4">
           <div>
-            <div className="text-xs font-medium text-muted-foreground mb-2">Share one of your projects (optional)</div>
+            <div className="text-xs font-medium text-muted-foreground mb-2">Choose the project you want to share</div>
             {loadingProjects ? (
               <div className="text-sm text-muted-foreground">Loading your projects…</div>
             ) : projects.length === 0 ? (
