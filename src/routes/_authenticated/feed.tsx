@@ -282,24 +282,7 @@ function PostCard({ post, onChange }: { post: PostWithAuthor; onChange: () => vo
 
       {post.body && <PostBody body={post.body} />}
 
-      {post.project && (
-        <Link to="/project/$id" params={{ id: post.project.id }} className="block rounded-2xl border border-border hover:border-primary transition overflow-hidden">
-          {post.project.cover_image_url && (
-            <img src={post.project.cover_image_url} alt="" className="w-full h-36 object-cover" loading="lazy" />
-          )}
-          <div className="p-4">
-            <div className="flex items-center gap-2">
-              <Rocket className="h-4 w-4 text-primary" />
-              <span className="font-display font-bold text-sm truncate">{post.project.title}</span>
-              <span className="ml-auto text-[11px] uppercase tracking-widest text-muted-foreground">{post.project.status}</span>
-            </div>
-            {post.project.description && <p className="text-xs text-muted-foreground line-clamp-2 mt-1.5">{post.project.description}</p>}
-            <div className="mt-3 h-1.5 rounded-full bg-secondary overflow-hidden">
-              <div className="h-full bg-primary" style={{ width: `${post.project.completion_percentage}%` }} />
-            </div>
-          </div>
-        </Link>
-      )}
+      {post.project && <ProjectPostCard project={post.project} />}
 
       {post.media_urls.length > 0 && <MediaGrid paths={post.media_urls} />}
 
