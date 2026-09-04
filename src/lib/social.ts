@@ -175,7 +175,7 @@ async function attachAuthors(rows: any[]): Promise<PostWithAuthor[]> {
   let projectMap = new Map<string, PostProject>();
   if (projectIds.length > 0) {
     const { data: projects } = await sb.from("projects")
-      .select("id, title, description, status, completion_percentage, tags, cover_image_url")
+      .select(PROJECT_SELECT)
       .in("id", projectIds);
     projectMap = new Map((projects || []).map((p: any) => [p.id, p as PostProject]));
   }
@@ -319,7 +319,7 @@ export async function fetchMyProjects(): Promise<PostProject[]> {
   const { data: u } = await supabase.auth.getUser();
   if (!u.user) return [];
   const { data } = await sb.from("projects")
-    .select("id, title, description, status, completion_percentage, tags, cover_image_url")
+    .select(PROJECT_SELECT)
     .eq("owner_id", u.user.id)
     .order("created_at", { ascending: false });
   return (data || []) as PostProject[];
