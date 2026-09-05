@@ -143,24 +143,56 @@
 }
 
 @layer utilities {
-  .animate-blob-1 { animation: blob1 26s ease-in-out infinite; }
-  .animate-blob-2 { animation: blob2 32s ease-in-out infinite; }
-  .animate-blob-3 { animation: blob3 24s ease-in-out infinite; }
-  .animate-blob-4 { animation: blob4 30s ease-in-out infinite; }
+  .animate-blob-1 { animation: blob1 22s ease-in-out infinite; }
+  .animate-blob-2 { animation: blob2 27s ease-in-out infinite; }
+  .animate-blob-3 { animation: blob3 19s ease-in-out infinite; }
+  .animate-blob-4 { animation: blob4 24s ease-in-out infinite; }
   @keyframes blob1 {
     0%, 100% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(70px, 50px) scale(1.15); }
+    33% { transform: translate(90px, 40px) scale(1.1); }
+    66% { transform: translate(30px, 110px) scale(0.95); }
   }
   @keyframes blob2 {
     0%, 100% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(-80px, -60px) scale(1.1); }
+    33% { transform: translate(-110px, -50px) scale(1.08); }
+    66% { transform: translate(-40px, -120px) scale(1.15); }
   }
   @keyframes blob3 {
     0%, 100% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(-60px, 80px) scale(1.2); }
+    50% { transform: translate(-90px, 100px) scale(1.12); }
   }
   @keyframes blob4 {
     0%, 100% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(60px, -70px) scale(1.12); }
+    50% { transform: translate(100px, -90px) scale(1.1); }
+  }
+
+  /* Logo arms: hold still, then wave — bottom tips inward, tops outward */
+  .animate-arm-left { animation: armLeft 3.4s ease-in-out 0.8s infinite; }
+  .animate-arm-right { animation: armRight 3.4s ease-in-out 0.8s infinite; }
+  @keyframes armLeft {
+    0%, 15% { transform: rotate(18deg); }
+    32% { transform: rotate(34deg); }
+    48% { transform: rotate(18deg); }
+    64% { transform: rotate(34deg); }
+    80%, 100% { transform: rotate(18deg); }
+  }
+  @keyframes armRight {
+    0%, 15% { transform: rotate(-18deg); }
+    32% { transform: rotate(-34deg); }
+    48% { transform: rotate(-18deg); }
+    64% { transform: rotate(-34deg); }
+    80%, 100% { transform: rotate(-18deg); }
+  }
+
+  /* Buttons slide in horizontally from outside toward the center */
+  .animate-btn-left { animation: btnLeft 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.35s both; }
+  .animate-btn-right { animation: btnRight 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.35s both; }
+  @keyframes btnLeft {
+    from { transform: translateX(-90px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes btnRight {
+    from { transform: translateX(90px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
   }
 }
