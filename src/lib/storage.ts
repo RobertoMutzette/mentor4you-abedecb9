@@ -90,10 +90,42 @@ export async function uploadProfileImage(
   return path;
 }
 
+const ALLOWED_VIDEO_MIME: Record<string, string> = {
+  mp4: "video/mp4",
+  webm: "video/webm",
+  mov: "video/quicktime",
+};
+const MAX_VIDEO_BYTES = 200 * 1024 * 1024; // 200MB
+
+export type MediaKind = "image" | "video";
+
+/** Validate a post attachment (photo or video) before upload. */
+function validateMediaFile(file: File): { ext: string; contentType: string; kind: MediaKind } {
+  const ext = (file.name.split(".").pop() || "").toLowerCase();
+  const videoMime = ALLOWED_VIDEO_MIME[ext];
+  if (videoMime) {
+    if (file.size > MAX_VIDEO_BYTES) throw new Error("Video too large (max 200MB)");
+    if (file.type && file.type !== videoMime) throw new Error("File type does not match its extension.");
+    return { ext, contentType: videoMime, kind: "video" };
+  }
+  const img = validateImageFile(file);
+  return { ...img, kind: "image" };
+}
+
+export function mediaKindOf(file: File): MediaKind {
+  const ext = (file.name.split(".").pop() || "").toLowerCase();
+  return ALLOWED_VIDEO_MIME[ext] ? "video" : "image";
+}
+
+export function mediaKindOfPath(path: string): MediaKind {
+  const ext = (path.split(".").pop() || "").toLowerCase();
+  return ALLOWED_VIDEO_MIME[ext] ? "video" : "image";
+}
+
 export async function uploadPostMedia(file: File): Promise<string> {
   const { data: u } = await supabase.auth.getUser();
   if (!u.user) throw new Error("Not signed in");
-  const { ext, contentType } = validateImageFile(file);
+  const { ext, contentType } = validateMediaFile(file);
   const path = `${u.user.id}/${crypto.randomUUID()}.${ext}`;
   const { error } = await supabase.storage.from("post-media").upload(path, file, {
     upsert: false,
@@ -101,6 +133,11 @@ export async function uploadPostMedia(file: File): Promise<string> {
   });
   if (error) throw error;
   return path;
+}
+
+/** Signed URL for any private post attachment (photo or video). */
+export async function resolveMedia(path: string) {
+  return resolveImage("post-media", path);
 }
 
 /** Server-enforced per-hour rate limiter via SECURITY DEFINER function. */
