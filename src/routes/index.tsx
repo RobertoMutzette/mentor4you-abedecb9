@@ -42,7 +42,13 @@ function Hero() {
   return (
     <section className="flex-1 flex flex-col items-center justify-center px-6 text-center relative overflow-hidden">
       <div className="absolute inset-0 -z-10 grain opacity-40" />
-      <div className="absolute -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-primary/8 blur-3xl" />
+      {/* drifting blue blur circles around the edges */}
+      <div aria-hidden className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-32 -left-32 h-[420px] w-[420px] rounded-full bg-primary/25 blur-[120px] animate-blob-1" />
+        <div className="absolute -bottom-40 -right-32 h-[480px] w-[480px] rounded-full bg-primary/20 blur-[140px] animate-blob-2" />
+        <div className="absolute top-1/3 -right-40 h-[360px] w-[360px] rounded-full bg-primary/15 blur-[110px] animate-blob-3" />
+        <div className="absolute -bottom-24 -left-40 h-[380px] w-[380px] rounded-full bg-primary/15 blur-[130px] animate-blob-4" />
+      </div>
 
       <div className="flex flex-col items-center">
         <div className="h-32 w-32 md:h-40 md:w-40 mb-8 animate-fade-in">
@@ -71,11 +77,6 @@ function Hero() {
           >
             I want to mentor
           </Link>
-        </div>
-
-        <div className="mt-10 flex items-center gap-2 text-sm text-muted-foreground">
-          <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-          <span>Free to join — start in under a minute</span>
         </div>
       </div>
     </section>
