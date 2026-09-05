@@ -78,11 +78,6 @@ function Hero() {
             I want to mentor
           </Link>
         </div>
-
-        <div className="mt-10 flex items-center gap-2 text-sm text-muted-foreground">
-          <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-          <span>Free to join — start in under a minute</span>
-        </div>
       </div>
     </section>
   );
