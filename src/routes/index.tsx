@@ -44,18 +44,15 @@ function Hero() {
       <div className="absolute inset-0 -z-10 grain opacity-40" />
       {/* drifting blue blur circles around the edges */}
       <div aria-hidden className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-20 -left-20 h-[240px] w-[240px] rounded-full bg-primary/45 blur-[90px] animate-blob-1" />
-        <div className="absolute -bottom-24 -right-20 h-[280px] w-[280px] rounded-full bg-primary/40 blur-[100px] animate-blob-2" />
-        <div className="absolute top-1/4 -right-24 h-[220px] w-[220px] rounded-full bg-primary/35 blur-[90px] animate-blob-3" />
-        <div className="absolute -bottom-16 -left-24 h-[230px] w-[230px] rounded-full bg-primary/35 blur-[95px] animate-blob-4" />
+        <div className="absolute -top-32 -left-32 h-[420px] w-[420px] rounded-full bg-primary/25 blur-[120px] animate-blob-1" />
+        <div className="absolute -bottom-40 -right-32 h-[480px] w-[480px] rounded-full bg-primary/20 blur-[140px] animate-blob-2" />
+        <div className="absolute top-1/3 -right-40 h-[360px] w-[360px] rounded-full bg-primary/15 blur-[110px] animate-blob-3" />
+        <div className="absolute -bottom-24 -left-40 h-[380px] w-[380px] rounded-full bg-primary/15 blur-[130px] animate-blob-4" />
       </div>
 
       <div className="flex flex-col items-center">
-        {/* Animated logo: circle face + two waving arm rectangles */}
-        <div className="relative h-32 w-32 md:h-40 md:w-40 mb-8 animate-fade-in" role="img" aria-label="Mentor4You logo">
-          <div className="absolute left-[20%] top-[16%] h-[64%] w-[7.5%] rounded-full bg-primary animate-arm-left" />
-          <div className="absolute right-[20%] top-[16%] h-[64%] w-[7.5%] rounded-full bg-primary animate-arm-right" />
-          <div className="absolute left-1/2 top-[52%] -translate-x-1/2 -translate-y-1/2 h-[23%] w-[23%] rounded-full bg-primary" />
+        <div className="h-32 w-32 md:h-40 md:w-40 mb-8 animate-fade-in">
+          <img src={logo} alt="Mentor4You" className="h-full w-full object-contain" />
         </div>
 
         <h1 className="font-display font-bold text-[clamp(2.5rem,6vw,4.5rem)] tracking-tight leading-[1.1] text-balance">
@@ -70,13 +67,13 @@ function Hero() {
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-sm sm:max-w-none">
           <Link
             to="/signup"
-            className="w-full sm:w-auto group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-primary text-primary-foreground font-medium text-lg hover:shadow-glow transition-all animate-btn-left"
+            className="w-full sm:w-auto group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-primary text-primary-foreground font-medium text-lg hover:shadow-glow transition-all"
           >
             Find a partner
           </Link>
           <Link
             to="/signup"
-            className="w-full sm:w-auto group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-ink text-cream font-medium text-lg hover:opacity-90 transition animate-btn-right"
+            className="w-full sm:w-auto group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-ink text-cream font-medium text-lg hover:opacity-90 transition"
           >
             I want to mentor
           </Link>
