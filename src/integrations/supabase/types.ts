@@ -713,7 +713,9 @@ export type Database = {
           hashtags: string[]
           id: string
           media_paths: string[]
+          media_types: string[]
           mentions: string[]
+          post_kind: string
           project_id: string | null
           repost_of: string | null
           updated_at: string
@@ -725,7 +727,9 @@ export type Database = {
           hashtags?: string[]
           id?: string
           media_paths?: string[]
+          media_types?: string[]
           mentions?: string[]
+          post_kind?: string
           project_id?: string | null
           repost_of?: string | null
           updated_at?: string
@@ -737,7 +741,9 @@ export type Database = {
           hashtags?: string[]
           id?: string
           media_paths?: string[]
+          media_types?: string[]
           mentions?: string[]
+          post_kind?: string
           project_id?: string | null
           repost_of?: string | null
           updated_at?: string
