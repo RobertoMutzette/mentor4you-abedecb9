@@ -70,13 +70,13 @@ function Hero() {
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-sm sm:max-w-none">
           <Link
             to="/signup"
-            className="w-full sm:w-auto group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-primary text-primary-foreground font-medium text-lg hover:shadow-glow transition-all"
+            className="w-full sm:w-auto group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-primary text-primary-foreground font-medium text-lg hover:shadow-glow transition-all animate-btn-left"
           >
             Find a partner
           </Link>
           <Link
             to="/signup"
-            className="w-full sm:w-auto group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-ink text-cream font-medium text-lg hover:opacity-90 transition"
+            className="w-full sm:w-auto group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-ink text-cream font-medium text-lg hover:opacity-90 transition animate-btn-right"
           >
             I want to mentor
           </Link>
