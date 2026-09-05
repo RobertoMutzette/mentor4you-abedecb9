@@ -43,7 +43,7 @@ function Hero() {
     <section className="flex-1 flex flex-col items-center justify-center px-6 text-center relative overflow-hidden">
       <div className="absolute inset-0 -z-10 grain opacity-40" />
       {/* drifting blue blur circles around the edges */}
-      <div aria-hidden className="absolute -z-10 inset-0 overflow-hidden">
+      <div aria-hidden className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-32 -left-32 h-[420px] w-[420px] rounded-full bg-primary/25 blur-[120px] animate-blob-1" />
         <div className="absolute -bottom-40 -right-32 h-[480px] w-[480px] rounded-full bg-primary/20 blur-[140px] animate-blob-2" />
         <div className="absolute top-1/3 -right-40 h-[360px] w-[360px] rounded-full bg-primary/15 blur-[110px] animate-blob-3" />
