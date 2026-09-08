@@ -2,11 +2,23 @@ import { supabase } from "@/integrations/supabase/client";
 
 const sb = supabase as any;
 
+export type PostKind = "update" | "question" | "video" | "milestone" | "launch";
+
+export const POST_KINDS: { key: PostKind; label: string; hint: string }[] = [
+  { key: "update", label: "Update", hint: "Progress, news, what changed" },
+  { key: "video", label: "Video", hint: "Present yourself or the idea on camera" },
+  { key: "question", label: "Ask", hint: "Get suggestions or feedback" },
+  { key: "milestone", label: "Milestone", hint: "Something big you reached" },
+  { key: "launch", label: "Launch", hint: "You're going live" },
+];
+
 export type Post = {
   id: string;
   author_id: string;
   body: string;
   media_urls: string[];
+  media_types: string[];
+  post_kind: PostKind;
   repost_of: string | null;
   project_id: string | null;
   mention_user_ids: string[];
