@@ -2,11 +2,23 @@ import { supabase } from "@/integrations/supabase/client";
 
 const sb = supabase as any;
 
+export type PostKind = "update" | "question" | "video" | "milestone" | "launch";
+
+export const POST_KINDS: { key: PostKind; label: string; hint: string }[] = [
+  { key: "update", label: "Update", hint: "Progress, news, what changed" },
+  { key: "video", label: "Video", hint: "Present yourself or the idea on camera" },
+  { key: "question", label: "Ask", hint: "Get suggestions or feedback" },
+  { key: "milestone", label: "Milestone", hint: "Something big you reached" },
+  { key: "launch", label: "Launch", hint: "You're going live" },
+];
+
 export type Post = {
   id: string;
   author_id: string;
   body: string;
   media_urls: string[];
+  media_types: string[];
+  post_kind: PostKind;
   repost_of: string | null;
   project_id: string | null;
   mention_user_ids: string[];
@@ -78,6 +90,8 @@ function normalize(row: any): Post {
     author_id: row.author_id,
     body: row.body ?? "",
     media_urls: row.media_paths ?? [],
+    media_types: row.media_types ?? [],
+    post_kind: (row.post_kind ?? "update") as PostKind,
     repost_of: row.repost_of ?? null,
     project_id: row.project_id ?? null,
     mention_user_ids: row.mentions ?? [],
@@ -92,6 +106,8 @@ function normalize(row: any): Post {
 export async function createPost(input: {
   body: string;
   media_urls?: string[];
+  media_types?: string[];
+  post_kind?: PostKind;
   repost_of?: string | null;
   project_id?: string | null;
 }) {
@@ -104,6 +120,8 @@ export async function createPost(input: {
     author_id: u.user.id,
     body: input.body,
     media_paths: input.media_urls ?? [],
+    media_types: input.media_types ?? [],
+    post_kind: input.post_kind ?? "update",
     repost_of: input.repost_of ?? null,
     project_id: input.project_id ?? null,
     hashtags,
@@ -230,6 +248,16 @@ export async function fetchFeed(opts: { scope: "for-you" | "following" | "user";
     q = q.in("author_id", ids);
   }
   const { data, error } = await q;
+  if (error) throw error;
+  return attachAuthors(data || []);
+}
+
+/** Timeline of a single project — its "account" feed. */
+export async function fetchProjectPosts(projectId: string, limit = 50): Promise<PostWithAuthor[]> {
+  const { data, error } = await sb.from("posts").select("*")
+    .eq("project_id", projectId)
+    .order("created_at", { ascending: false })
+    .limit(limit);
   if (error) throw error;
   return attachAuthors(data || []);
 }

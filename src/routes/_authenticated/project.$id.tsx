@@ -2,10 +2,12 @@ import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { inviteToProject, leaveProject, postComment, postUpdate } from "@/lib/projects";
-import { ArrowLeft, Github, Globe, Globe2, Lock, Loader2, MessageSquare, Megaphone, UserPlus, Users2, X, LogOut } from "lucide-react";
+import { ArrowLeft, Github, Globe, Globe2, Lock, Loader2, MessageSquare, Megaphone, UserPlus, Users2, X, LogOut, Rss } from "lucide-react";
 import { safeUrl } from "@/lib/safe-url";
 import { SHARE_FIELD_LABELS, normalizeShareFields, publishProject, unpublishProject, updateShareFields, type ShareFields } from "@/lib/project-visibility";
 import { toast } from "sonner";
+import { Composer, PostCard } from "@/components/post-feed";
+import { fetchProjectPosts, type PostWithAuthor } from "@/lib/social";
 
 export const Route = createFileRoute("/_authenticated/project/$id")({
   head: () => ({ meta: [{ title: "Project — Mentor4You" }] }),
@@ -21,7 +23,7 @@ function ProjectWorkspace() {
   const [comments, setComments] = useState<any[]>([]);
   const [updates, setUpdates] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState<"updates" | "discussion" | "team">("updates");
+  const [tab, setTab] = useState<"posts" | "updates" | "discussion" | "team">("posts");
   const [showInvite, setShowInvite] = useState(false);
   const [showVisibility, setShowVisibility] = useState(false);
 
@@ -106,13 +108,15 @@ function ProjectWorkspace() {
         )}
       </header>
 
-      <nav className="mt-6 flex gap-1 border-b border-border">
+      <nav className="mt-6 flex gap-1 border-b border-border overflow-x-auto">
+        <TabBtn active={tab === "posts"} onClick={() => setTab("posts")} icon={<Rss className="h-4 w-4" />}>Posts</TabBtn>
         <TabBtn active={tab === "updates"} onClick={() => setTab("updates")} icon={<Megaphone className="h-4 w-4" />}>Updates</TabBtn>
         <TabBtn active={tab === "discussion"} onClick={() => setTab("discussion")} icon={<MessageSquare className="h-4 w-4" />}>Discussion</TabBtn>
         <TabBtn active={tab === "team"} onClick={() => setTab("team")} icon={<Users2 className="h-4 w-4" />}>Team</TabBtn>
       </nav>
 
       <div className="mt-6">
+        {tab === "posts" && <PostsTab projectId={id} isMember={isMember} isPublic={project.visibility === "public"} />}
         {tab === "updates" && <UpdatesTab projectId={id} updates={updates} profiles={profiles} isMember={isMember} onPosted={load} />}
         {tab === "discussion" && <DiscussionTab projectId={id} comments={comments} profiles={profiles} onPosted={load} />}
         {tab === "team" && <TeamTab ownerId={project.owner_id} members={members} profiles={profiles} />}
@@ -120,6 +124,40 @@ function ProjectWorkspace() {
 
       {showInvite && <InviteModal projectId={id} onClose={() => setShowInvite(false)} />}
       {showVisibility && <VisibilityModal project={project} onClose={() => setShowVisibility(false)} onSaved={load} />}
+    </div>
+  );
+}
+
+function PostsTab({ projectId, isMember, isPublic }: { projectId: string; isMember: boolean; isPublic: boolean }) {
+  const [posts, setPosts] = useState<PostWithAuthor[]>([]);
+  const [me, setMe] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  const load = () => fetchProjectPosts(projectId).then(setPosts).finally(() => setLoading(false));
+  useEffect(() => { load(); }, [projectId]);
+  useEffect(() => {
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) return;
+      const { data: p } = await (supabase as any).from("profiles").select("id, full_name, avatar_url").eq("id", data.user.id).maybeSingle();
+      setMe(p);
+    });
+  }, []);
+
+  return (
+    <div className="space-y-4">
+      {isMember && (
+        <>
+          {!isPublic && (
+            <p className="text-xs text-muted-foreground">
+              This project is private — posts stay visible to people who can already see it. Switch it to public to reach the feed.
+            </p>
+          )}
+          <Composer me={me} projectId={projectId} onPosted={load} />
+        </>
+      )}
+      {loading ? <Empty>Loading…</Empty>
+        : posts.length === 0 ? <Empty>No posts yet. Share a photo, a video or an update.</Empty>
+        : posts.map((p) => <PostCard key={p.id} post={p} onChange={load} />)}
     </div>
   );
 }
