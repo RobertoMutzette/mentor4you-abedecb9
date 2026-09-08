@@ -106,6 +106,8 @@ function normalize(row: any): Post {
 export async function createPost(input: {
   body: string;
   media_urls?: string[];
+  media_types?: string[];
+  post_kind?: PostKind;
   repost_of?: string | null;
   project_id?: string | null;
 }) {
