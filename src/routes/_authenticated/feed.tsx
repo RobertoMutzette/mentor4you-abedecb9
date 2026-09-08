@@ -1,19 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  fetchFeed, createPost, toggleReaction, fetchComments, postComment,
-  fetchMyProjects, type PostWithAuthor, type PostProject,
-} from "@/lib/social";
-import { uploadPostMedia, useSignedImage, resolveImage } from "@/lib/storage";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { fetchFeed, fetchMyProjects, type PostWithAuthor, type PostProject } from "@/lib/social";
 import { Card } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Heart, MessageCircle, Repeat2, Image as ImageIcon, X, Send, Plus, Rocket, Lock } from "lucide-react";
+import { Plus, Lock, X } from "lucide-react";
 import { SHARE_FIELD_LABELS, DEFAULT_SHARE_FIELDS, normalizeShareFields, publishProject, type ShareFields } from "@/lib/project-visibility";
-import { toast } from "sonner";
-import { safeUrl } from "@/lib/safe-url";
+import { Composer, PostCard } from "@/components/post-feed";
 
 export const Route = createFileRoute("/_authenticated/feed")({
   head: () => ({
