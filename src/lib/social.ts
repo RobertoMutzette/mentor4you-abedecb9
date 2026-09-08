@@ -90,6 +90,8 @@ function normalize(row: any): Post {
     author_id: row.author_id,
     body: row.body ?? "",
     media_urls: row.media_paths ?? [],
+    media_types: row.media_types ?? [],
+    post_kind: (row.post_kind ?? "update") as PostKind,
     repost_of: row.repost_of ?? null,
     project_id: row.project_id ?? null,
     mention_user_ids: row.mentions ?? [],
