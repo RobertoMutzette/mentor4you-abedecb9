@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchFeed, fetchMyProjects, type PostWithAuthor, type PostProject } from "@/lib/social";
 import { Card } from "@/components/ui/card";
-import { Plus, Lock, X } from "lucide-react";
+import { Plus, Lock, X, Rocket } from "lucide-react";
 import { SHARE_FIELD_LABELS, DEFAULT_SHARE_FIELDS, normalizeShareFields, publishProject, type ShareFields } from "@/lib/project-visibility";
 import { Composer, PostCard } from "@/components/post-feed";
 
