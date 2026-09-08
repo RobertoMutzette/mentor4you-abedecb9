@@ -120,6 +120,8 @@ export async function createPost(input: {
     author_id: u.user.id,
     body: input.body,
     media_paths: input.media_urls ?? [],
+    media_types: input.media_types ?? [],
+    post_kind: input.post_kind ?? "update",
     repost_of: input.repost_of ?? null,
     project_id: input.project_id ?? null,
     hashtags,
