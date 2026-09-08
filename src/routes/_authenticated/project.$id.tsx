@@ -106,13 +106,15 @@ function ProjectWorkspace() {
         )}
       </header>
 
-      <nav className="mt-6 flex gap-1 border-b border-border">
+      <nav className="mt-6 flex gap-1 border-b border-border overflow-x-auto">
+        <TabBtn active={tab === "posts"} onClick={() => setTab("posts")} icon={<Rss className="h-4 w-4" />}>Posts</TabBtn>
         <TabBtn active={tab === "updates"} onClick={() => setTab("updates")} icon={<Megaphone className="h-4 w-4" />}>Updates</TabBtn>
         <TabBtn active={tab === "discussion"} onClick={() => setTab("discussion")} icon={<MessageSquare className="h-4 w-4" />}>Discussion</TabBtn>
         <TabBtn active={tab === "team"} onClick={() => setTab("team")} icon={<Users2 className="h-4 w-4" />}>Team</TabBtn>
       </nav>
 
       <div className="mt-6">
+        {tab === "posts" && <PostsTab projectId={id} isMember={isMember} isPublic={project.visibility === "public"} />}
         {tab === "updates" && <UpdatesTab projectId={id} updates={updates} profiles={profiles} isMember={isMember} onPosted={load} />}
         {tab === "discussion" && <DiscussionTab projectId={id} comments={comments} profiles={profiles} onPosted={load} />}
         {tab === "team" && <TeamTab ownerId={project.owner_id} members={members} profiles={profiles} />}
