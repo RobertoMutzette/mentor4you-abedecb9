@@ -252,6 +252,16 @@ export async function fetchFeed(opts: { scope: "for-you" | "following" | "user";
   return attachAuthors(data || []);
 }
 
+/** Timeline of a single project — its "account" feed. */
+export async function fetchProjectPosts(projectId: string, limit = 50): Promise<PostWithAuthor[]> {
+  const { data, error } = await sb.from("posts").select("*")
+    .eq("project_id", projectId)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error) throw error;
+  return attachAuthors(data || []);
+}
+
 export async function toggleReaction(postId: string): Promise<boolean> {
   const { data: u } = await supabase.auth.getUser();
   if (!u.user) throw new Error("Not signed in");
