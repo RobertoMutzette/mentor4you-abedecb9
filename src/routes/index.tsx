@@ -91,7 +91,8 @@ function Footer() {
           <img src={logo} alt="" className="h-5 w-5" />
           <span className="font-display font-semibold text-foreground">Mentor4You</span>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center justify-center gap-4">
+          <Link to="/about" className="font-medium text-foreground hover:text-primary transition">Who we are</Link>
           <Link to="/privacy" className="hover:text-foreground transition">Privacy</Link>
           <Link to="/terms" className="hover:text-foreground transition">Terms</Link>
           <Link to="/gdpr" className="hover:text-foreground transition">GDPR</Link>
