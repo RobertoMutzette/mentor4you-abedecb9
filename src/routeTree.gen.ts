@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as GdprRouteImport } from './routes/gdpr'
 import { Route as GuidelinesRouteImport } from './routes/guidelines'
@@ -51,6 +52,11 @@ const IndexRoute = IndexRouteImport.update({
 } as any)
 const AuthenticatedRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
@@ -224,6 +230,7 @@ const AuthenticatedInstitutionsInviteTokenRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/gdpr': typeof GdprRoute
   '/guidelines': typeof GuidelinesRoute
@@ -259,6 +266,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/gdpr': typeof GdprRoute
   '/guidelines': typeof GuidelinesRoute
@@ -296,6 +304,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/about': typeof AboutRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/gdpr': typeof GdprRoute
   '/guidelines': typeof GuidelinesRoute
@@ -333,6 +342,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about'
     | '/forgot-password'
     | '/gdpr'
     | '/guidelines'
@@ -368,6 +378,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
     | '/forgot-password'
     | '/gdpr'
     | '/guidelines'
@@ -404,6 +415,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/about'
     | '/forgot-password'
     | '/gdpr'
     | '/guidelines'
@@ -441,6 +453,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  AboutRoute: typeof AboutRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   GdprRoute: typeof GdprRoute
   GuidelinesRoute: typeof GuidelinesRoute
@@ -467,6 +480,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forgot-password': {
@@ -776,6 +796,7 @@ const SignupRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  AboutRoute: AboutRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   GdprRoute: GdprRoute,
   GuidelinesRoute: GuidelinesRoute,

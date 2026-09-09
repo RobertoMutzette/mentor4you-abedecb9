@@ -224,7 +224,8 @@ function AuthLayout() {
             <img src={logo} alt="" className="h-4 w-4" />
             <span className="font-display font-semibold text-foreground">Mentor4You</span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <Link to="/about" className="font-medium text-foreground hover:text-primary transition">Who we are</Link>
             <Link to="/privacy" className="hover:text-foreground transition">Privacy</Link>
             <Link to="/terms" className="hover:text-foreground transition">Terms</Link>
             <Link to="/gdpr" className="hover:text-foreground transition">GDPR</Link>
