@@ -83,6 +83,12 @@ function GdprPage() {
           </p>
         </Section>
 
+        <Section title="7b. Photos, videos and other uploads">
+          <p className="text-muted-foreground leading-relaxed">
+            Media you upload (profile photos, cover images, project photos and videos, verification documents) is personal data when it shows or identifies a person. It is kept in private storage and only reachable through short-lived signed links, on the legal basis of performing our contract with you and your consent when you choose to publish a project. You may delete your own posts and their media at any time from the platform, and a full account deletion removes your uploads; residual copies in encrypted backups are erased on our normal backup rotation. Exports under your right to data portability include a list of your uploaded files. Please do not upload media showing other people without their consent, or documents containing special-category data you are not required to provide.
+          </p>
+        </Section>
+
         <Section title="8. Complaints">
           <p className="text-muted-foreground leading-relaxed">
             If you believe we have violated your data protection rights, you have the right to lodge a complaint with your local data protection authority.
