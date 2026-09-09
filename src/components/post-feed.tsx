@@ -14,6 +14,7 @@ import { Heart, MessageCircle, Repeat2, Image as ImageIcon, Video, X, Send, Rock
 import { normalizeShareFields } from "@/lib/project-visibility";
 import { toast } from "sonner";
 import { safeUrl } from "@/lib/safe-url";
+import { timeAgo } from "@/lib/time";
 
 export function Composer({
   me, onPosted, repostOf, projectId, autoFocus, requireProject, beforeSubmit, showKinds = true,
@@ -144,7 +145,7 @@ export function PostCard({ post, onChange }: { post: PostWithAuthor; onChange: (
   const kindLabel = POST_KINDS.find((k) => k.key === post.post_kind)?.label;
 
   return (
-    <Card className="p-4 space-y-3">
+    <Card className="p-4 space-y-3 rounded-3xl sm:rounded-3xl transition hover:shadow-[0_20px_50px_-30px_oklch(0_0_0/0.35)]">
       <div className="flex items-start gap-3">
         <Link to="/u/$id" params={{ id: post.author_id }}>
           <Avatar className="h-10 w-10">
