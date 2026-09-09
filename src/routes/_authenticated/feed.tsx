@@ -48,8 +48,8 @@ function FeedPage() {
   }, []);
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-6 sm:py-8 space-y-4">
-      <div className="flex items-center gap-2">
+    <div className="mx-auto max-w-2xl px-4 pb-6 space-y-4">
+      <div className="sticky top-16 z-30 -mx-4 px-4 py-3 bg-background/80 backdrop-blur-md border-b border-border/60 flex items-center gap-2">
         <button onClick={() => setScope("for-you")}
           className={`px-4 py-2 rounded-full text-sm font-medium transition ${scope==="for-you"?"bg-primary text-primary-foreground":"bg-secondary text-foreground hover:bg-secondary/80"}`}>For you</button>
         <button onClick={() => setScope("following")}
@@ -63,6 +63,21 @@ function FeedPage() {
           <Plus className="h-4 w-4" /> <span className="hidden sm:inline">Post</span>
         </button>
       </div>
+
+      {/* Status-box style entry point */}
+      <button
+        onClick={() => setComposerOpen(true)}
+        className="w-full flex items-center gap-3 rounded-3xl border border-border bg-card p-3 text-left hover:bg-secondary/50 transition"
+      >
+        <span className="h-10 w-10 rounded-full bg-primary/15 text-primary text-xs font-display font-bold flex items-center justify-center shrink-0">
+          {(me?.full_name || "?").slice(0, 1).toUpperCase()}
+        </span>
+        <span className="flex-1 text-sm text-muted-foreground truncate">Share a project you're working on…</span>
+        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-primary shrink-0">
+          <Rocket className="h-4 w-4" /> Project
+        </span>
+      </button>
+
 
       {loading ? (
         <div className="text-center text-muted-foreground py-12">Loading…</div>
