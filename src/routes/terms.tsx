@@ -58,7 +58,7 @@ function TermsPage() {
 
         <Section title="5. Content you post">
           <p className="text-muted-foreground leading-relaxed">
-            You retain ownership of content you post. By posting, you grant Mentor4You a worldwide, non-exclusive, royalty-free license to use, display, and distribute your content on the platform for the purpose of operating and improving the service. You represent that you have the right to share any content you post.
+            You retain ownership of content you post, including text, photos and videos. By posting, you grant Mentor4You a worldwide, non-exclusive, royalty-free license to host, store, encode, display and distribute that content on the platform for the purpose of operating and improving the service. You represent that you own or have the rights to every photo, video, logo and document you upload, and that you have the consent of any identifiable person appearing in it. Photos and videos are limited to supported formats (JPG, PNG, GIF, WebP up to 10MB; MP4, WebM, MOV up to 200MB) and must not contain sexual, violent, hateful, deceptive or infringing material. You can delete your own posts at any time; deletion removes them from the platform, though backups may persist for a limited period.
           </p>
         </Section>
 

@@ -26,7 +26,7 @@ function PrivacyPage() {
 
         <Section title="1. What we collect">
           <p className="text-muted-foreground leading-relaxed">
-            We collect information you provide directly: name, email, profile details, bio, education, experience, photos, mentorship topics, and social links. We also collect usage data such as log-ins, feature usage, connection requests, messages, posts, and project interactions to improve the platform.
+            We collect information you provide directly: name, email, profile details, bio, education, experience, mentorship topics, social links, and the media you upload — profile photos, cover images, project images and videos, and verification documents. Uploaded files are stored in private storage and served through short-lived signed links; files may carry technical metadata (size, format, duration) that we retain with the file. We also collect usage data such as log-ins, feature usage, connection requests, messages, posts, and project interactions to improve the platform. We do not use face recognition on your photos or videos, and we do not use your media to train AI models.
           </p>
         </Section>
 
