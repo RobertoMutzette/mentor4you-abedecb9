@@ -158,7 +158,7 @@ export function PostCard({ post, onChange }: { post: PostWithAuthor; onChange: (
             <Link to="/u/$id" params={{ id: post.author_id }} className="font-semibold hover:underline truncate">
               {post.author?.full_name || "Unknown"}
             </Link>
-            <span className="text-muted-foreground text-xs">· {new Date(post.created_at).toLocaleDateString()}</span>
+            <span className="text-muted-foreground text-xs" title={new Date(post.created_at).toLocaleString()}>· {timeAgo(post.created_at)}</span>
             {kindLabel && post.post_kind !== "update" && (
               <span className="text-[10px] uppercase tracking-widest px-2 py-0.5 rounded-full bg-secondary text-muted-foreground">{kindLabel}</span>
             )}
@@ -189,15 +189,26 @@ export function PostCard({ post, onChange }: { post: PostWithAuthor; onChange: (
         </Card>
       )}
 
-      <div className="flex items-center gap-1 pt-2 border-t border-border text-muted-foreground">
-        <button onClick={onLike} className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-secondary text-sm ${liked ? "text-primary" : ""}`}>
-          <Heart className={`h-4 w-4 ${liked ? "fill-current" : ""}`} /> {count > 0 && count}
+      {(count > 0 || post.comment_count > 0 || post.repost_count > 0) && (
+        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+          {count > 0 && <span>{count} {count === 1 ? "like" : "likes"}</span>}
+          {post.comment_count > 0 && <span>{post.comment_count} {post.comment_count === 1 ? "comment" : "comments"}</span>}
+          {post.repost_count > 0 && <span>{post.repost_count} reshared</span>}
+        </div>
+      )}
+
+      <div className="grid grid-cols-3 gap-1 pt-2 border-t border-border text-muted-foreground">
+        <button onClick={onLike} aria-pressed={liked}
+          className={`inline-flex items-center justify-center gap-2 py-2 rounded-full text-sm font-medium transition active:scale-95 hover:bg-secondary ${liked ? "text-primary" : ""}`}>
+          <Heart className={`h-4 w-4 transition-transform ${liked ? "fill-current scale-110" : ""}`} /> Like
         </button>
-        <button onClick={() => setShowComments(!showComments)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-secondary text-sm">
-          <MessageCircle className="h-4 w-4" /> {post.comment_count > 0 && post.comment_count}
+        <button onClick={() => setShowComments(!showComments)}
+          className="inline-flex items-center justify-center gap-2 py-2 rounded-full text-sm font-medium hover:bg-secondary transition">
+          <MessageCircle className="h-4 w-4" /> Comment
         </button>
-        <button onClick={() => setShowRepost(!showRepost)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-secondary text-sm">
-          <Repeat2 className="h-4 w-4" /> {post.repost_count > 0 && post.repost_count}
+        <button onClick={() => setShowRepost(!showRepost)}
+          className="inline-flex items-center justify-center gap-2 py-2 rounded-full text-sm font-medium hover:bg-secondary transition">
+          <Repeat2 className="h-4 w-4" /> Reshare
         </button>
       </div>
 
